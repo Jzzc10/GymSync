@@ -1,0 +1,265 @@
+openapi: 3.0.1
+info:
+  title: API Documentation GymSync
+  description: Documentación de los ENDPOINTS para el sistema de gestión de gimnasios GymSync.
+  version: 1.0.0
+servers:
+  - url: /api
+tags:
+- name: Usuarios
+  description: Gestión de usuarios (clientes, entrenadores, administradores).
+- name: Rutinas
+  description: Operaciones relacionadas con rutinas de entrenamiento.
+- name: Ejercicios
+  description: Catálogo de ejercicios disponibles.
+- name: Progreso
+  description: Seguimiento del progreso de los clientes.
+- name: Auth
+  description: Autenticación y autorización.
+
+paths:
+  # ======================
+  # AUTENTICACIÓN
+  # ======================
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Inicio de sesión para usuarios.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "usuario@example.com"
+                password:
+                  type: string
+                  example: "contraseña123"
+      responses:
+        200:
+          description: Credenciales válidas. Retorna token JWT.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  # ======================
+  # USUARIOS
+  # ======================
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Obtiene todos los usuarios (requiere rol admin).
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Lista de usuarios.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /usuarios/entrenadores:
+    get:
+      tags: [Usuarios]
+      summary: Obtiene solo entrenadores.
+      responses:
+        200:
+          description: Lista de entrenadores.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+
+  /usuarios/{id}:
+    get:
+      tags: [Usuarios]
+      summary: Obtiene un usuario por ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Datos del usuario.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+
+  # ======================
+  # RUTINAS
+  # ======================
+  /rutinas:
+    post:
+      tags: [Rutinas]
+      summary: Crea una nueva rutina (requiere rol entrenador/admin).
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutinaInput'
+      responses:
+        201:
+          description: Rutina creada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rutina'
+
+  /rutinas/usuario/{usuarioId}:
+    get:
+      tags: [Rutinas]
+      summary: Obtiene rutinas asignadas a un usuario.
+      parameters:
+        - name: usuarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lista de rutinas del usuario.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rutina'
+
+  # ======================
+  # EJERCICIOS
+  # ======================
+  /ejercicios:
+    get:
+      tags: [Ejercicios]
+      summary: Obtiene todos los ejercicios disponibles.
+      responses:
+        200:
+          description: Lista de ejercicios.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ejercicio'
+
+  # ======================
+  # PROGRESO
+  # ======================
+  /progreso/{usuarioId}:
+    get:
+      tags: [Progreso]
+      summary: Obtiene el progreso de un usuario.
+      parameters:
+        - name: usuarioId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Datos de progreso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Progreso'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Unauthorized:
+      description: Credenciales inválidas o token expirado.
+    Forbidden:
+      description: No tiene permisos para esta acción.
+    NotFound:
+      description: Recurso no encontrado.
+
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        email:
+          type: string
+        rol:
+          type: string
+          enum: [cliente, entrenador, admin]
+        especialidad:
+          type: string
+          description: Solo para entrenadores.
+
+    Rutina:
+      type: object
+      properties:
+        id:
+          type: integer
+        objetivo:
+          type: string
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+        ejercicios:
+          type: array
+          items:
+            $ref: '#/components/schemas/EjercicioRutina'
+
+    EjercicioRutina:
+      type: object
+      properties:
+        ejercicioId:
+          type: integer
+        series:
+          type: integer
+        repeticiones:
+          type: integer
+
+    Progreso:
+      type: object
+      properties:
+        fecha:
+          type: string
+          format: date
+        peso:
+          type: number
+          format: float
+        medidas:
+          type: object
+          additionalProperties:
+            type: number
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        usuario:
+          $ref: '#/components/schemas/Usuario'
