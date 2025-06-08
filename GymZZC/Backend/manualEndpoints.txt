@@ -1,0 +1,97 @@
+Entidades Principales
+Entidad	            Descripción	                                    Campos Clave
+Usuario	            Usuarios del sistema (Cliente, Entrenador)	    id, nombre, email, rol
+Ejercicio	        Ejercicios disponibles	                        id, nombre, tipo, descripcion
+Rutina	            Rutinas de entrenamiento	                    id, cliente, entrenador, descripcion
+RutinaEjercicio	    Relación Rutina-Ejercicio (clave compuesta)	    rutinaId, ejercicioId, series, repeticiones
+Progreso	        Registro de progreso de usuarios	            id, usuario, rutinaEjercicio, fecha
+
+
+Usuario Controller
+Método	Endpoint	                Descripción	                            Parámetros
+GET     /api/usuarios	            Obtener usuarios (filtros opcionales)	nombre, rol, email
+GET	    /api/usuarios/{id}	        Obtener usuario por ID	                id (Path)
+GET	    /api/usuarios/entrenadores	Obtener todos los entrenadores	            -
+POST	/api/usuarios	            Crear nuevo usuario	                    Body: Usuario (JSON)
+PUT	    /api/usuarios/{id}	        Actualizar usuario	                    id (Path), Body: Usuario (JSON)
+DELETE	/api/usuarios/{id}	        Eliminar usuario	                    id (Path)
+{
+  "nombre": "Carlos López",
+  "email": "carlos@example.com",
+  "rol": "CLIENTE"
+}
+
+
+Ejercicio Controller
+Método	Endpoint	            Descripción	                    Parámetros
+GET	    /api/ejercicios	        Obtener todos los ejercicios	-
+GET	    /api/ejercicios/{id}	Obtener ejercicio por ID	    id (Path)
+POST	/api/ejercicios	        Crear nuevo ejercicio	        Body: Ejercicio (JSON)
+PUT	    /api/ejercicios/{id}	Actualizar ejercicio	        id (Path), Body: Ejercicio (JSON)
+DELETE	/api/ejercicios/{id}	Eliminar ejercicio	            id (Path)
+{
+  "nombre": "Press de banca",
+  "tipo": "PECHO",
+  "descripcion": "Ejercicio para pectorales"
+}
+
+
+Rutina Controller
+Método	Endpoint	                            Descripción	                        Parámetros
+GET	    /api/rutinas	                        Obtener todas las rutinas	            -
+GET	    /api/rutinas/{id}	                    Obtener rutina por ID	            id (Path)
+GET	    /api/rutinas/cliente/{clienteId}	    Rutinas de un cliente	            clienteId (Path)
+GET	    /api/rutinas/entrenador/{entrenadorId}	Rutinas creadas por un entrenador	entrenadorId (Path)
+POST	/api/rutinas	                        Crear nueva rutina	                Body: Rutina (JSON)
+PUT	    /api/rutinas/{id}	                    Actualizar rutina	                id (Path), Body: Rutina (JSON)
+DELETE	/api/rutinas/{id}	                    Eliminar rutina	                    id (Path)
+{
+  "cliente": { "id": 1 },
+  "entrenador": { "id": 2 },
+  "descripcion": "Rutina para ganar masa muscular"
+}
+
+
+RutinaEjercicio Controller
+Método	Endpoint	                                        Descripción             	        Parámetros
+GET	    /api/rutinas/{rutinaId}/ejercicios	                Ejercicios de una rutina	        rutinaId (Path)
+GET	    /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}	Detalles de ejercicio en rutina	    rutinaId, ejercicioId (Path)
+POST	/api/rutinas/{rutinaId}/ejercicios	                Agregar ejercicio a rutina	        rutinaId (Path), Body: RutinaEjercicio (JSON)
+PUT	    /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}	Actualizar ejercicio en rutina      rutinaId, ejercicioId (Path), Body: RutinaEjercicio (JSON)
+DELETE	/api/rutinas/{rutinaId}/ejercicios/{ejercicioId}	Quitar ejercicio de rutina	        rutinaId, ejercicioId (Path)
+{
+  "ejercicio": { "id": 3 },
+  "series": 4,
+  "repeticiones": 12,
+  "pesoEjercicio": 30
+}
+
+
+Progreso Controller
+Método	Endpoint	                                                                    Descripción	                                                    Parámetros
+GET	    /api/progreso	                                                                Obtener todo el progreso	                                        -
+GET	    /api/progreso/usuario/{usuarioId}	                                            Progreso de un usuario	                                        usuarioId (Path)
+GET	    /api/progreso/usuario/{usuarioId}/rutina/{rutinaId}/ejercicio/{ejercicioId}	    Progreso específico	                                            usuarioId, rutinaId, ejercicioId (Path)
+POST	/api/progreso	                                                                Registrar nuevo progreso	                                    Body: Progreso (JSON)
+PUT	    /api/progreso/{id}	                                                            Actualizar progreso	                                            id (Path), Body: Progreso (JSON)
+DELETE	/api/progreso/{id}	                                                            Eliminar progreso	                                            id (Path)
+{
+  "usuario": { "id": 1 },
+  "rutinaEjercicio": {
+    "rutina": { "id": 1 },
+    "ejercicio": { "id": 3 }
+  },
+  "seriesCompletadas": 4,
+  "repeticionesCompletadas": 10,
+  "pesoUtilizado": 25
+}
+
+
+Relaciones Clave
+    RutinaEjercicio: Clave compuesta (rutinaId + ejercicioId).
+    Progreso: Depende de RutinaEjercicio (clave compuesta) y Usuario.
+
+    Validaciones:
+        En RutinaController: El entrenador debe tener rol ENTRENADOR.
+        En RutinaEjercicioController: El ejercicio debe existir antes de agregarlo a una rutina.
+

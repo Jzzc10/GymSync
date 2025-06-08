@@ -1,115 +1,131 @@
-openapi: 3.0.1
+openapi: 3.0.0
 info:
-  title: API Documentation GymSync
-  description: Documentación de los ENDPOINTS para el sistema de gestión de gimnasios GymSync.
+  title: API de Gestión de Entrenamiento
   version: 1.0.0
+  description: API para gestionar usuarios, rutinas, ejercicios y progreso de entrenamiento
 servers:
-  - url: /api
-tags:
-- name: Usuarios
-  description: Gestión de usuarios (clientes, entrenadores, administradores).
-- name: Rutinas
-  description: Operaciones relacionadas con rutinas de entrenamiento.
-- name: Ejercicios
-  description: Catálogo de ejercicios disponibles.
-- name: Progreso
-  description: Seguimiento del progreso de los clientes.
-- name: Auth
-  description: Autenticación y autorización.
+  - url: https://api.tuentrenador.com/v1
+    description: Servidor de producción
+  - url: http://localhost:3000/api
+    description: Servidor de desarrollo
 
 paths:
-  # ======================
-  # AUTENTICACIÓN
-  # ======================
-  /auth/login:
+  # =============================================
+  # ENDPOINTS DE USUARIOS
+  # =============================================
+  /usuarios:
+    get:
+      summary: Obtiene usuarios con filtros opcionales
+      description: Retorna lista de usuarios con posibilidad de filtrar por nombre, rol o email
+      parameters:
+        - in: query
+          name: nombre
+          schema:
+            type: string
+          description: Filtro por nombre (búsqueda parcial)
+        - in: query
+          name: rol
+          schema:
+            type: string
+            enum: [cliente, entrenador, admin]
+          description: Filtro por rol de usuario
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: Búsqueda exacta por email
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
     post:
-      tags: [Auth]
-      summary: Inicio de sesión para usuarios.
+      summary: Crea un nuevo usuario
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  example: "usuario@example.com"
-                password:
-                  type: string
-                  example: "contraseña123"
+              $ref: '#/components/schemas/UsuarioInput'
       responses:
-        200:
-          description: Credenciales válidas. Retorna token JWT.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-
-  # ======================
-  # USUARIOS
-  # ======================
-  /usuarios:
-    get:
-      tags: [Usuarios]
-      summary: Obtiene todos los usuarios (requiere rol admin).
-      security:
-        - BearerAuth: []
-      responses:
-        200:
-          description: Lista de usuarios.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Usuario'
-        403:
-          $ref: '#/components/responses/Forbidden'
-
-  /usuarios/entrenadores:
-    get:
-      tags: [Usuarios]
-      summary: Obtiene solo entrenadores.
-      responses:
-        200:
-          description: Lista de entrenadores.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Usuario'
-
-  /usuarios/{id}:
-    get:
-      tags: [Usuarios]
-      summary: Obtiene un usuario por ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Datos del usuario.
+        '201':
+          description: Usuario creado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Usuario'
 
-  # ======================
-  # RUTINAS
-  # ======================
+  /usuarios/{id}:
+    get:
+      summary: Obtiene un usuario por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del usuario
+      responses:
+        '200':
+          description: Detalles del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+    put:
+      summary: Actualiza un usuario existente
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioInput'
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+    delete:
+      summary: Elimina un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuario eliminado
+
+  # =============================================
+  # ENDPOINTS DE RUTINAS
+  # =============================================
   /rutinas:
+    get:
+      summary: Obtiene todas las rutinas
+      responses:
+        '200':
+          description: Lista de rutinas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rutina'
     post:
-      tags: [Rutinas]
-      summary: Crea una nueva rutina (requiere rol entrenador/admin).
-      security:
-        - BearerAuth: []
+      summary: Crea una nueva rutina
       requestBody:
         required: true
         content:
@@ -117,26 +133,74 @@ paths:
             schema:
               $ref: '#/components/schemas/RutinaInput'
       responses:
-        201:
-          description: Rutina creada exitosamente.
+        '201':
+          description: Rutina creada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Rutina'
 
-  /rutinas/usuario/{usuarioId}:
+  /rutinas/{id}:
     get:
-      tags: [Rutinas]
-      summary: Obtiene rutinas asignadas a un usuario.
+      summary: Obtiene una rutina por ID
       parameters:
-        - name: usuarioId
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: integer
       responses:
-        200:
-          description: Lista de rutinas del usuario.
+        '200':
+          description: Detalles de la rutina
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rutina'
+    put:
+      summary: Actualiza una rutina existente
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutinaInput'
+      responses:
+        '200':
+          description: Rutina actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rutina'
+    delete:
+      summary: Elimina una rutina
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Rutina eliminada
+
+  /rutinas/cliente/{cliente_id}:
+    get:
+      summary: Obtiene rutinas asignadas a un cliente
+      parameters:
+        - in: path
+          name: cliente_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de rutinas del cliente
           content:
             application/json:
               schema:
@@ -144,122 +208,602 @@ paths:
                 items:
                   $ref: '#/components/schemas/Rutina'
 
-  # ======================
-  # EJERCICIOS
-  # ======================
+  /rutinas/entrenador/{entrenador_id}:
+    get:
+      summary: Obtiene rutinas creadas por un entrenador
+      parameters:
+        - in: path
+          name: entrenador_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de rutinas del entrenador
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rutina'
+
+  # =============================================
+  # ENDPOINTS DE EJERCICIOS
+  # =============================================
   /ejercicios:
     get:
-      tags: [Ejercicios]
-      summary: Obtiene todos los ejercicios disponibles.
+      summary: Obtiene todos los ejercicios
       responses:
-        200:
-          description: Lista de ejercicios.
+        '200':
+          description: Lista de ejercicios
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Ejercicio'
+    post:
+      summary: Crea un nuevo ejercicio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EjercicioInput'
+      responses:
+        '201':
+          description: Ejercicio creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ejercicio'
 
-  # ======================
-  # PROGRESO
-  # ======================
-  /progreso/{usuarioId}:
+  /ejercicios/{id}:
     get:
-      tags: [Progreso]
-      summary: Obtiene el progreso de un usuario.
+      summary: Obtiene un ejercicio por ID
       parameters:
-        - name: usuarioId
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: integer
       responses:
-        200:
-          description: Datos de progreso.
+        '200':
+          description: Detalles del ejercicio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ejercicio'
+    put:
+      summary: Actualiza un ejercicio existente
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EjercicioInput'
+      responses:
+        '200':
+          description: Ejercicio actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ejercicio'
+    delete:
+      summary: Elimina un ejercicio
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Ejercicio eliminado
+
+  # =============================================
+  # GESTIÓN DE EJERCICIOS EN RUTINAS
+  # =============================================
+  /rutinas/{rutina_id}/ejercicios:
+    get:
+      summary: Obtiene ejercicios de una rutina
+      parameters:
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de ejercicios en la rutina
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RutinaEjercicio'
+    post:
+      summary: Añade un ejercicio a una rutina
+      parameters:
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutinaEjercicioInput'
+      responses:
+        '201':
+          description: Ejercicio añadido a la rutina
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RutinaEjercicio'
+
+  /rutinas/{rutina_id}/ejercicios/{ejercicio_id}:
+    get:
+      summary: Obtiene detalles de un ejercicio en una rutina
+      parameters:
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: ejercicio_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles del ejercicio en la rutina
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RutinaEjercicio'
+    put:
+      summary: Modifica un ejercicio en una rutina
+      parameters:
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: ejercicio_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RutinaEjercicioInput'
+      responses:
+        '200':
+          description: Ejercicio actualizado en la rutina
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RutinaEjercicio'
+    delete:
+      summary: Quita un ejercicio de una rutina
+      parameters:
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: ejercicio_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Ejercicio eliminado de la rutina
+
+  # =============================================
+  # ENDPOINTS DE PROGRESO
+  # =============================================
+  /progreso:
+    get:
+      summary: Obtiene todos los registros de progreso
+      responses:
+        '200':
+          description: Lista de progresos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Progreso'
+    post:
+      summary: Registra nuevo progreso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgresoInput'
+      responses:
+        '201':
+          description: Progreso registrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Progreso'
 
+  /progreso/{id}:
+    get:
+      summary: Obtiene un progreso por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles del progreso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Progreso'
+    put:
+      summary: Actualiza un registro de progreso
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgresoInput'
+      responses:
+        '200':
+          description: Progreso actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Progreso'
+    delete:
+      summary: Elimina un registro de progreso
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Progreso eliminado
+
+  /progreso/usuario/{usuario_id}:
+    get:
+      summary: Obtiene todo el progreso de un usuario
+      parameters:
+        - in: path
+          name: usuario_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de progresos del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Progreso'
+
+  /progreso/usuario/{usuario_id}/rutina/{rutina_id}:
+    get:
+      summary: Obtiene progreso de un usuario en una rutina específica
+      parameters:
+        - in: path
+          name: usuario_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Progreso en la rutina
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Progreso'
+
+  /progreso/usuario/{usuario_id}/ejercicio/{ejercicio_id}:
+    get:
+      summary: Obtiene progreso de un usuario en un ejercicio específico
+      parameters:
+        - in: path
+          name: usuario_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: ejercicio_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Progreso en el ejercicio
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Progreso'
+
+  /progreso/usuario/{usuario_id}/rutina/{rutina_id}/ejercicio/{ejercicio_id}:
+    get:
+      summary: Obtiene progreso específico en ejercicio dentro de rutina
+      parameters:
+        - in: path
+          name: usuario_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: rutina_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: ejercicio_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Progreso detallado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Progreso'
+
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  responses:
-    Unauthorized:
-      description: Credenciales inválidas o token expirado.
-    Forbidden:
-      description: No tiene permisos para esta acción.
-    NotFound:
-      description: Recurso no encontrado.
-
   schemas:
+    # ======== USUARIO ========
     Usuario:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         nombre:
           type: string
+          example: Ana López
         email:
           type: string
+          example: ana@example.com
         rol:
           type: string
           enum: [cliente, entrenador, admin]
-        especialidad:
+          example: cliente
+        fecha_registro:
           type: string
-          description: Solo para entrenadores.
+          format: date
+          example: '2023-05-15'
+      required: [id, nombre, email, rol]
 
+    UsuarioInput:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: Carlos Ruiz
+        email:
+          type: string
+          example: carlos@example.com
+        rol:
+          type: string
+          enum: [cliente, entrenador, admin]
+          example: entrenador
+      required: [nombre, email, rol]
+
+    # ======== RUTINA ========
     Rutina:
       type: object
       properties:
         id:
           type: integer
-        objetivo:
+          example: 5
+        usuario_id:
+          type: integer
+          example: 1
+        entrenador_id:
+          type: integer
+          example: 2
+        descripcion:
           type: string
-        fechaInicio:
-          type: string
-          format: date
-        fechaFin:
-          type: string
-          format: date
-        ejercicios:
-          type: array
-          items:
-            $ref: '#/components/schemas/EjercicioRutina'
+          example: Rutina de fuerza inicial
+      required: [id, usuario_id, entrenador_id, descripcion]
 
-    EjercicioRutina:
+    RutinaInput:
       type: object
       properties:
-        ejercicioId:
+        usuario_id:
           type: integer
+          example: 1
+        entrenador_id:
+          type: integer
+          example: 2
+        descripcion:
+          type: string
+          example: Rutina de definición
+      required: [usuario_id, entrenador_id, descripcion]
+
+    # ======== EJERCICIO ========
+    Ejercicio:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 8
+        nombre:
+          type: string
+          example: Sentadillas
+        tipo:
+          type: string
+          enum: [pecho, abdominales, piernas, espalda, triceps, biceps, hombro, gluteo]
+          example: piernas
+        descripcion:
+          type: string
+          example: Ejercicio para fortalecer piernas
+        url_imagen:
+          type: string
+          example: https://ejemplo.com/sentadilla.jpg
+        url_video:
+          type: string
+          example: https://ejemplo.com/sentadilla.mp4
+      required: [id, nombre, tipo]
+
+    EjercicioInput:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: Flexiones
+        tipo:
+          type: string
+          enum: [pecho, abdominales, piernas, espalda, triceps, biceps, hombro, gluteo]
+          example: pecho
+        descripcion:
+          type: string
+          example: Ejercicio básico para pecho
+        url_imagen:
+          type: string
+          example: https://ejemplo.com/flexiones.jpg
+        url_video:
+          type: string
+          example: https://ejemplo.com/flexiones.mp4
+      required: [nombre, tipo]
+
+    # ======== RUTINA_EJERCICIO ========
+    RutinaEjercicio:
+      type: object
+      properties:
+        rutina_id:
+          type: integer
+          example: 5
+        ejercicio_id:
+          type: integer
+          example: 8
         series:
           type: integer
+          example: 4
         repeticiones:
           type: integer
+          example: 12
+        peso_ejercicio:
+          type: integer
+          example: 20
+      required: [rutina_id, ejercicio_id, series, repeticiones]
 
+    RutinaEjercicioInput:
+      type: object
+      properties:
+        ejercicio_id:
+          type: integer
+          example: 8
+        series:
+          type: integer
+          example: 4
+        repeticiones:
+          type: integer
+          example: 12
+        peso_ejercicio:
+          type: integer
+          example: 20
+      required: [ejercicio_id, series, repeticiones]
+
+    # ======== PROGRESO ========
     Progreso:
       type: object
       properties:
+        id:
+          type: integer
+          example: 25
+        usuario_id:
+          type: integer
+          example: 1
+        rutina_id:
+          type: integer
+          example: 5
+        ejercicio_id:
+          type: integer
+          example: 8
         fecha:
           type: string
           format: date
-        peso:
+          example: '2023-06-10'
+        series_completadas:
+          type: integer
+          example: 4
+        repeticiones_completadas:
+          type: integer
+          example: 10
+        peso_utilizado:
           type: number
           format: float
-        medidas:
-          type: object
-          additionalProperties:
-            type: number
+          example: 22.5
+        notas:
+          type: string
+          example: Última serie con ayuda
+      required: [id, usuario_id, rutina_id, ejercicio_id, fecha, series_completadas, repeticiones_completadas]
 
-    AuthResponse:
+    ProgresoInput:
       type: object
       properties:
-        token:
+        usuario_id:
+          type: integer
+          example: 1
+        rutina_id:
+          type: integer
+          example: 5
+        ejercicio_id:
+          type: integer
+          example: 8
+        series_completadas:
+          type: integer
+          example: 4
+        repeticiones_completadas:
+          type: integer
+          example: 10
+        peso_utilizado:
+          type: number
+          format: float
+          example: 22.5
+        notas:
           type: string
-        usuario:
-          $ref: '#/components/schemas/Usuario'
+          example: Última serie con ayuda
+      required: [usuario_id, rutina_id, ejercicio_id, series_completadas, repeticiones_completadas]
