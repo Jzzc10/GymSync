@@ -43,11 +43,42 @@ public class RutinaController {
         return ResponseEntity.ok(rutinaService.findByEntrenadorId(entrenadorId));
     }
 
-    // Nuevo endpoint para obtener todos los progresos de una rutina
+    // Endpoint para obtener todos los progresos de una rutina
     @GetMapping("/{id}/progresos")
     public ResponseEntity<List<Progreso>> getProgresosByRutina(@PathVariable Integer id) {
         return rutinaService.findById(id)
                 .map(rutina -> ResponseEntity.ok(rutina.obtenerTodosLosProgresos()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Nuevo endpoint para obtener progresos de una rutina por usuario
+    @GetMapping("/{id}/progresos/usuario/{usuarioId}")
+    public ResponseEntity<List<Progreso>> getProgresosByRutinaAndUsuario(
+            @PathVariable Integer id, 
+            @PathVariable Integer usuarioId) {
+        return rutinaService.findById(id)
+                .map(rutina -> ResponseEntity.ok(rutina.obtenerProgresosPorUsuario(usuarioId)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Nuevo endpoint para obtener progresos de una rutina por ejercicio
+    @GetMapping("/{id}/progresos/ejercicio/{ejercicioId}")
+    public ResponseEntity<List<Progreso>> getProgresosByRutinaAndEjercicio(
+            @PathVariable Integer id, 
+            @PathVariable Integer ejercicioId) {
+        return rutinaService.findById(id)
+                .map(rutina -> ResponseEntity.ok(rutina.obtenerProgresosPorEjercicio(ejercicioId)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Nuevo endpoint para obtener progresos específicos de usuario y ejercicio en una rutina
+    @GetMapping("/{id}/progresos/usuario/{usuarioId}/ejercicio/{ejercicioId}")
+    public ResponseEntity<List<Progreso>> getProgresosByRutinaUsuarioAndEjercicio(
+            @PathVariable Integer id, 
+            @PathVariable Integer usuarioId,
+            @PathVariable Integer ejercicioId) {
+        return rutinaService.findById(id)
+                .map(rutina -> ResponseEntity.ok(rutina.obtenerProgresosPorUsuarioYEjercicio(usuarioId, ejercicioId)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -56,7 +87,6 @@ public class RutinaController {
         // Validar que el entrenador tenga rol correcto
         if(!rutina.getEntrenador().getRol().equals(Usuario.Rol.ENTRENADOR)) {
             return ResponseEntity.badRequest().build();
-            // return ResponseEntity.badRequest().body("El entrenador no es válido");
         }
 
         Rutina savedRutina = rutinaService.save(rutina);

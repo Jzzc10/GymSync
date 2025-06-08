@@ -46,6 +46,21 @@ public class ProgresoServiceImpl implements ProgresoServiceInterface {
     }
 
     @Override
+    public List<Progreso> findByRutinaId(Integer rutinaId) {
+        return progresoRepository.findByRutinaId(rutinaId);
+    }
+
+    @Override
+    public List<Progreso> findByEjercicioId(Integer ejercicioId) {
+        return progresoRepository.findByEjercicioId(ejercicioId);
+    }
+
+    @Override
+    public List<Progreso> findByRutinaIdAndEjercicioId(Integer rutinaId, Integer ejercicioId) {
+        return progresoRepository.findByRutinaIdAndEjercicioId(rutinaId, ejercicioId);
+    }
+
+    @Override
     public Progreso save(Progreso progreso) {
         return progresoRepository.save(progreso);
     }

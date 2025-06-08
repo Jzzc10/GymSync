@@ -6,14 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Table(name = "rutina_ejercicio")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(RutinaEjercicioId.class) // Clave compuesta
+@IdClass(RutinaEjercicioId.class)
 public class RutinaEjercicio {
 
     @Id
@@ -23,7 +21,7 @@ public class RutinaEjercicio {
     private Rutina rutina;
 
     @Id
-    @ManyToOne
+    @ManyToOne  
     @JoinColumn(name = "ejercicio_id", nullable = false)
     @NotNull
     private Ejercicio ejercicio;
@@ -38,11 +36,7 @@ public class RutinaEjercicio {
 
     @Column(name = "peso_ejercicio")
     private Integer pesoEjercicio;
-
-    // Relación bidireccional con Progreso
-    @OneToMany(mappedBy = "rutinaEjercicio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Progreso> progresos;
-
+    
     // Métodos de conveniencia para obtener los IDs
     @Transient
     public Integer getRutinaId() {

@@ -5,6 +5,7 @@ import com.backend.gymsync.repository.UsuarioRepository;
 import com.backend.gymsync.service.interfaces.UsuarioServiceInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,9 @@ public class UsuarioServiceImpl implements UsuarioServiceInterface {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<Usuario> findAll() {
@@ -48,11 +52,29 @@ public class UsuarioServiceImpl implements UsuarioServiceInterface {
 
     @Override
     public Usuario save(Usuario usuario) {
+        // Encriptar la contraseña antes de guardar
+        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
+            // Solo encriptar si la contraseña no está ya encriptada
+            if (!isPasswordEncrypted(usuario.getPassword())) {
+                usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            }
+        }
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public void deleteById(Integer id) {
         usuarioRepository.deleteById(id);
+    }
+    
+    // Método adicional para verificar contraseñas
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+    
+    // Método para verificar si una contraseña ya está encriptada
+    private boolean isPasswordEncrypted(String password) {
+        // BCrypt hashes always start with $2a$, $2b$, or $2y$
+        return password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$");
     }
 }

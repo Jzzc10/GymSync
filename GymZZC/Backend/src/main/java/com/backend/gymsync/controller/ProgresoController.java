@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,25 +81,24 @@ public class ProgresoController {
 
     @PostMapping
     public ResponseEntity<Progreso> registrarProgreso(@Valid @RequestBody Progreso progreso) {
-        // Validar que exista la relación RutinaEjercicio
-        if (progreso.getRutinaEjercicio() == null || 
-            progreso.getRutinaEjercicio().getRutina() == null || 
-            progreso.getRutinaEjercicio().getEjercicio() == null) {
+        // Validar que existan la rutina y el ejercicio por separado
+        if (progreso.getRutina() == null || progreso.getEjercicio() == null) {
             return ResponseEntity.badRequest().build();
         }
 
+        // Validar que exista la relación RutinaEjercicio
         RutinaEjercicioId id = RutinaEjercicioId.of(
-            progreso.getRutinaEjercicio().getRutina().getId(),
-            progreso.getRutinaEjercicio().getEjercicio().getId()
+            progreso.getRutina().getId(),
+            progreso.getEjercicio().getId()
         );
 
         if (!rutinaEjercicioService.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Asegurar que la fecha esté establecida
-        if (progreso.getFecha() == null) {
-            progreso.setFecha(java.time.LocalDate.now());
+        // Asegurar que la fecha de registro esté establecida
+        if (progreso.getFechaRegistro() == null) {
+            progreso.setFechaRegistro(LocalDate.now());
         }
 
         try {
@@ -116,6 +116,17 @@ public class ProgresoController {
         }
         
         progreso.setId(id);
+        
+        // Si no se proporciona fecha de registro, mantener la actual o asignar nueva
+        if (progreso.getFechaRegistro() == null) {
+            Optional<Progreso> progresoExistente = progresoService.findById(id);
+            if (progresoExistente.isPresent()) {
+                progreso.setFechaRegistro(progresoExistente.get().getFechaRegistro());
+            } else {
+                progreso.setFechaRegistro(LocalDate.now());
+            }
+        }
+        
         try {
             Progreso progresoActualizado = progresoService.save(progreso);
             return ResponseEntity.ok(progresoActualizado);

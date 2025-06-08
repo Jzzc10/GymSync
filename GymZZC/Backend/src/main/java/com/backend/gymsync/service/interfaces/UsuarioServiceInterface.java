@@ -13,4 +13,5 @@ public interface UsuarioServiceInterface {
     boolean existsByEmail(String email);
     Usuario save(Usuario usuario);
     void deleteById(Integer id);
+    boolean checkPassword(String rawPassword, String encodedPassword);
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 
@@ -14,42 +15,66 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Progreso {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false)
     @NotNull
     private Usuario usuario;
 
-    // Relación con RutinaEjercicio usando las columnas correctas
     @ManyToOne
-    @JoinColumns({
-        @JoinColumn(name = "rutina_id", referencedColumnName = "rutina_id", nullable = false),
-        @JoinColumn(name = "ejercicio_id", referencedColumnName = "ejercicio_id", nullable = false)
-    })
+    @JoinColumn(name = "rutina_id", referencedColumnName = "id", nullable = false)
     @NotNull
-    private RutinaEjercicio rutinaEjercicio;
+    @JsonIgnore // Evita referencia circular en JSON
+    private Rutina rutina;
+
+    @ManyToOne
+    @JoinColumn(name = "ejercicio_id", referencedColumnName = "id", nullable = false)
+    @NotNull
+    private Ejercicio ejercicio;
 
     @Column(nullable = false)
-    private LocalDate fecha = LocalDate.now();
-
-    @Column(name = "series_completadas", nullable = false)
     @NotNull
-    private Integer seriesCompletadas;
+    private Integer series;
 
-    @Column(name = "repeticiones_completadas", nullable = false)
+    @Column(nullable = false)
     @NotNull
-    private Integer repeticionesCompletadas;
+    private Integer repeticiones;
 
     @Column(name = "peso_utilizado")
-    private Integer pesoUtilizado;
+    private Double pesoUtilizado;
 
-    private String notas;
+    @Column(name = "fecha_registro", nullable = false)
+    @NotNull
+    private LocalDate fechaRegistro;
 
-    // Método para obtener la rutina a través de rutinaEjercicio
-    public Rutina getRutina() {
-        return rutinaEjercicio != null ? rutinaEjercicio.getRutina() : null;
+    @Column(length = 500)
+    private String observaciones;
+
+    // Métodos de conveniencia para obtener los IDs
+    @Transient
+    public Integer getUsuarioId() {
+        return usuario != null ? usuario.getId() : null;
+    }
+
+    @Transient
+    public Integer getRutinaId() {
+        return rutina != null ? rutina.getId() : null;
+    }
+
+    @Transient
+    public Integer getEjercicioId() {
+        return ejercicio != null ? ejercicio.getId() : null;
+    }
+
+    // Constructor para inicialización automática de fecha
+    @PrePersist
+    protected void onCreate() {
+        if (fechaRegistro == null) {
+            fechaRegistro = LocalDate.now();
+        }
     }
 }

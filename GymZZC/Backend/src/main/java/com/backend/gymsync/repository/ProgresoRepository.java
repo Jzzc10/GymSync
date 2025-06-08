@@ -11,16 +11,24 @@ import java.util.List;
 @Repository
 public interface ProgresoRepository extends JpaRepository<Progreso, Integer> {
     
-    List<Progreso> findByUsuarioId(Integer usuarioId);
+    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId")
+    List<Progreso> findByUsuarioId(@Param("usuarioId") Integer usuarioId);
     
-    // Para acceder a rutina y ejercicio, necesitamos usar consultas personalizadas
-    // porque están dentro de rutinaEjercicio  
-    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId AND p.rutinaEjercicio.rutina.id = :rutinaId")
+    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId AND p.rutina.id = :rutinaId")
     List<Progreso> findByUsuarioIdAndRutinaId(@Param("usuarioId") Integer usuarioId, @Param("rutinaId") Integer rutinaId);
     
-    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId AND p.rutinaEjercicio.ejercicio.id = :ejercicioId")
+    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId AND p.ejercicio.id = :ejercicioId")
     List<Progreso> findByUsuarioIdAndEjercicioId(@Param("usuarioId") Integer usuarioId, @Param("ejercicioId") Integer ejercicioId);
     
-    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId AND p.rutinaEjercicio.rutina.id = :rutinaId AND p.rutinaEjercicio.ejercicio.id = :ejercicioId")
+    @Query("SELECT p FROM Progreso p WHERE p.usuario.id = :usuarioId AND p.rutina.id = :rutinaId AND p.ejercicio.id = :ejercicioId")
     List<Progreso> findByUsuarioIdAndRutinaIdAndEjercicioId(@Param("usuarioId") Integer usuarioId, @Param("rutinaId") Integer rutinaId, @Param("ejercicioId") Integer ejercicioId);
+    
+    @Query("SELECT p FROM Progreso p WHERE p.rutina.id = :rutinaId")
+    List<Progreso> findByRutinaId(@Param("rutinaId") Integer rutinaId);
+    
+    @Query("SELECT p FROM Progreso p WHERE p.ejercicio.id = :ejercicioId")
+    List<Progreso> findByEjercicioId(@Param("ejercicioId") Integer ejercicioId);
+    
+    @Query("SELECT p FROM Progreso p WHERE p.rutina.id = :rutinaId AND p.ejercicio.id = :ejercicioId")
+    List<Progreso> findByRutinaIdAndEjercicioId(@Param("rutinaId") Integer rutinaId, @Param("ejercicioId") Integer ejercicioId);
 }

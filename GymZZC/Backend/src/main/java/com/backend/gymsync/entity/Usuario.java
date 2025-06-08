@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -26,8 +28,14 @@ public class Usuario {
 
     @Email(message = "Email debe tener formato válido")
     @NotBlank(message = "El email es obligatorio")
-    @Column(length = 100, nullable = false, unique = true) // Unique para evitar duplicados
+    @Column(length = 100, nullable = false, unique = true)
     private String email;
+
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    @Column(nullable = false, length = 255) // Aumentar longitud para hash
+    @JsonIgnore // Evita que se serialice en JSON responses
+    private String password;
 
     @NotNull(message = "El rol es obligatorio")
     @Enumerated(EnumType.STRING)

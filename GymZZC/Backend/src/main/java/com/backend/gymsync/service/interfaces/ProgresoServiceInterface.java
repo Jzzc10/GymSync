@@ -11,6 +11,12 @@ public interface ProgresoServiceInterface {
     List<Progreso> findByUsuarioIdAndRutinaId(Integer usuarioId, Integer rutinaId);
     List<Progreso> findByUsuarioIdAndEjercicioId(Integer usuarioId, Integer ejercicioId);
     List<Progreso> findByUsuarioIdAndRutinaIdAndEjercicioId(Integer usuarioId, Integer rutinaId, Integer ejercicioId);
+    
+    // Métodos adicionales del repositorio
+    List<Progreso> findByRutinaId(Integer rutinaId);
+    List<Progreso> findByEjercicioId(Integer ejercicioId);
+    List<Progreso> findByRutinaIdAndEjercicioId(Integer rutinaId, Integer ejercicioId);
+    
     Progreso save(Progreso progreso);
     void deleteById(Integer id);
     boolean existsById(Integer id);
