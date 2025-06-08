@@ -1,97 +1,521 @@
-Entidades Principales
-Entidad	            Descripción	                                    Campos Clave
-Usuario	            Usuarios del sistema (Cliente, Entrenador)	    id, nombre, email, rol
-Ejercicio	        Ejercicios disponibles	                        id, nombre, tipo, descripcion
-Rutina	            Rutinas de entrenamiento	                    id, cliente, entrenador, descripcion
-RutinaEjercicio	    Relación Rutina-Ejercicio (clave compuesta)	    rutinaId, ejercicioId, series, repeticiones
-Progreso	        Registro de progreso de usuarios	            id, usuario, rutinaEjercicio, fecha
+# 🏋️ Manual de API GymSync
 
+## 📋 Índice
+1. [Información General](#información-general)
+2. [Autenticación](#autenticación)
+3. [Usuarios](#usuarios)
+4. [Ejercicios](#ejercicios)
+5. [Rutinas](#rutinas)
+6. [Rutina-Ejercicios](#rutina-ejercicios)
+7. [Progreso](#progreso)
+8. [Códigos de Respuesta](#códigos-de-respuesta)
+9. [Ejemplos de Uso](#ejemplos-de-uso)
 
-Usuario Controller
-Método	Endpoint	                Descripción	                            Parámetros
-GET     /api/usuarios	            Obtener usuarios (filtros opcionales)	nombre, rol, email
-GET	    /api/usuarios/{id}	        Obtener usuario por ID	                id (Path)
-GET	    /api/usuarios/entrenadores	Obtener todos los entrenadores	            -
-POST	/api/usuarios	            Crear nuevo usuario	                    Body: Usuario (JSON)
-PUT	    /api/usuarios/{id}	        Actualizar usuario	                    id (Path), Body: Usuario (JSON)
-DELETE	/api/usuarios/{id}	        Eliminar usuario	                    id (Path)
+---
+
+## 🌐 Información General
+
+- **Base URL**: `http://localhost:8080`
+- **Formato**: JSON
+- **Documentación Swagger**: `http://localhost:8080/swagger-ui.html`
+- **API Docs**: `http://localhost:8080/api-docs`
+
+---
+
+## 🔐 Autenticación
+
+### Login
+```http
+POST /api/usuarios/login
+Content-Type: application/json
+
 {
-  "nombre": "Carlos López",
-  "email": "carlos@example.com",
+  "email": "usuario@email.com",
+  "password": "contraseña123"
+}
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "message": "Login exitoso",
+  "usuario": {
+    "id": 1,
+    "nombre": "Juan Pérez",
+    "email": "juan@email.com",
+    "rol": "CLIENTE"
+  },
   "rol": "CLIENTE"
 }
+```
 
+---
 
-Ejercicio Controller
-Método	Endpoint	            Descripción	                    Parámetros
-GET	    /api/ejercicios	        Obtener todos los ejercicios	-
-GET	    /api/ejercicios/{id}	Obtener ejercicio por ID	    id (Path)
-POST	/api/ejercicios	        Crear nuevo ejercicio	        Body: Ejercicio (JSON)
-PUT	    /api/ejercicios/{id}	Actualizar ejercicio	        id (Path), Body: Ejercicio (JSON)
-DELETE	/api/ejercicios/{id}	Eliminar ejercicio	            id (Path)
+## 👥 Usuarios
+
+### Obtener todos los usuarios
+```http
+GET /api/usuarios
+```
+
+**Filtros disponibles:**
+- `?nombre=Juan` - Buscar por nombre
+- `?rol=ENTRENADOR` - Filtrar por rol
+- `?email=juan@email.com` - Buscar por email
+
+### Obtener usuario por ID
+```http
+GET /api/usuarios/{id}
+```
+
+### Obtener solo entrenadores
+```http
+GET /api/usuarios/entrenadores
+```
+
+### Crear usuario
+```http
+POST /api/usuarios
+Content-Type: application/json
+
+{
+  "nombre": "Juan Pérez",
+  "email": "juan@email.com",
+  "password": "contraseña123",
+  "rol": "CLIENTE"
+}
+```
+
+**Roles disponibles:** `CLIENTE`, `ENTRENADOR`, `ADMIN`
+
+### Actualizar usuario
+```http
+PUT /api/usuarios/{id}
+Content-Type: application/json
+
+{
+  "nombre": "Juan Pérez Actualizado",
+  "email": "juan.nuevo@email.com",
+  "rol": "CLIENTE"
+}
+```
+
+### Cambiar contraseña
+```http
+PUT /api/usuarios/{id}/password
+Content-Type: application/json
+
+{
+  "nuevaPassword": "nuevaContraseña123"
+}
+```
+
+### Eliminar usuario
+```http
+DELETE /api/usuarios/{id}
+```
+
+---
+
+## 💪 Ejercicios
+
+### Obtener todos los ejercicios
+```http
+GET /api/ejercicios
+```
+
+### Obtener ejercicio por ID
+```http
+GET /api/ejercicios/{id}
+```
+
+### Crear ejercicio
+```http
+POST /api/ejercicios
+Content-Type: application/json
+
 {
   "nombre": "Press de banca",
   "tipo": "PECHO",
-  "descripcion": "Ejercicio para pectorales"
+  "descripcion": "Ejercicio para desarrollar el pectoral mayor",
+  "urlImagen": "https://ejemplo.com/imagen.jpg",
+  "urlVideo": "https://ejemplo.com/video.mp4"
 }
+```
 
+**Tipos disponibles:** `PECHO`, `ABDOMINALES`, `PIERNAS`, `ESPALDA`, `TRICEPS`, `BICEPS`, `HOMBRO`, `GLUTEO`
 
-Rutina Controller
-Método	Endpoint	                            Descripción	                        Parámetros
-GET	    /api/rutinas	                        Obtener todas las rutinas	            -
-GET	    /api/rutinas/{id}	                    Obtener rutina por ID	            id (Path)
-GET	    /api/rutinas/cliente/{clienteId}	    Rutinas de un cliente	            clienteId (Path)
-GET	    /api/rutinas/entrenador/{entrenadorId}	Rutinas creadas por un entrenador	entrenadorId (Path)
-POST	/api/rutinas	                        Crear nueva rutina	                Body: Rutina (JSON)
-PUT	    /api/rutinas/{id}	                    Actualizar rutina	                id (Path), Body: Rutina (JSON)
-DELETE	/api/rutinas/{id}	                    Eliminar rutina	                    id (Path)
+### Actualizar ejercicio
+```http
+PUT /api/ejercicios/{id}
+Content-Type: application/json
+
 {
-  "cliente": { "id": 1 },
-  "entrenador": { "id": 2 },
-  "descripcion": "Rutina para ganar masa muscular"
+  "nombre": "Press de banca inclinado",
+  "tipo": "PECHO",
+  "descripcion": "Variación del press de banca"
 }
+```
 
+### Eliminar ejercicio
+```http
+DELETE /api/ejercicios/{id}
+```
 
-RutinaEjercicio Controller
-Método	Endpoint	                                        Descripción             	        Parámetros
-GET	    /api/rutinas/{rutinaId}/ejercicios	                Ejercicios de una rutina	        rutinaId (Path)
-GET	    /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}	Detalles de ejercicio en rutina	    rutinaId, ejercicioId (Path)
-POST	/api/rutinas/{rutinaId}/ejercicios	                Agregar ejercicio a rutina	        rutinaId (Path), Body: RutinaEjercicio (JSON)
-PUT	    /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}	Actualizar ejercicio en rutina      rutinaId, ejercicioId (Path), Body: RutinaEjercicio (JSON)
-DELETE	/api/rutinas/{rutinaId}/ejercicios/{ejercicioId}	Quitar ejercicio de rutina	        rutinaId, ejercicioId (Path)
+---
+
+## 📋 Rutinas
+
+### Obtener todas las rutinas
+```http
+GET /api/rutinas
+```
+
+### Obtener rutina por ID
+```http
+GET /api/rutinas/{id}
+```
+
+### Obtener rutinas de un cliente
+```http
+GET /api/rutinas/cliente/{clienteId}
+```
+
+### Obtener rutinas de un entrenador
+```http
+GET /api/rutinas/entrenador/{entrenadorId}
+```
+
+### Obtener progresos de una rutina
+```http
+GET /api/rutinas/{id}/progresos
+```
+
+### Obtener progresos de rutina por usuario
+```http
+GET /api/rutinas/{id}/progresos/usuario/{usuarioId}
+```
+
+### Obtener progresos de rutina por ejercicio
+```http
+GET /api/rutinas/{id}/progresos/ejercicio/{ejercicioId}
+```
+
+### Obtener progresos específicos (usuario + ejercicio)
+```http
+GET /api/rutinas/{id}/progresos/usuario/{usuarioId}/ejercicio/{ejercicioId}
+```
+
+### Crear rutina
+```http
+POST /api/rutinas
+Content-Type: application/json
+
 {
-  "ejercicio": { "id": 3 },
-  "series": 4,
-  "repeticiones": 12,
-  "pesoEjercicio": 30
-}
-
-
-Progreso Controller
-Método	Endpoint	                                                                    Descripción	                                                    Parámetros
-GET	    /api/progreso	                                                                Obtener todo el progreso	                                        -
-GET	    /api/progreso/usuario/{usuarioId}	                                            Progreso de un usuario	                                        usuarioId (Path)
-GET	    /api/progreso/usuario/{usuarioId}/rutina/{rutinaId}/ejercicio/{ejercicioId}	    Progreso específico	                                            usuarioId, rutinaId, ejercicioId (Path)
-POST	/api/progreso	                                                                Registrar nuevo progreso	                                    Body: Progreso (JSON)
-PUT	    /api/progreso/{id}	                                                            Actualizar progreso	                                            id (Path), Body: Progreso (JSON)
-DELETE	/api/progreso/{id}	                                                            Eliminar progreso	                                            id (Path)
-{
-  "usuario": { "id": 1 },
-  "rutinaEjercicio": {
-    "rutina": { "id": 1 },
-    "ejercicio": { "id": 3 }
+  "cliente": {
+    "id": 1
   },
-  "seriesCompletadas": 4,
-  "repeticionesCompletadas": 10,
-  "pesoUtilizado": 25
+  "entrenador": {
+    "id": 2
+  },
+  "descripcion": "Rutina de pecho y tríceps"
 }
+```
 
+### Actualizar rutina
+```http
+PUT /api/rutinas/{id}
+Content-Type: application/json
 
-Relaciones Clave
-    RutinaEjercicio: Clave compuesta (rutinaId + ejercicioId).
-    Progreso: Depende de RutinaEjercicio (clave compuesta) y Usuario.
+{
+  "descripcion": "Rutina actualizada de pecho y tríceps"
+}
+```
 
-    Validaciones:
-        En RutinaController: El entrenador debe tener rol ENTRENADOR.
-        En RutinaEjercicioController: El ejercicio debe existir antes de agregarlo a una rutina.
+### Eliminar rutina
+```http
+DELETE /api/rutinas/{id}
+```
 
+---
+
+## 🔗 Rutina-Ejercicios
+
+### Obtener ejercicios de una rutina
+```http
+GET /api/rutinas/{rutinaId}/ejercicios
+```
+
+### Obtener ejercicio específico en rutina
+```http
+GET /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
+```
+
+### Agregar ejercicio a rutina
+```http
+POST /api/rutinas/{rutinaId}/ejercicios
+Content-Type: application/json
+
+{
+  "ejercicio": {
+    "id": 1
+  },
+  "series": 3,
+  "repeticiones": 12,
+  "pesoEjercicio": 80
+}
+```
+
+### Actualizar ejercicio en rutina
+```http
+PUT /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
+Content-Type: application/json
+
+{
+  "series": 4,
+  "repeticiones": 10,
+  "pesoEjercicio": 85
+}
+```
+
+### Quitar ejercicio de rutina
+```http
+DELETE /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
+```
+
+---
+
+## 📈 Progreso
+
+### Obtener todo el progreso
+```http
+GET /api/progreso
+```
+
+### Obtener progreso por ID
+```http
+GET /api/progreso/{id}
+```
+
+### Obtener progreso de un usuario
+```http
+GET /api/progreso/usuario/{usuarioId}
+```
+
+### Obtener progreso de usuario en rutina específica
+```http
+GET /api/progreso/usuario/{usuarioId}/rutina/{rutinaId}
+```
+
+### Obtener progreso de usuario en ejercicio específico
+```http
+GET /api/progreso/usuario/{usuarioId}/ejercicio/{ejercicioId}
+```
+
+### Obtener progreso específico completo
+```http
+GET /api/progreso/usuario/{usuarioId}/rutina/{rutinaId}/ejercicio/{ejercicioId}
+```
+
+### Registrar progreso
+```http
+POST /api/progreso
+Content-Type: application/json
+
+{
+  "usuario": {
+    "id": 1
+  },
+  "rutina": {
+    "id": 1
+  },
+  "ejercicio": {
+    "id": 1
+  },
+  "series": 3,
+  "repeticiones": 12,
+  "pesoUtilizado": 80.5,
+  "observaciones": "Buen rendimiento, aumentar peso la próxima vez"
+}
+```
+
+### Actualizar progreso
+```http
+PUT /api/progreso/{id}
+Content-Type: application/json
+
+{
+  "series": 4,
+  "repeticiones": 10,
+  "pesoUtilizado": 82.5,
+  "observaciones": "Progreso notable"
+}
+```
+
+### Eliminar progreso
+```http
+DELETE /api/progreso/{id}
+```
+
+---
+
+## 📊 Códigos de Respuesta
+
+| Código | Descripción |
+|--------|-------------|
+| 200    | OK - Operación exitosa |
+| 201    | Created - Recurso creado exitosamente |
+| 204    | No Content - Eliminación exitosa |
+| 400    | Bad Request - Datos inválidos |
+| 401    | Unauthorized - Credenciales inválidas |
+| 404    | Not Found - Recurso no encontrado |
+| 500    | Internal Server Error - Error del servidor |
+
+---
+
+## 🚀 Ejemplos de Uso
+
+### Flujo completo: Crear usuario y rutina
+
+#### 1. Crear entrenador
+```bash
+curl -X POST http://localhost:8080/api/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Carlos Trainer",
+    "email": "carlos@gym.com",
+    "password": "trainer123",
+    "rol": "ENTRENADOR"
+  }'
+```
+
+#### 2. Crear cliente
+```bash
+curl -X POST http://localhost:8080/api/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Ana Cliente",
+    "email": "ana@email.com",
+    "password": "cliente123",
+    "rol": "CLIENTE"
+  }'
+```
+
+#### 3. Crear ejercicio
+```bash
+curl -X POST http://localhost:8080/api/ejercicios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Sentadillas",
+    "tipo": "PIERNAS",
+    "descripcion": "Ejercicio básico para piernas"
+  }'
+```
+
+#### 4. Crear rutina
+```bash
+curl -X POST http://localhost:8080/api/rutinas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cliente": {"id": 2},
+    "entrenador": {"id": 1},
+    "descripcion": "Rutina de piernas para principiantes"
+  }'
+```
+
+#### 5. Agregar ejercicio a rutina
+```bash
+curl -X POST http://localhost:8080/api/rutinas/1/ejercicios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ejercicio": {"id": 1},
+    "series": 3,
+    "repeticiones": 15,
+    "pesoEjercicio": 0
+  }'
+```
+
+#### 6. Registrar progreso
+```bash
+curl -X POST http://localhost:8080/api/progreso \
+  -H "Content-Type: application/json" \
+  -d '{
+    "usuario": {"id": 2},
+    "rutina": {"id": 1},
+    "ejercicio": {"id": 1},
+    "series": 3,
+    "repeticiones": 15,
+    "pesoUtilizado": 0,
+    "observaciones": "Primera sesión completada"
+  }'
+```
+
+### Consultas útiles
+
+#### Obtener todas las rutinas de un cliente con filtros
+```bash
+curl "http://localhost:8080/api/rutinas/cliente/2"
+```
+
+#### Obtener progreso específico de un usuario
+```bash
+curl "http://localhost:8080/api/progreso/usuario/2/rutina/1"
+```
+
+#### Login de usuario
+```bash
+curl -X POST http://localhost:8080/api/usuarios/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "ana@email.com",
+    "password": "cliente123"
+  }'
+```
+
+---
+
+## 🔧 Configuración de Swagger
+
+Para acceder a la documentación interactiva:
+
+1. Asegúrate de tener las dependencias en tu `pom.xml`
+2. Inicia la aplicación
+3. Visita: `http://localhost:8080/swagger-ui.html`
+
+**Características de Swagger UI:**
+- Explorar todos los endpoints
+- Probar requests directamente
+- Ver esquemas de datos
+- Descargar especificación OpenAPI
+
+---
+
+## 💡 Consejos de Uso
+
+1. **Validaciones**: Todos los campos marcados como `@NotNull` o `@NotBlank` son obligatorios
+2. **Relaciones**: Siempre verifica que existan las entidades relacionadas antes de crear nuevos registros
+3. **Fechas**: Las fechas de progreso se asignan automáticamente si no se proporcionan
+4. **Passwords**: Las contraseñas se encriptan automáticamente al guardar usuarios
+5. **CORS**: Todos los endpoints tienen CORS habilitado para desarrollo
+
+---
+
+## 🐛 Troubleshooting
+
+### Error 400 - Bad Request
+- Verifica que todos los campos obligatorios estén presentes
+- Revisa el formato JSON
+- Confirma que los tipos de datos sean correctos
+
+### Error 404 - Not Found
+- Verifica que los IDs en las URLs existan
+- Confirma que las relaciones entre entidades sean válidas
+
+### Error 500 - Internal Server Error
+- Revisa los logs del servidor
+- Verifica la conexión a la base de datos
+- Confirma que no haya conflictos de integridad referencial
+
+---
+
+*Documentación generada para GymSync API v1.0.0*
