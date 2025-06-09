@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 
 @Entity
-@Table(name = "ejercicio")
+@Table(name = "ejercicios")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

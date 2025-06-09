@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@Table(name = "rutina_ejercicio")
+@Table(name = "rutina_ejercicios")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
