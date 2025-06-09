@@ -1,7 +1,6 @@
 package com.backend.gymsync.controller;
 
 import com.backend.gymsync.entity.Rutina;
-import com.backend.gymsync.entity.Usuario;
 import com.backend.gymsync.entity.Progreso;
 import com.backend.gymsync.service.interfaces.RutinaServiceInterface;
 
@@ -84,20 +83,24 @@ public class RutinaController {
 
     @PostMapping
     public ResponseEntity<Rutina> crearRutina(@Valid @RequestBody Rutina rutina) {
-        // Validar que el entrenador tenga rol correcto
-        if(!rutina.getEntrenador().getRol().equals(Usuario.Rol.ENTRENADOR)) {
-            return ResponseEntity.badRequest().build();
-        }
-
         Rutina savedRutina = rutinaService.save(rutina);
         return ResponseEntity.ok(savedRutina);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Rutina> actualizarRutina(@PathVariable Integer id, @Valid @RequestBody Rutina rutina) {
-        
         if (!rutinaService.existsById(id)) {
             return ResponseEntity.notFound().build();
+        }
+        
+        // Validate all progresos have usuario
+        if (rutina.getProgresos() != null) {
+            for (Progreso progreso : rutina.getProgresos()) {
+                if (progreso.getUsuario() == null) {
+                    return ResponseEntity.badRequest()
+                        .body(null);
+                }
+            }
         }
         
         rutina.setId(id);

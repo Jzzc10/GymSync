@@ -1,20 +1,5 @@
 # 🏋️ Manual de API GymSync
 
-## 📋 Índice
-1. [Información General](#información-general)
-2. [Autenticación](#autenticación)
-3. [Usuarios](#usuarios)
-4. [Ejercicios](#ejercicios)
-5. [Rutinas](#rutinas)
-6. [Rutina-Ejercicios](#rutina-ejercicios)
-7. [Progreso](#progreso)
-8. [Códigos de Respuesta](#códigos-de-respuesta)
-9. [Ejemplos de Uso](#ejemplos-de-uso)
-
----
-
-## 🌐 Información General
-
 - **Base URL**: `http://localhost:8080`
 - **Formato**: JSON
 - **Documentación Swagger**: `http://localhost:8080/swagger-ui.html`
@@ -30,8 +15,8 @@ POST /api/usuarios/login
 Content-Type: application/json
 
 {
-  "email": "usuario@email.com",
-  "password": "contraseña123"
+  "email": "juan.perez@email.com",
+  "password": "12345678"
 }
 ```
 
@@ -42,7 +27,7 @@ Content-Type: application/json
   "usuario": {
     "id": 1,
     "nombre": "Juan Pérez",
-    "email": "juan@email.com",
+    "email": "juan.perez@email.com",
     "rol": "CLIENTE"
   },
   "rol": "CLIENTE"
@@ -79,9 +64,9 @@ POST /api/usuarios
 Content-Type: application/json
 
 {
-  "nombre": "Juan Pérez",
-  "email": "juan@email.com",
-  "password": "contraseña123",
+  "nombre": "Jorge Zhou",
+  "email": "jorge.zhou@email.com",
+  "password": "12345678",
   "rol": "CLIENTE"
 }
 ```
@@ -106,7 +91,7 @@ PUT /api/usuarios/{id}/password
 Content-Type: application/json
 
 {
-  "nuevaPassword": "nuevaContraseña123"
+  "nuevaPassword": "nuevaContrasenia123"
 }
 ```
 
@@ -151,9 +136,11 @@ PUT /api/ejercicios/{id}
 Content-Type: application/json
 
 {
-  "nombre": "Press de banca inclinado",
+  "nombre": "Mancuernas pecho",
   "tipo": "PECHO",
-  "descripcion": "Variación del press de banca"
+  "descripcion": "Ejercicio para desarrollar el pectoral mayor",
+  "urlImagen": "https://ejemplo.com/imagen.jpg",
+  "urlVideo": "https://ejemplo.com/video.mp4"
 }
 ```
 
