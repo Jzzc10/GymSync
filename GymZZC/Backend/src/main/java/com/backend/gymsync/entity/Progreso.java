@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDate;
 
@@ -23,12 +23,13 @@ public class Progreso {
     @ManyToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false)
     @NotNull
+    @JsonBackReference("usuario-progresos")
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "rutina_id", referencedColumnName = "id", nullable = false)
     @NotNull
-    @JsonIgnore // Evita referencia circular en JSON
+    @JsonBackReference("rutina-progresos")
     private Rutina rutina;
 
     @ManyToOne
@@ -61,6 +62,11 @@ public class Progreso {
     }
 
     @Transient
+    public String getUsuarioNombre() {
+        return usuario != null ? usuario.getNombre() : null;
+    }
+
+    @Transient
     public Integer getRutinaId() {
         return rutina != null ? rutina.getId() : null;
     }
@@ -70,7 +76,6 @@ public class Progreso {
         return ejercicio != null ? ejercicio.getId() : null;
     }
 
-    // Constructor para inicialización automática de fecha
     @PrePersist
     protected void onCreate() {
         if (fechaRegistro == null) {

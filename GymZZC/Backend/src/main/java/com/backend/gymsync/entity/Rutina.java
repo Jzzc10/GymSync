@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -18,37 +20,36 @@ public class Rutina {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // Referencia al cliente
     @ManyToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference("usuario-rutinas-cliente")
     private Usuario cliente;
 
+    // Referencia al entrenador
     @ManyToOne
     @JoinColumn(name = "entrenador_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference("usuario-rutinas-entrenador")
     private Usuario entrenador;
 
     @Column(nullable = true, length = 255)
     private String descripcion;
 
+    // Ejercicios de la rutina
     @OneToMany(mappedBy = "rutina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("rutina-ejercicios")
     private List<RutinaEjercicio> ejercicios;
 
-    // Relación con los progresos de esta rutina
+    // Progresos de la rutina
     @OneToMany(mappedBy = "rutina", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("rutina-progresos")
     private List<Progreso> progresos;
 
-    /**
-     * Obtiene todos los progresos asociados a esta rutina
-     * @return Lista de progresos de la rutina
-     */
+    // Métodos de utilidad
     public List<Progreso> obtenerTodosLosProgresos() {
         return progresos != null ? progresos : new ArrayList<>();
     }
 
-    /**
-     * Obtiene los progresos de un usuario específico para esta rutina
-     * @param usuarioId ID del usuario
-     * @return Lista de progresos del usuario para esta rutina
-     */
     public List<Progreso> obtenerProgresosPorUsuario(Integer usuarioId) {
         if (progresos == null) {
             return new ArrayList<>();
@@ -59,11 +60,6 @@ public class Rutina {
                 .toList();
     }
 
-    /**
-     * Obtiene los progresos de un ejercicio específico dentro de esta rutina
-     * @param ejercicioId ID del ejercicio
-     * @return Lista de progresos del ejercicio en esta rutina
-     */
     public List<Progreso> obtenerProgresosPorEjercicio(Integer ejercicioId) {
         if (progresos == null) {
             return new ArrayList<>();
@@ -74,12 +70,6 @@ public class Rutina {
                 .toList();
     }
 
-    /**
-     * Obtiene los progresos de un usuario específico para un ejercicio específico en esta rutina
-     * @param usuarioId ID del usuario
-     * @param ejercicioId ID del ejercicio
-     * @return Lista de progresos del usuario para el ejercicio en esta rutina
-     */
     public List<Progreso> obtenerProgresosPorUsuarioYEjercicio(Integer usuarioId, Integer ejercicioId) {
         if (progresos == null) {
             return new ArrayList<>();
@@ -89,5 +79,26 @@ public class Rutina {
                 .filter(progreso -> progreso.getUsuario().getId().equals(usuarioId) && 
                                   progreso.getEjercicio().getId().equals(ejercicioId))
                 .toList();
+    }
+
+    // Métodos de conveniencia para obtener IDs sin causar serialización
+    @Transient
+    public Integer getClienteId() {
+        return cliente != null ? cliente.getId() : null;
+    }
+
+    @Transient
+    public String getClienteNombre() {
+        return cliente != null ? cliente.getNombre() : null;
+    }
+
+    @Transient
+    public Integer getEntrenadorId() {
+        return entrenador != null ? entrenador.getId() : null;
+    }
+
+    @Transient
+    public String getEntrenadorNombre() {
+        return entrenador != null ? entrenador.getNombre() : null;
     }
 }

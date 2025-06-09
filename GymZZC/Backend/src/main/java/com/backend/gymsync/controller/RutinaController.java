@@ -35,12 +35,12 @@ public class RutinaController {
 
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<Rutina>> getRutinasByCliente(@PathVariable Integer clienteId) {
-        return ResponseEntity.ok(rutinaService.findByClienteId(clienteId));
+        return ResponseEntity.ok(rutinaService.findByCliente_Id(clienteId));
     }
 
     @GetMapping("/entrenador/{entrenadorId}")
     public ResponseEntity<List<Rutina>> getRutinasByEntrenador(@PathVariable Integer entrenadorId) {
-        return ResponseEntity.ok(rutinaService.findByEntrenadorId(entrenadorId));
+        return ResponseEntity.ok(rutinaService.findByEntrenador_Id(entrenadorId));
     }
 
     // Endpoint para obtener todos los progresos de una rutina

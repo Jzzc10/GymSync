@@ -7,8 +7,8 @@ import java.util.Optional;
 public interface RutinaServiceInterface {
     List<Rutina> findAll();
     Optional<Rutina> findById(Integer id);
-    List<Rutina> findByClienteId(Integer clienteId);
-    List<Rutina> findByEntrenadorId(Integer entrenadorId);
+    List<Rutina> findByCliente_Id(Integer clienteId);
+    List<Rutina> findByEntrenador_Id(Integer entrenadorId);
     Rutina save(Rutina rutina);
     void deleteById(Integer id);
     boolean existsById(Integer id);

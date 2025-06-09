@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class Usuario {
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    @Column(nullable = false, length = 255) // Aumentar longitud para hash
-    @JsonIgnore // Evita que se serialice en JSON responses
+    @Column(nullable = false, length = 255)
+    @JsonIgnore
     private String password;
 
     @NotNull(message = "El rol es obligatorio")
@@ -42,15 +43,19 @@ public class Usuario {
     @Column(length = 20, nullable = false)
     private Rol rol;
 
-    // Rutinas donde este usuario es el CLIENTE
+    // Rutinas donde el usuario es cliente
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @JsonManagedReference("usuario-rutinas-cliente")
     private List<Rutina> rutinasAsignadas;
 
-    // Rutinas donde este usuario es el ENTRENADOR
+    // Rutinas donde el usuario es entrenador
     @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL)
+    @JsonManagedReference("usuario-rutinas-entrenador")
     private List<Rutina> rutinasCreadas;
 
+    // Progresos del usuario
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonManagedReference("usuario-progresos")
     private List<Progreso> progresos;
 
     public enum Rol {

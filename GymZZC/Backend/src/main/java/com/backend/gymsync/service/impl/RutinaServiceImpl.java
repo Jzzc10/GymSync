@@ -27,13 +27,13 @@ public class RutinaServiceImpl implements RutinaServiceInterface{
     }
 
     @Override
-    public List<Rutina> findByClienteId(Integer clienteId) {
-        return rutinaRepository.findByClienteId(clienteId);
+    public List<Rutina> findByCliente_Id(Integer clienteId) {
+        return rutinaRepository.findByCliente_Id(clienteId);
     }
 
     @Override
-    public List<Rutina> findByEntrenadorId(Integer entrenadorId) {
-        return rutinaRepository.findByEntrenadorId(entrenadorId);
+    public List<Rutina> findByEntrenador_Id(Integer entrenadorId) {
+        return rutinaRepository.findByEntrenador_Id(entrenadorId);
     }
 
     @Override

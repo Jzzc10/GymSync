@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "rutina_ejercicio")
@@ -18,12 +19,14 @@ public class RutinaEjercicio {
     @ManyToOne
     @JoinColumn(name = "rutina_id", nullable = false)
     @NotNull
+    @JsonBackReference("rutina-ejercicios")
     private Rutina rutina;
 
     @Id
-    @ManyToOne  
+    @ManyToOne
     @JoinColumn(name = "ejercicio_id", nullable = false)
     @NotNull
+    @JsonBackReference("ejercicio-rutinas")
     private Ejercicio ejercicio;
 
     @Column(nullable = false)
@@ -46,5 +49,15 @@ public class RutinaEjercicio {
     @Transient
     public Integer getEjercicioId() {
         return ejercicio != null ? ejercicio.getId() : null;
+    }
+
+    @Transient
+    public String getEjercicioNombre() {
+        return ejercicio != null ? ejercicio.getNombre() : null;
+    }
+
+    @Transient
+    public String getEjercicioTipo() {
+        return ejercicio != null ? ejercicio.getTipo().toString() : null;
     }
 }
