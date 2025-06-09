@@ -1,7 +1,7 @@
 // app.component.ts
 import { Component } from '@angular/core';
-import { HeaderComponent } from './header/header.component'; // Ajusta la ruta
-import { ExerciseFormComponent } from './exercise-form/exercise-form.component'; // Ajusta la ruta
+import { HeaderComponent } from './components/header/header.component'; // Ajusta la ruta
+import { ExerciseFormComponent } from './components/exercise-form/exercise-form.component'; // Ajusta la ruta
 
 @Component({
   selector: 'app-root',
