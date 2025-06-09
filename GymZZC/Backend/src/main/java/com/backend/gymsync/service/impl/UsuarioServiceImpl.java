@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioServiceInterface {
@@ -19,6 +20,9 @@ public class UsuarioServiceImpl implements UsuarioServiceInterface {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    // Patrón regex para validar hashes BCrypt
+    private static final Pattern BCRYPT_PATTERN = Pattern.compile("^\\$2[ayb]\\$\\d{2}\\$.{53}$");
 
     @Override
     public List<Usuario> findAll() {
@@ -53,10 +57,15 @@ public class UsuarioServiceImpl implements UsuarioServiceInterface {
     @Override
     public Usuario save(Usuario usuario) {
         // Encriptar la contraseña antes de guardar
-        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
+        if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
             // Solo encriptar si la contraseña no está ya encriptada
-            if (!isPasswordEncrypted(usuario.getPassword())) {
+            boolean isEncrypted = isPasswordEncrypted(usuario.getPassword());
+            System.out.println("Password: " + usuario.getPassword());
+            System.out.println("Is encrypted: " + isEncrypted);
+            
+            if (!isEncrypted) {
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                System.out.println("Password encrypted to: " + usuario.getPassword());
             }
         }
         return usuarioRepository.save(usuario);
@@ -72,9 +81,13 @@ public class UsuarioServiceImpl implements UsuarioServiceInterface {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
     
-    // Método para verificar si una contraseña ya está encriptada
+    // Método mejorado para verificar si una contraseña ya está encriptada
     private boolean isPasswordEncrypted(String password) {
-        // BCrypt hashes always start with $2a$, $2b$, or $2y$
-        return password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$");
+        if (password == null || password.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Verificar si coincide con el patrón BCrypt
+        return BCRYPT_PATTERN.matcher(password.trim()).matches();
     }
 }

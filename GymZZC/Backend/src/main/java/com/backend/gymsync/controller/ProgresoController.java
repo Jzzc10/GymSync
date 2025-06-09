@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/progreso")
+@RequestMapping("/api/progresos")
 @CrossOrigin(origins = "*")
 public class ProgresoController {
 
