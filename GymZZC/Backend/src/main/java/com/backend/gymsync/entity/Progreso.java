@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "progreso")
+@Table(name = "progresos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
