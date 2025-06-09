@@ -276,37 +276,37 @@ DELETE /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
 
 ### Obtener todo el progreso
 ```http
-GET /api/progreso
+GET /api/progresos
 ```
 
 ### Obtener progreso por ID
 ```http
-GET /api/progreso/{id}
+GET /api/progresos/{id}
 ```
 
 ### Obtener progreso de un usuario
 ```http
-GET /api/progreso/usuario/{usuarioId}
+GET /api/progresos/usuario/{usuarioId}
 ```
 
 ### Obtener progreso de usuario en rutina específica
 ```http
-GET /api/progreso/usuario/{usuarioId}/rutina/{rutinaId}
+GET /api/progresos/usuarios/{usuarioId}/rutinas/{rutinaId}
 ```
 
 ### Obtener progreso de usuario en ejercicio específico
 ```http
-GET /api/progreso/usuario/{usuarioId}/ejercicio/{ejercicioId}
+GET /api/progresos/usuarios/{usuarioId}/ejercicios/{ejercicioId}
 ```
 
 ### Obtener progreso específico completo
 ```http
-GET /api/progreso/usuario/{usuarioId}/rutina/{rutinaId}/ejercicio/{ejercicioId}
+GET /api/progresos/usuarios/2/rutinas/3/ejercicios/2
 ```
 
 ### Registrar progreso
 ```http
-POST /api/progreso
+POST /api/progresos
 Content-Type: application/json
 
 {
@@ -322,7 +322,8 @@ Content-Type: application/json
   "series": 3,
   "repeticiones": 12,
   "pesoUtilizado": 80.5,
-  "observaciones": "Buen rendimiento, aumentar peso la próxima vez"
+  "observaciones": "Buen rendimiento, aumentar peso la próxima vez",
+  "fechaRegistro": "2025-06-09"
 }
 ```
 
@@ -332,10 +333,20 @@ PUT /api/progreso/{id}
 Content-Type: application/json
 
 {
+  "usuario": {
+    "id": 1
+  },
+  "rutina": {
+    "id": 1
+  },
+  "ejercicio": {
+    "id": 1
+  },
   "series": 4,
   "repeticiones": 10,
-  "pesoUtilizado": 82.5,
-  "observaciones": "Progreso notable"
+  "pesoUtilizado": 85.0,
+  "observaciones": "Aumento de peso según lo planeado",
+  "fechaRegistro": "2025-06-09"
 }
 ```
 
@@ -504,5 +515,3 @@ Para acceder a la documentación interactiva:
 - Confirma que no haya conflictos de integridad referencial
 
 ---
-
-*Documentación generada para GymSync API v1.0.0*
