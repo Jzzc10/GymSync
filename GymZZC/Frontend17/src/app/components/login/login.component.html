@@ -1,0 +1,71 @@
+
+<div class="login-container">
+  <div class="login-card">
+    <h2 class="login-title">Iniciar Sesión</h2>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Selección de Rol -->
+      <div class="form-group">
+        <label for="rol">Rol</label>
+        <select 
+          id="rol" 
+          formControlName="rol"
+          class="form-control"
+          [class.is-invalid]="loginForm.get('rol')?.invalid && loginForm.get('rol')?.touched">
+          <option value="">Selecciona tu rol</option>
+          <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+        </select>
+        <div *ngIf="loginForm.get('rol')?.invalid && loginForm.get('rol')?.touched" class="invalid-feedback">
+          Por favor selecciona un rol
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          placeholder="tu@gmail.com">
+        <div *ngIf="loginForm.get('email')?.errors?.['required'] && loginForm.get('email')?.touched" class="invalid-feedback">
+          Email es requerido
+        </div>
+        <div *ngIf="loginForm.get('email')?.errors?.['email'] && loginForm.get('email')?.touched" class="invalid-feedback">
+          Email inválido
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password"
+          class="form-control"
+          [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          placeholder="••••••••">
+        <div *ngIf="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched" class="invalid-feedback">
+          Contraseña es requerida
+        </div>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{errorMessage}}
+      </div>
+
+      <!-- Botón de envío -->
+      <button 
+        type="submit" 
+        class="btn-login"
+        [disabled]="loading">
+        <span *ngIf="!loading">Iniciar Sesión</span>
+        <span *ngIf="loading">Verificando...</span>
+      </button>
+    </form>
+  </div>
+</div>

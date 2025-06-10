@@ -1,0 +1,170 @@
+<!-- dashboard-cliente/dashboard-cliente.component.html -->
+<div class="exercise-container">
+  <div class="form-section">
+    <h1 class="page-title">Registrar Ejercicio</h1>
+    
+    <!-- Sección para mostrar detalles de la rutina seleccionada -->
+    <div *ngIf="rutinaDetalle" class="rutina-detalle">
+    <h3>Detalles de la Rutina: {{rutinaDetalle.descripcion || 'Rutina ' + rutinaDetalle.id}}</h3>
+    <ul>
+      <li *ngFor="let ejercicio of rutinaDetalle.ejercicios">
+        <strong>{{ejercicio.ejercicioNombre}}</strong>:
+        {{ejercicio.series}} series x {{ejercicio.repeticiones}} repeticiones
+        <span *ngIf="ejercicio.pesoEjercicio">({{ejercicio.pesoEjercicio}} kg)</span>
+      </li>
+    </ul>
+  </div>
+
+    <form class="exercise-form" (ngSubmit)="registrarEjercicio()">
+      <!-- Select Rutina -->
+      <div class="form-group" *ngIf="rutinas.length > 0">
+        <label for="rutina">Rutina</label>
+        <select 
+          id="rutina" 
+          [(ngModel)]="selectedRutinaId" 
+          name="rutina"
+          class="form-select"
+          required
+          (change)="onRutinaChange()">
+          <option *ngFor="let rutina of rutinas" [value]="rutina.id">
+            {{rutina.descripcion || 'Rutina ' + rutina.id}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Select Ejercicio -->
+      <!-- Select de ejercicios con mejor visualización -->
+      <div class="form-group">
+        <label for="ejercicio">Ejercicio</label>
+        <select 
+          id="ejercicio" 
+          [(ngModel)]="selectedExerciseId" 
+          name="ejercicio"
+          class="form-select"
+          required
+          (change)="onExerciseChange()">
+          <option value="">Selecciona un ejercicio</option>
+          <option *ngFor="let ejercicio of ejercicios" [value]="ejercicio.id">
+            {{ejercicio.nombre}} ({{ejercicio.tipo}})
+          </option>
+        </select>
+        
+        <!-- Recomendaciones -->
+        <div *ngIf="ejercicioRecomendado" class="recomendacion p-2 mt-2 rounded bg-light">
+          <div class="d-flex justify-content-between">
+            <span>
+              <strong>Recomendado:</strong> 
+              {{ejercicioRecomendado.series}} series x 
+              {{ejercicioRecomendado.repeticiones}} repeticiones
+              <span *ngIf="ejercicioRecomendado.pesoEjercicio">
+                ({{ejercicioRecomendado.pesoEjercicio}} kg)
+              </span>
+            </span>
+            <span class="badge bg-primary">Rutina</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Select Repeticiones -->
+      <div class="form-group">
+        <label for="repeticiones">Repeticiones</label>
+        <select 
+          id="repeticiones" 
+          [(ngModel)]="selectedRepetitions" 
+          name="repeticiones"
+          class="form-select"
+          required>
+          <option value="0">Selecciona repeticiones</option>
+          <option *ngFor="let rep of repeticiones" [value]="rep">
+            {{rep}} repeticiones
+          </option>
+        </select>
+      </div>
+
+      <!-- Select Series -->
+      <div class="form-group">
+        <label for="series">Series</label>
+        <select 
+          id="series" 
+          [(ngModel)]="selectedSeries" 
+          name="series"
+          class="form-select"
+          required>
+          <option value="0">Selecciona series</option>
+          <option *ngFor="let serie of series" [value]="serie">
+            {{serie}} {{serie === 1 ? 'serie' : 'series'}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Input Peso Utilizado -->
+      <div class="form-group">
+        <label for="peso">Peso Utilizado (kg)</label>
+        <input 
+          type="number" 
+          id="peso" 
+          [(ngModel)]="pesoUtilizado" 
+          name="peso"
+          class="form-select"
+          placeholder="Opcional"
+          min="0"
+          step="0.5">
+      </div>
+
+      <!-- Sección para mostrar imagen y video del ejercicio -->
+      <div *ngIf="selectedExercise" class="exercise-detail">
+        <div *ngIf="selectedExercise.urlImagen" class="exercise-image">
+          <img [src]="selectedExercise.urlImagen" 
+              alt="Imagen de {{selectedExercise.nombre}}"
+              style="max-height: 200px; border-radius: 8px;">
+        </div>
+        <div *ngIf="selectedExercise.urlVideo" class="exercise-video mt-2">
+          <a [href]="selectedExercise.urlVideo" 
+            target="_blank" 
+            class="video-link"
+            style="display: block; text-align: center;">
+            <mat-icon>play_circle</mat-icon> Ver video del ejercicio
+          </a>
+        </div>
+      </div>
+
+      <!-- Botón Registrar -->
+      <button type="submit" class="btn-register">
+        <span class="btn-icon">✓</span>
+        Registrar Ejercicio
+      </button>
+    </form>
+  </div>
+
+  <!-- Lista de ejercicios registrados -->
+  <div class="exercises-list" *ngIf="registeredExercises.length > 0">
+    <h2 class="list-title">Ejercicios Registrados Hoy</h2>
+    <div class="exercise-card" *ngFor="let exercise of registeredExercises">
+      <div class="exercise-info">
+        <h3 class="exercise-name">{{exercise.ejercicio?.nombre || 'Ejercicio'}}</h3>
+        <div class="exercise-details">
+          <span class="detail-item">
+            <strong>{{exercise.series}}</strong> series
+          </span>
+          <span class="detail-separator">•</span>
+          <span class="detail-item">
+            <strong>{{exercise.repeticiones}}</strong> repeticiones
+          </span>
+          <span *ngIf="exercise.pesoUtilizado" class="detail-separator">•</span>
+          <span *ngIf="exercise.pesoUtilizado" class="detail-item">
+            <strong>{{exercise.pesoUtilizado}}</strong> kg
+          </span>
+        </div>
+        <div class="exercise-time">
+          {{exercise.fechaRegistro | date:'short'}}
+        </div>
+      </div>
+      <button class="btn-delete" (click)="eliminarEjercicio(exercise.id!)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3,6 5,6 21,6"></polyline>
+          <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

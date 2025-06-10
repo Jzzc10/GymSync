@@ -9,11 +9,11 @@ USE backend;
 -- Usuarios
 -- password: 12345678
 INSERT INTO usuarios (nombre, email, password, rol) VALUES
-('Juan Pérez', 'juan.perez@email.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'CLIENTE'),
-('María García', 'maria.garcia@email.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'CLIENTE'),
-('Carlos López', 'carlos.lopez@email.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ENTRENADOR'),
-('Ana Martínez', 'ana.martinez@email.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ENTRENADOR'),
-('Admin Sistema', 'admin@email.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ADMIN');
+('Juan Pérez', 'juan.perez@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'CLIENTE'),
+('María García', 'maria.garcia@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'CLIENTE'),
+('Carlos López', 'carlos.lopez@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ENTRENADOR'),
+('Ana Martínez', 'ana.martinez@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ENTRENADOR'),
+('Admin Sistema', 'admin@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ADMIN');
 select * from usuarios;
 select * from rutinas;
 -- Ejercicios

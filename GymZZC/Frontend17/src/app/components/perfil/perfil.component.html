@@ -1,0 +1,119 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Perfil de Usuario</h1>
+    <button mat-raised-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon> Cerrar Sesión
+    </button>
+  </div>
+
+  <div class="profile-card">
+    <h2>Información Personal</h2>
+    
+    <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          formControlName="nombre"
+          class="form-control"
+          [class.is-invalid]="profileForm.get('nombre')?.invalid && profileForm.get('nombre')?.touched">
+        <div *ngIf="profileForm.get('nombre')?.invalid && profileForm.get('nombre')?.touched" class="invalid-feedback">
+          El nombre es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+        <div *ngIf="profileForm.get('email')?.errors?.['required'] && profileForm.get('email')?.touched" class="invalid-feedback">
+          Email es requerido
+        </div>
+        <div *ngIf="profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched" class="invalid-feedback">
+          Email inválido
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-update"
+          [disabled]="loading || profileForm.invalid">
+          <span *ngIf="!loading">Actualizar Información</span>
+          <span *ngIf="loading">Actualizando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="profile-card">
+    <div class="password-header">
+      <h2>Cambiar Contraseña</h2>
+      <button mat-icon-button (click)="showPasswordForm = !showPasswordForm">
+        <mat-icon>{{showPasswordForm ? 'expand_less' : 'expand_more'}}</mat-icon>
+      </button>
+    </div>
+    
+    <form *ngIf="showPasswordForm" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <div class="form-group">
+        <label for="currentPassword">Contraseña Actual</label>
+        <input 
+          type="password" 
+          id="currentPassword" 
+          formControlName="currentPassword"
+          class="form-control"
+          [class.is-invalid]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
+        <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" class="invalid-feedback">
+          Contraseña actual es requerida
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="newPassword">Nueva Contraseña</label>
+        <input 
+          type="password" 
+          id="newPassword" 
+          formControlName="newPassword"
+          class="form-control"
+          [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+        <div *ngIf="passwordForm.get('newPassword')?.errors?.['required']" class="invalid-feedback">
+          Nueva contraseña es requerida
+        </div>
+        <div *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']" class="invalid-feedback">
+          La contraseña debe tener al menos 8 caracteres
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar Nueva Contraseña</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          formControlName="confirmPassword"
+          class="form-control"
+          [class.is-invalid]="passwordForm.get('confirmPassword')?.errors?.['mismatch'] || (passwordForm.get('confirmPassword')?.touched && passwordForm.invalid)">
+        <div *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']" class="invalid-feedback">
+          Confirmación de contraseña es requerida
+        </div>
+        <div *ngIf="passwordForm.get('confirmPassword')?.errors?.['mismatch']" class="invalid-feedback">
+          Las contraseñas no coinciden
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-update"
+          [disabled]="passwordLoading || passwordForm.invalid">
+          <span *ngIf="!passwordLoading">Cambiar Contraseña</span>
+          <span *ngIf="passwordLoading">Actualizando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

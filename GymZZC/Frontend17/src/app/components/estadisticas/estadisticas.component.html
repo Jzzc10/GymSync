@@ -1,0 +1,140 @@
+<!-- estadisticas-progreso.component.html -->
+<div class="container">
+  <h2>📈 Tus Estadísticas</h2>
+
+  <div *ngIf="loading" class="loading">
+    <p>Cargando datos de progreso...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{error}}</p>
+    <button (click)="cargarDatosIniciales()">Reintentar</button>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- Filtros -->
+    <div class="filtros">
+      <h3>Filtros</h3>
+      <div class="filtros-row">
+        <div class="filtro-group">
+          <label for="rutina">Rutina:</label>
+          <select id="rutina" [(ngModel)]="filtros.rutinaId">
+            <option [ngValue]="null">Todas las rutinas</option>
+            <option *ngFor="let rutina of rutinas" [ngValue]="rutina.id">
+              {{rutina.descripcion || 'Rutina ' + rutina.id}}
+            </option>
+          </select>
+        </div>
+
+        <div class="filtro-group">
+          <label for="ejercicio">Ejercicio:</label>
+          <select id="ejercicio" [(ngModel)]="filtros.ejercicioId">
+            <option [ngValue]="null">Todos los ejercicios</option>
+            <option *ngFor="let ejercicio of ejercicios" [ngValue]="ejercicio.id">
+              {{ejercicio.nombre}}
+            </option>
+          </select>
+        </div>
+
+        <div class="filtro-group">
+          <label for="fechaDesde">Desde:</label>
+          <input type="date" id="fechaDesde" [(ngModel)]="filtros.fechaDesde">
+        </div>
+
+        <div class="filtro-group">
+          <label for="fechaHasta">Hasta:</label>
+          <input type="date" id="fechaHasta" [(ngModel)]="filtros.fechaHasta">
+        </div>
+      </div>
+
+      <div class="filtros-actions">
+        <button (click)="aplicarFiltros()">Aplicar Filtros</button>
+        <button (click)="limpiarFiltros()">Limpiar Filtros</button>
+      </div>
+    </div>
+
+    <!-- Estadísticas resumen -->
+    <div class="resumen">
+      <h3>Resumen Estadístico</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">{{estadisticas.totalSesiones || 0}}</div>
+          <div class="stat-label">Sesiones</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{estadisticas.pesoMaximo || 0}} kg</div>
+          <div class="stat-label">Peso Máximo</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{estadisticas.pesoPromedio || 0}} kg</div>
+          <div class="stat-label">Peso Promedio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{estadisticas.seriesTotal || 0}}</div>
+          <div class="stat-label">Series Totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{estadisticas.repeticionesTotal || 0}}</div>
+          <div class="stat-label">Repeticiones</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{formatearFecha(estadisticas.fechaUltimoEntrenamiento) || 'N/A'}}</div>
+          <div class="stat-label">Último Entrenamiento</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="grafico" *ngIf="progresos.length > 0">
+      <h3>Evolución de Pesos</h3>
+      <div class="chart-container">
+        <canvas #pesoChart width="700" height="400"></canvas>
+      </div>
+    </div>
+
+    <!-- Lista de progresos -->
+    <div class="lista-progresos">
+      <h3>Registros de Progreso ({{progresos.length}})</h3>
+      
+      <div *ngIf="progresos.length === 0" class="no-data">
+        No se encontraron registros de progreso
+      </div>
+
+      <div class="progreso-card" *ngFor="let progreso of progresos">
+        <div class="progreso-header">
+          <div class="ejercicio">{{progreso.ejercicio?.nombre || 'Ejercicio'}}</div>
+          <div class="fecha">{{formatearFecha(progreso.fechaRegistro)}}</div>
+        </div>
+        
+        <div class="progreso-details">
+          <div class="detail-item">
+            <span class="label">Rutina:</span>
+            <span class="value">{{progreso.rutina?.descripcion || 'N/A'}}</span>
+          </div>
+          
+          <div class="detail-row">
+            <div class="detail-item">
+              <span class="label">Series:</span>
+              <span class="value">{{progreso.series}}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="label">Repeticiones:</span>
+              <span class="value">{{progreso.repeticiones}}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="label">Peso:</span>
+              <span class="value">{{progreso.pesoUtilizado || 0}} kg</span>
+            </div>
+          </div>
+          
+          <div *ngIf="progreso.observaciones" class="detail-item observaciones">
+            <span class="label">Notas:</span>
+            <span class="value">{{progreso.observaciones}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
