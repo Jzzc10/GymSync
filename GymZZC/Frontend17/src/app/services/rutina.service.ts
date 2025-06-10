@@ -25,6 +25,9 @@ export interface Rutina {
   descripcion?: string;
   ejercicios?: RutinaEjercicio[];
   progresos?: Progreso[];
+  fechaCreacion?: string;
+  fechaModificacion?: string;
+  activa?: boolean;
   // Métodos de conveniencia que vienen del backend
   clienteId?: number;
   clienteNombre?: string;
@@ -99,6 +102,11 @@ export class RutinaService {
   // Eliminar rutina
   deleteRutina(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // MÉTODO FALTANTE - Asignar rutina a cliente
+  asignarRutinaACliente(rutinaId: number, clienteId: number): Observable<Rutina> {
+    return this.http.put<Rutina>(`${this.apiUrl}/${rutinaId}/asignar-cliente/${clienteId}`, {});
   }
 
   // MÉTODOS PARA GESTIÓN DE EJERCICIOS EN RUTINAS

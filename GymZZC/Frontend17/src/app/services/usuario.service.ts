@@ -9,6 +9,10 @@ export interface Usuario {
   email: string;
   password?: string;
   rol: 'CLIENTE' | 'ENTRENADOR' | 'ADMIN';
+  entrenadorId?: number; // ID del entrenador asignado (para clientes)
+  entrenadorNombre?: string; // Nombre del entrenador (campo auxiliar)
+  fechaRegistro?: string;
+  activo?: boolean;
 }
 
 export interface LoginCredentials {
@@ -20,10 +24,16 @@ export interface LoginResponse {
   message: string;
   usuario: Usuario;
   rol: string;
+  token?: string; // Para JWT si lo implementas
 }
 
 export interface PasswordChangeRequest {
   nuevaPassword: string;
+}
+
+export interface AsignarEntrenadorRequest {
+  clienteId: number;
+  entrenadorId: number;
 }
 
 @Injectable({
@@ -61,6 +71,45 @@ export class UsuarioService {
     return this.http.get<Usuario[]>(`${this.apiUrl}/entrenadores`);
   }
 
+  // Obtener clientes
+  getClientes(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/clientes`);
+  }
+
+  // NUEVOS MÉTODOS PARA ENTRENADORES
+
+  // Obtener clientes asignados a un entrenador específico
+  getClientesAsignados(entrenadorId: number): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/entrenador/${entrenadorId}/clientes`);
+  }
+
+  // Obtener clientes asignados al entrenador logueado (usando token)
+  getMisClientes(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/mis-clientes`);
+  }
+
+  // Asignar un cliente a un entrenador (solo admin)
+  asignarEntrenador(asignacion: AsignarEntrenadorRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/asignar-entrenador`, asignacion);
+  }
+
+  // Desasignar un cliente de su entrenador (solo admin)
+  desasignarEntrenador(clienteId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/cliente/${clienteId}/entrenador`);
+  }
+
+  // Obtener el entrenador asignado a un cliente
+  getEntrenadorAsignado(clienteId: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/cliente/${clienteId}/entrenador`);
+  }
+
+  // Obtener clientes sin entrenador asignado (solo admin)
+  getClientesSinEntrenador(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/clientes-sin-entrenador`);
+  }
+
+  // MÉTODOS EXISTENTES
+
   // Crear usuario
   createUsuario(usuario: Usuario): Observable<Usuario> {
     return this.http.post<Usuario>(this.apiUrl, usuario);
@@ -86,5 +135,50 @@ export class UsuarioService {
     return this.http.put<{ message: string }>(`${this.apiUrl}/${id}/password`, passwordData);
   }
 
+  // Activar/Desactivar usuario
+  toggleUsuarioActivo(id: number): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/${id}/toggle-activo`, {});
+  }
+
+  // Obtener perfil del usuario actual
+  getMiPerfil(): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/mi-perfil`);
+  }
+
+  // Actualizar mi perfil
+  actualizarMiPerfil(usuario: Partial<Usuario>): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/mi-perfil`, usuario);
+  }
+
+  // Métodos auxiliares para el frontend
   
+  // Verificar si un usuario puede ser entrenador
+  puedeSerEntrenador(usuario: Usuario): boolean {
+    return usuario.rol === 'ENTRENADOR' || usuario.rol === 'ADMIN';
+  }
+
+  // Verificar si un usuario puede asignar entrenadores
+  puedeAsignarEntrenadores(usuario: Usuario): boolean {
+    return usuario.rol === 'ADMIN';
+  }
+
+  // Obtener nombre de rol para mostrar
+  getNombreRol(rol: string): string {
+    switch (rol) {
+      case 'CLIENTE':
+        return 'Cliente';
+      case 'ENTRENADOR':
+        return 'Entrenador';
+      case 'ADMIN':
+        return 'Administrador';
+      default:
+        return 'Desconocido';
+    }
+  }
+
+  // Validar email
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 }

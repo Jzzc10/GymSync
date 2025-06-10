@@ -3,29 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Usuario }from './usuario.service';
-import { Ejercicio } from './ejercicio.service';
+import { Ejercicio } from '../models/ejercicio.model';
+import { Progreso } from '../models/progreso.model';
 
 export interface Rutina {
   id?: number;
   descripcion?: string;
   // Otras propiedades necesarias para la referencia
-}
-
-export interface Progreso {
-  id?: number;
-  usuario?: Usuario;
-  rutina?: Rutina;
-  ejercicio?: Ejercicio;
-  series: number;
-  repeticiones: number;
-  pesoUtilizado?: number;
-  fechaRegistro?: string; // LocalDate se maneja como string en JSON
-  observaciones?: string;
-  // Métodos de conveniencia que vienen del backend
-  usuarioId?: number;
-  usuarioNombre?: string;
-  rutinaId?: number;
-  ejercicioId?: number;
 }
 
 @Injectable({
@@ -109,3 +93,5 @@ export class ProgresoService {
     };
   }
 }
+
+export { Progreso };

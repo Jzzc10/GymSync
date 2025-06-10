@@ -2,15 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface Ejercicio {
-  id?: number;
-  nombre: string;
-  tipo: 'PECHO' | 'ABDOMINALES' | 'PIERNAS' | 'ESPALDA' | 'TRICEPS' | 'BICEPS' | 'HOMBRO' | 'GLUTEO';
-  descripcion?: string;
-  urlImagen?: string;
-  urlVideo?: string;
-}
+import { Ejercicio, TipoEjercicioEnum, EjercicioHelper } from '../models/ejercicio.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +38,7 @@ export class EjercicioService {
   }
 
   // Método auxiliar para obtener los tipos de ejercicio
-  getTiposEjercicio(): string[] {
-    return ['PECHO', 'ABDOMINALES', 'PIERNAS', 'ESPALDA', 'TRICEPS', 'BICEPS', 'HOMBRO', 'GLUTEO'];
+  getTiposEjercicio(): TipoEjercicioEnum[] {
+    return EjercicioHelper.getTiposEjercicio();
   }
 }

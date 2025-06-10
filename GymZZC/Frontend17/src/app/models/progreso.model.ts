@@ -1,8 +1,7 @@
 // models/progreso.model.ts
 import { Usuario } from './usuario.model';
-import { Ejercicio } from './ejercicio.model';
 import { Rutina } from './rutina.model';
-import { TipoEjercicio } from './ejercicio.model';
+import { Ejercicio, TipoEjercicioEnum } from './ejercicio.model'; 
 
 export interface Progreso {
   id?: number;
@@ -20,7 +19,7 @@ export interface Progreso {
   rutinaId?: number;
   ejercicioId?: number;
   ejercicioNombre?: string;
-  ejercicioTipo?: TipoEjercicio;
+  ejercicioTipo?: TipoEjercicioEnum;
 }
 
 // Interface para crear progreso
@@ -92,8 +91,13 @@ export class ProgresoHelper {
   }
 
   static calcularVolumen(progreso: Progreso): number {
-    const peso = progreso.pesoUtilizado || 0;
-    return peso * progreso.series * progreso.repeticiones;
+    const peso = typeof progreso.pesoUtilizado === 'number' ? progreso.pesoUtilizado : 0;
+    const series = typeof progreso.series === 'number' ? progreso.series : 0;
+    const repeticiones = typeof progreso.repeticiones === 'number' ? progreso.repeticiones : 0;
+    
+    // Calcular volumen y asegurar que sea un número válido
+    const volumen = peso * series * repeticiones;
+    return isNaN(volumen) ? 0 : volumen;
   }
 
 

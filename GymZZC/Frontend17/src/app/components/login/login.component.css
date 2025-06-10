@@ -99,6 +99,54 @@
   opacity: 1;
 }
 
+/* Contenedor para campos del formulario */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem; /* Espacio uniforme entre campos */
+}
+
+/* Ajustar espaciado entre grupos */
+.form-group {
+  margin-bottom: 0; /* Eliminar margen inferior */
+}
+
+/* Asegurar que los inputs tengan el mismo tamaño */
+.form-control {
+  min-height: 48px; /* Altura mínima consistente */
+}
+
+/* Mejorar responsividad en pantallas pequeñas */
+@media (max-width: 400px) {
+  .login-card {
+    padding: 1.2rem;
+  }
+  
+  .form-fields {
+    gap: 1rem;
+  }
+  
+  .form-control {
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+  }
+  
+  .btn-login {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+}
+
+/* Ajustar el select para que tenga la misma apariencia */
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23667eea' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+}
+
 /* Responsive */
 @media (max-width: 576px) {
   .login-card {

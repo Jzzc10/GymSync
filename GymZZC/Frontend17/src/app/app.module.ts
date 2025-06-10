@@ -8,8 +8,8 @@ import { DashboardClienteComponent } from './components/dashboard-cliente/dashbo
 import { DashboardEntrenadorComponent } from './components/dashboard-entrenador/dashboard-entrenador.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
-import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
-import { TemporizadorComponent } from './components/temporizador/temporizador.component';
+import { EstadisticasComponent } from './components/dashboard-cliente/estadisticas/estadisticas.component';
+import { TemporizadorComponent } from './components/dashboard-cliente/temporizador/temporizador.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,7 +45,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatIconModule,
     MatSnackBarModule,
     BrowserAnimationsModule,
-    RouterModule // para router-outlet
+    RouterModule, // para router-outlet
   ],
   providers: [
     {
