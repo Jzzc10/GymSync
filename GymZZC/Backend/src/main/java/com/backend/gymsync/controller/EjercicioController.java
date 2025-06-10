@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
+//http://localhost:8080/api/ejercicios
 @RequestMapping("/api/ejercicios")
 @CrossOrigin(origins = "*")
 public class EjercicioController {
