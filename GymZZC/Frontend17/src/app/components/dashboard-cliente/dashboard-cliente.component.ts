@@ -75,11 +75,14 @@ export class DashboardClienteComponent implements OnInit {
 
   onRutinaChange(): void {
     if (this.selectedRutinaId) {
+      // Busca la rutina seleccionada en el array de rutinas
       const rutina = this.rutinas.find(r => r.id === this.selectedRutinaId);
       if (rutina) {
+        // Actualiza rutinaDetalle con la rutina seleccionada
         this.rutinaDetalle = rutina;
         this.selectedRutinaEjercicios = rutina.ejercicios || [];
         
+        // Actualiza el mapa de ejercicios de la rutina
         this.rutinaEjercicioMap.clear();
         this.selectedRutinaEjercicios.forEach(ej => {
           if (ej.ejercicioId) {

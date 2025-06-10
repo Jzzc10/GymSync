@@ -33,21 +33,6 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
     fechaHasta: null as string | null
   };
 
-  // Datos para gráficos
-  chartData: any[] = [];
-  view: [number, number] = [700, 400];
-  showXAxis = true;
-  showYAxis = true;
-  gradient = false;
-  showLegend = true;
-  showXAxisLabel = true;
-  xAxisLabel = 'Fecha';
-  showYAxisLabel = true;
-  yAxisLabel = 'Peso (kg)';
-  colorScheme = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
-  };
-
   constructor(
     private progresoService: ProgresoService,
     private rutinaService: RutinaService,
@@ -78,9 +63,10 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
     // Cargar progresos del usuario
     this.progresoService.getProgresosByUsuario(usuarioId).subscribe({
       next: (progresos) => {
+        console.log('Progresos recibidos:', progresos);
         this.progresos = progresos;
         this.calcularEstadisticas();
-        this.prepararDatosGrafico();
+        this.dibujarGrafico(); // Llamar directamente al dibujar
         this.loading = false;
       },
       error: (err) => {
@@ -156,7 +142,7 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
         });
         
         this.calcularEstadisticas();
-        this.prepararDatosGrafico();
+        this.dibujarGrafico(); // Actualizar gráfico
         this.loading = false;
       },
       error: (err) => {
@@ -181,119 +167,139 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
     this.estadisticas = ProgresoHelper.calcularEstadisticas(this.progresos);
   }
 
-  prepararDatosGrafico(): void {
-    // Agrupar por fecha y ejercicio
-    const datosAgrupados: {[key: string]: any} = {};
-    
-    this.progresos.forEach(p => {
-      if (!p.fechaRegistro || !p.ejercicioNombre || !p.pesoUtilizado) return;
-      
-      const fecha = this.datePipe.transform(p.fechaRegistro, 'dd/MM/yyyy') || p.fechaRegistro;
-      const clave = `${fecha}_${p.ejercicioId}`;
-      
-      if (!datosAgrupados[clave]) {
-        datosAgrupados[clave] = {
-          name: fecha,
-          series: []
-        };
-      }
-      
-      // Encontrar si ya existe una entrada para este ejercicio en esta fecha
-      const ejercicioExistente = datosAgrupados[clave].series.find(
-        (s: any) => s.name === p.ejercicioNombre
-      );
-      
-      if (ejercicioExistente) {
-        // Actualizar si el peso es mayor
-        if (p.pesoUtilizado > ejercicioExistente.value) {
-          ejercicioExistente.value = p.pesoUtilizado;
-        }
-      } else {
-        datosAgrupados[clave].series.push({
-          name: p.ejercicioNombre,
-          value: p.pesoUtilizado
-        });
-      }
-    });
-    
-    this.chartData = Object.values(datosAgrupados);
-  }
-
   formatearFecha(fecha?: string): string {
     return ProgresoHelper.formatearFecha(fecha);
   }
 
-  prepararDatosGrafico(): void {
-    // Eliminar lógica anterior de ngx-charts
-    setTimeout(() => this.dibujarGrafico(), 0);
-  }
-
+  // estadisticas.component.ts - Modificaciones en el método dibujarGrafico
   dibujarGrafico(): void {
-    if (!this.chartContext || this.progresos.length === 0) return;
-    
-    const ctx = this.chartContext;
-    const canvas = this.pesoChart.nativeElement;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Filtrar progresos con peso
-    const datos = this.progresos
-      .filter(p => p.fechaRegistro && p.pesoUtilizado)
-      .sort((a, b) => new Date(a.fechaRegistro).getTime() - new Date(b.fechaRegistro).getTime());
-    
-    if (datos.length === 0) return;
-
-    // Configuración del gráfico
-    const margin = 40;
-    const width = canvas.width - 2 * margin;
-    const height = canvas.height - 2 * margin;
-    
-    // Calcular escalas
-    const fechas = datos.map(p => new Date(p.fechaRegistro));
-    const pesos = datos.map(p => p.pesoUtilizado);
-    const minDate = Math.min(...fechas.map(d => d.getTime()));
-    const maxDate = Math.max(...fechas.map(d => d.getTime()));
-    const minPeso = Math.min(...pesos);
-    const maxPeso = Math.max(...pesos);
-    
-    // Dibujar ejes
-    ctx.beginPath();
-    ctx.moveTo(margin, margin);
-    ctx.lineTo(margin, height + margin);
-    ctx.lineTo(width + margin, height + margin);
-    ctx.strokeStyle = '#374151';
-    ctx.stroke();
-    
-    // Dibujar líneas de peso
-    ctx.beginPath();
-    datos.forEach((p, i) => {
-      const x = margin + (width * (new Date(p.fechaRegistro).getTime() - minDate)) / (maxDate - minDate);
-      const y = margin + height - (height * (p.pesoUtilizado - minPeso)) / (maxPeso - minPeso);
-      
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-      
-      // Dibujar punto
-      ctx.fillStyle = '#3b82f6';
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, 2 * Math.PI);
-      ctx.fill();
-    });
-    
-    ctx.strokeStyle = '#3b82f6';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    // Etiquetas
-    ctx.fillStyle = '#6b7280';
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Fecha', width / 2 + margin, height + margin + 30);
-    
-    ctx.save();
-    ctx.translate(10, height / 2 + margin);
-    ctx.rotate(-Math.PI / 2);
-    ctx.textAlign = 'center';
-    ctx.fillText('Peso (kg)', 0, 0);
-    ctx.restore();
+  if (!this.chartContext || this.progresos.length === 0) {
+    console.log('No hay contexto de gráfico o progresos vacíos');
+    return;
   }
+  
+  const ctx = this.chartContext;
+  const canvas = this.pesoChart.nativeElement;
+  
+  // Limpiar canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Filtrar progresos con peso y fecha válidos
+  const datos = this.progresos
+    .filter(p => {
+      const tieneFecha = !!p.fechaRegistro;
+      const tienePeso = p.pesoUtilizado !== null && p.pesoUtilizado !== undefined;
+      if (!tieneFecha) console.log('Progreso sin fecha:', p);
+      if (!tienePeso) console.log('Progreso sin peso:', p);
+      return tieneFecha && tienePeso;
+    })
+    .map(p => ({
+      fecha: new Date(p.fechaRegistro),
+      peso: Number(p.pesoUtilizado)
+    }))
+    .sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+  
+  console.log('Datos para gráfico:', datos);
+  
+  if (datos.length === 0) {
+    console.log('No hay datos válidos para mostrar el gráfico');
+    return;
+  }
+
+  // Configuración del gráfico
+  const margin = { top: 40, right: 40, bottom: 60, left: 60 };
+  const width = canvas.width - margin.left - margin.right;
+  const height = canvas.height - margin.top - margin.bottom;
+  
+  // Calcular escalas
+  const fechas = datos.map(d => d.fecha);
+  const pesos = datos.map(d => d.peso);
+  const minDate = Math.min(...fechas.map(d => d.getTime()));
+  const maxDate = Math.max(...fechas.map(d => d.getTime()));
+  const minPeso = Math.min(...pesos);
+  const maxPeso = Math.max(...pesos);
+  
+  // Función para mapear fecha a coordenada X
+  const xScale = (date: Date) => {
+    return margin.left + (date.getTime() - minDate) / (maxDate - minDate) * width;
+  };
+  
+  // Función para mapear peso a coordenada Y
+  const yScale = (peso: number) => {
+    return margin.top + height - ((peso - minPeso) / (maxPeso - minPeso)) * height;
+  };
+  
+  // Dibujar ejes
+  ctx.beginPath();
+  // Eje Y
+  ctx.moveTo(margin.left, margin.top);
+  ctx.lineTo(margin.left, margin.top + height);
+  // Eje X
+  ctx.lineTo(margin.left + width, margin.top + height);
+  ctx.strokeStyle = '#374151';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  
+  // Dibujar línea de progresión
+  ctx.beginPath();
+  datos.forEach((d, index) => {
+    const x = xScale(d.fecha);
+    const y = yScale(d.peso);
+    
+    if (index === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+    
+    // Dibujar punto
+    ctx.fillStyle = '#3b82f6';
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Etiquetas del eje X (fechas)
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'center';
+  
+  // Mostrar algunas fechas para no saturar
+  const paso = Math.max(1, Math.ceil(datos.length / 5));
+  for (let i = 0; i < datos.length; i += paso) {
+    const d = datos[i];
+    const x = xScale(d.fecha);
+    const y = margin.top + height + 20;
+    const fechaFormateada = this.datePipe.transform(d.fecha, 'shortDate') || '';
+    
+    // Verificar que la etiqueta no se salga del canvas
+    if (x >= margin.left && x <= margin.left + width) {
+      ctx.fillText(fechaFormateada, x, y);
+    }
+  }
+  
+  // Etiquetas del eje Y (peso)
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  const pasosPeso = 5;
+  for (let i = 0; i <= pasosPeso; i++) {
+    const peso = minPeso + (maxPeso - minPeso) * (i / pasosPeso);
+    const y = yScale(peso);
+    ctx.fillText(peso.toFixed(1), margin.left - 10, y);
+  }
+  
+  // Títulos de los ejes
+  ctx.textAlign = 'center';
+  ctx.fillText('Fecha', margin.left + width / 2, margin.top + height + 40);
+  
+  ctx.save();
+  ctx.translate(margin.left - 30, margin.top + height / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Peso (kg)', 0, 0);
+  ctx.restore();
+}
 }

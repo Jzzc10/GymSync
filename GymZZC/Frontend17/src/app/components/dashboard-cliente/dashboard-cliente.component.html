@@ -3,6 +3,10 @@
   <div class="form-section">
     <h1 class="page-title">Registrar Ejercicio</h1>
     
+    <div *ngIf="rutinas.length === 0" class="alert alert-info">
+      No tienes rutinas asignadas. Por favor, contacta con tu entrenador.
+    </div>
+
     <!-- Sección para mostrar detalles de la rutina seleccionada -->
     <div *ngIf="rutinaDetalle" class="rutina-detalle">
     <h3>Detalles de la Rutina: {{rutinaDetalle.descripcion || 'Rutina ' + rutinaDetalle.id}}</h3>
@@ -20,12 +24,12 @@
       <div class="form-group" *ngIf="rutinas.length > 0">
         <label for="rutina">Rutina</label>
         <select 
-          id="rutina" 
-          [(ngModel)]="selectedRutinaId" 
-          name="rutina"
-          class="form-select"
-          required
-          (change)="onRutinaChange()">
+        id="rutina" 
+        [(ngModel)]="selectedRutinaId" 
+        name="rutina"
+        class="form-select"
+        required
+        (change)="onRutinaChange()">
           <option *ngFor="let rutina of rutinas" [value]="rutina.id">
             {{rutina.descripcion || 'Rutina ' + rutina.id}}
           </option>
@@ -33,7 +37,6 @@
       </div>
 
       <!-- Select Ejercicio -->
-      <!-- Select de ejercicios con mejor visualización -->
       <div class="form-group">
         <label for="ejercicio">Ejercicio</label>
         <select 

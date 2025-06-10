@@ -8,12 +8,15 @@
   <span class="spacer"></span>
 
   <!-- Botones derecha -->
-  <a mat-button routerLink="/estadisticas" routerLinkActive="active-link">
-    Estadísticas/Progresos
-  </a>
-  <a mat-button routerLink="/temporizador" routerLinkActive="active-link">
-    Temporizador
-  </a>
+  <ng-container *ngIf="isClient()">
+    <a mat-button routerLink="/estadisticas" routerLinkActive="active-link">
+      Estadísticas/Progresos
+    </a>
+    <a mat-button routerLink="/temporizador" routerLinkActive="active-link">
+      Temporizador
+    </a>
+  </ng-container>
+  
   <a mat-button routerLink="/perfil" routerLinkActive="active-link">
     Perfil de Usuario
   </a>
