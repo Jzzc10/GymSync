@@ -28,10 +28,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+
 import { GestionUsuariosComponent } from './components/dashboard-admin/gestion-usuarios/gestion-usuarios.component';
 import { GestionEntrenadoresComponent } from './components/dashboard-admin/gestion-entrenadores/gestion-entrenadores.component';
 import { UsuarioFormComponent } from './components/dashboard-admin/gestion-usuarios/usuario-form/usuario-form.component';
-import { DashboardEntrenadorModule } from './components/dashboard-entrenador/dashboard-entrenador.module';
+
+// Import dashboard-entrenador components directly
+import { DashboardEntrenadorComponent } from './components/dashboard-entrenador/dashboard-entrenador.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +50,8 @@ import { DashboardEntrenadorModule } from './components/dashboard-entrenador/das
     MadridTimePipe,
     GestionUsuariosComponent,
     GestionEntrenadoresComponent,
-    UsuarioFormComponent
+    UsuarioFormComponent,
+    DashboardEntrenadorComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,8 +70,7 @@ import { DashboardEntrenadorModule } from './components/dashboard-entrenador/das
     MatSlideToggleModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-    DashboardEntrenadorModule
+    MatSelectModule
   ],
   providers: [
     {

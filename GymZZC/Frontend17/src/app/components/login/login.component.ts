@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -13,11 +13,13 @@ export class LoginComponent implements OnInit {
   errorMessage: string = '';
   loading: boolean = false;
   roles = ['CLIENTE', 'ENTRENADOR', 'ADMIN'];
+  returnUrl: string = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       rol: ['', Validators.required],
@@ -27,45 +29,74 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('LoginComponent inicializado');
+    console.log('🔑 LoginComponent inicializado');
+    
+    // Obtener returnUrl si existe
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
+    console.log('📍 Return URL:', this.returnUrl);
+    
     // Si ya está logueado, redirigir
     if (this.authService.isLoggedIn()) {
-      console.log('Usuario ya logueado, redirigiendo...');
+      console.log('✅ Usuario ya logueado, redirigiendo...');
       this.redirectBasedOnRole();
     }
   }
   
   private redirectBasedOnRole() {
     const role = this.authService.getUserRole();
-    console.log('Redirigiendo basado en rol:', role);
+    console.log('🎭 Redirigiendo basado en rol:', role);
+    
+    // Si hay returnUrl y es válido, usarlo
+    if (this.returnUrl && this.isValidReturnUrl(this.returnUrl)) {
+      console.log('🔄 Redirigiendo a return URL:', this.returnUrl);
+      this.router.navigate([this.returnUrl]);
+      return;
+    }
     
     // Usar setTimeout para asegurar que la navegación ocurra después del ciclo actual
     setTimeout(() => {
       switch(role) {
         case 'CLIENTE': 
-          console.log('Navegando a dashboard-cliente');
+          console.log('👤 Navegando a dashboard-cliente');
           this.router.navigate(['/dashboard-cliente']); 
           break;
         case 'ENTRENADOR': 
-          console.log('Navegando a dashboard-entrenador');
+          console.log('💪 Navegando a dashboard-entrenador');
           this.router.navigate(['/dashboard-entrenador']); 
           break;
         case 'ADMIN': 
-          console.log('Navegando a dashboard-admin');
+          console.log('👑 Navegando a dashboard-admin');
           this.router.navigate(['/dashboard-admin']);
           break;
         default: 
-          console.log('Rol desconocido, navegando a login:', role);
+          console.log('❓ Rol desconocido, navegando a login:', role);
           this.router.navigate(['/login']);
       }
     }, 100);
   }
 
+  private isValidReturnUrl(url: string): boolean {
+    // Validar que el returnUrl sea una ruta válida de la aplicación
+    const validPaths = [
+      '/dashboard-cliente',
+      '/dashboard-entrenador', 
+      '/dashboard-admin',
+      '/entrenador/usuarios',
+      '/entrenador/ejercicios',
+      '/entrenador/rutinas',
+      '/estadisticas',
+      '/temporizador',
+      '/perfil'
+    ];
+    
+    return validPaths.some(path => url.startsWith(path));
+  }
+
   onSubmit() {
-    console.log('Formulario enviado');
+    console.log('📝 Formulario enviado');
     
     if (this.loginForm.invalid) {
-      console.log('Formulario inválido, marcando campos como tocados');
+      console.log('❌ Formulario inválido, marcando campos como tocados');
       this.markFormGroupTouched();
       return;
     }
@@ -73,15 +104,15 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     
     const { rol, email, password } = this.loginForm.value;
-    console.log('Intentando login con:', { rol, email, password: '***' });
+    console.log('🔐 Intentando login con:', { rol, email, password: '***' });
     
     this.authService.loginWithRole({ email, password }, rol).subscribe({
       next: (response) => {
-        console.log('Login exitoso:', response);
+        console.log('✅ Login exitoso:', response);
         this.loading = false;
         
         // Verificar que el estado de autenticación se haya actualizado
-        console.log('Estado después del login:');
+        console.log('📊 Estado después del login:');
         console.log('- isLoggedIn:', this.authService.isLoggedIn());
         console.log('- userRole:', this.authService.getUserRole());
         console.log('- currentUser:', this.authService.getCurrentUser());
@@ -93,7 +124,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        console.error('Error en login:', err);
+        console.error('💥 Error en login:', err);
         
         // Manejo de errores del servidor
         if (err.message && err.message.includes('Rol incorrecto')) {
@@ -109,7 +140,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  // Método para marcar campos como tocados y mostrar errores
+  // Resto de métodos sin cambios...
   private markFormGroupTouched() {
     Object.keys(this.loginForm.controls).forEach(key => {
       const control = this.loginForm.get(key);
@@ -119,7 +150,6 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  // Métodos para mostrar errores específicos en el template
   getEmailError(): string {
     const emailControl = this.loginForm.get('email');
     if (emailControl?.errors && emailControl.touched) {

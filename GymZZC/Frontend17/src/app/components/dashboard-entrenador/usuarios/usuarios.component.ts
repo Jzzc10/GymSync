@@ -87,7 +87,6 @@ export class UsuariosComponent implements OnInit {
     ).length;
   }
 
-  // Funciones para el estado del entrenamiento
   getEstadoEntrenoBadge(ultimaSesion: string | null): string {
     if (!ultimaSesion) return 'badge-sin-datos';
     
@@ -127,21 +126,37 @@ export class UsuariosComponent implements OnInit {
     return fechaObj.toLocaleDateString('es-ES', opciones);
   }
 
-  // Funciones de navegación y acciones
+  // Funciones de navegación y acciones - TEMPORALMENTE CON ALERTS
   asignarUsuario(): void {
-    this.router.navigate(['/dashboard-entrenador/asignar-usuario']);
+    // Por ahora mostramos un alert hasta crear el componente
+    alert('Funcionalidad "Asignar Usuario" en desarrollo.\nComponente AsignarUsuarioComponent pendiente de crear.');
+    
+    // Cuando crees el componente, descomenta:
+    // this.router.navigate(['/entrenador/asignar-usuario']);
   }
 
   verDetalleUsuario(usuarioId: number): void {
-    this.router.navigate(['/dashboard-entrenador/usuario-detalle', usuarioId]);
+    // Por ahora mostramos un alert hasta crear el componente
+    alert(`Funcionalidad "Ver Detalle Usuario" en desarrollo.\nUsuario ID: ${usuarioId}\nComponente UsuarioDetalleComponent pendiente de crear.`);
+    
+    // Cuando crees el componente, descomenta:
+    // this.router.navigate(['/entrenador/usuario-detalle', usuarioId]);
   }
 
   asignarRutina(usuarioId: number): void {
-    this.router.navigate(['/dashboard-entrenador/asignar-rutina', usuarioId]);
+    // Por ahora mostramos un alert hasta crear el componente
+    alert(`Funcionalidad "Asignar Rutina" en desarrollo.\nUsuario ID: ${usuarioId}\nComponente AsignarRutinaComponent pendiente de crear.`);
+    
+    // Cuando crees el componente, descomenta:
+    // this.router.navigate(['/entrenador/asignar-rutina', usuarioId]);
   }
 
   verProgreso(usuarioId: number): void {
-    this.router.navigate(['/dashboard-entrenador/progreso-usuario', usuarioId]);
+    // Por ahora mostramos un alert hasta crear el componente
+    alert(`Funcionalidad "Ver Progreso" en desarrollo.\nUsuario ID: ${usuarioId}\nComponente ProgresoUsuarioComponent pendiente de crear.`);
+    
+    // Cuando crees el componente, descomenta:
+    // this.router.navigate(['/entrenador/progreso-usuario', usuarioId]);
   }
 
   // TrackBy function para optimizar la renderización

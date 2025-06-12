@@ -63,8 +63,8 @@ export class UsuarioService {
   }
 
   // Obtener usuario por ID
-  getUsuarioById(id: number): Observable<Usuario> {
-    return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
+  getUsuarioById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
   // Obtener entrenadores
@@ -85,8 +85,8 @@ export class UsuarioService {
   }
 
   // Asignar un cliente a un entrenador (solo admin)
-  asignarEntrenador(asignacion: AsignarEntrenadorRequest): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/asignar-entrenador`, asignacion);
+  asignarEntrenador(usuarioId: number, entrenadorId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${usuarioId}/asignar-entrenador`, { entrenadorId });
   }
 
   // Desasignar un cliente de su entrenador (solo admin)
@@ -137,6 +137,10 @@ export class UsuarioService {
       passwordData
     );
   }
+
+  
+
+  
 
   // Activar/Desactivar usuario
   toggleUsuarioActivo(id: number): Observable<{ message: string }> {

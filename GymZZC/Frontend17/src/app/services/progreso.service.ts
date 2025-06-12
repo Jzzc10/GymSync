@@ -57,9 +57,8 @@ export class ProgresoService {
   }
 
   getResumenProgreso(usuarioId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/resumen/${usuarioId}`);
+    return this.http.get<any>(`${this.apiUrl}/usuario/${usuarioId}/resumen`);
   }
-
   
   // Registrar progreso
   registrarProgreso(progreso: Progreso): Observable<Progreso> {
@@ -74,6 +73,16 @@ export class ProgresoService {
   // Eliminar progreso
   deleteProgreso(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  
+
+  getProgresoDetallado(usuarioId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/usuario/${usuarioId}/detallado`);
+  }
+
+  registrarSesion(usuarioId: number, datosProgreso: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/usuario/${usuarioId}/sesion`, datosProgreso);
   }
 
   // Método auxiliar para crear un progreso básico

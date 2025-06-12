@@ -9,21 +9,16 @@ import { DashboardAdminComponent } from './components/dashboard-admin/dashboard-
 import { EstadisticasComponent } from './components/dashboard-cliente/estadisticas/estadisticas.component';
 import { TemporizadorComponent } from './components/dashboard-cliente/temporizador/temporizador.component';
 
-import { UsuariosComponent } from './components/dashboard-entrenador/usuarios/usuarios.component';
-import { RutinasComponent } from './components/dashboard-entrenador/rutinas/rutinas.component';
-
 import { GestionUsuariosComponent } from './components/dashboard-admin/gestion-usuarios/gestion-usuarios.component';
 import { GestionEntrenadoresComponent } from './components/dashboard-admin/gestion-entrenadores/gestion-entrenadores.component';
 
 import { Permission } from './models/auth.model';
 
-import { RutinaFormComponent } from './components/dashboard-entrenador/rutinas/rutina-form/rutina-form.component';
-import { RutinaDetalleComponent } from './components/dashboard-entrenador/rutinas/rutina-detalle/rutina-detalle.component';
-
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   
+  // RUTAS DE CLIENTE
   { 
     path: 'dashboard-cliente', 
     component: DashboardClienteComponent, 
@@ -43,6 +38,7 @@ const routes: Routes = [
     data: { role: 'CLIENTE' } 
   },
   
+  // RUTAS DE ENTRENADOR
   { 
     path: 'dashboard-entrenador', 
     component: DashboardEntrenadorComponent, 
@@ -50,56 +46,18 @@ const routes: Routes = [
     data: { role: 'ENTRENADOR' } 
   },
   
-  // RUTAS DE USUARIOS ENTRENADOR
-  { 
-    path: 'entrenador/usuarios', 
-    component: UsuariosComponent,
-    canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      requiredPermissions: [Permission.VIEW_USERS, Permission.VIEW_PROGRESS] 
-    }
-  },
-  
-  // RUTAS DE RUTINAS ENTRENADOR
+  // IMPORTANTE: Estas rutas DEBEN coincidir con los routerLink del dashboard-entrenador.component.ts
   {
-    path: 'entrenador/rutinas',
-    component: RutinasComponent,
+    path: 'entrenador/usuarios',
+    loadChildren: () => import('./components/dashboard-entrenador/dashboard-entrenador.module')
+      .then(m => m.DashboardEntrenadorModule),
     canActivate: [AuthGuard],
     data: { 
       role: 'ENTRENADOR',
-      permissions: [Permission.VIEW_ROUTINES]
+      requiredPermissions: [Permission.VIEW_USERS, Permission.VIEW_PROGRESS]
     }
   },
-  {
-    path: 'entrenador/rutinas/crear',
-    component: RutinaFormComponent,
-    canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.CREATE_ROUTINE]
-    }
-  },
-  {
-    path: 'entrenador/rutinas/editar/:id',
-    component: RutinaFormComponent,
-    canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.EDIT_ROUTINE]
-    }
-  },
-  {
-    path: 'entrenador/rutinas/:id',
-    component: RutinaDetalleComponent,
-    canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.VIEW_ROUTINES]
-    }
-  },
-  
-  // RUTAS DE EJERCICIOS ENTRENADOR (Lazy Loading)
+
   {
     path: 'entrenador/ejercicios',
     loadChildren: () => import('./components/dashboard-entrenador/ejercicios/ejercicios.module')
@@ -116,34 +74,16 @@ const routes: Routes = [
     }
   },
 
-  // RUTAS ADICIONALES QUE FALTAN PARA USUARIOS (necesitas crear estos componentes)
-  // Comentadas hasta que crees los componentes correspondientes
-  /*
   {
-    path: 'dashboard-entrenador/asignar-usuario',
-    component: AsignarUsuarioComponent, // Necesitas crear este componente
+    path: 'entrenador/rutinas',
+    loadChildren: () => import('./components/dashboard-entrenador/dashboard-entrenador.module')
+      .then(m => m.DashboardEntrenadorModule),
     canActivate: [AuthGuard],
-    data: { role: 'ENTRENADOR' }
+    data: { 
+      role: 'ENTRENADOR',
+      permissions: [Permission.VIEW_ROUTINES]
+    }
   },
-  {
-    path: 'dashboard-entrenador/usuario-detalle/:id',
-    component: UsuarioDetalleComponent, // Necesitas crear este componente
-    canActivate: [AuthGuard],
-    data: { role: 'ENTRENADOR' }
-  },
-  {
-    path: 'dashboard-entrenador/asignar-rutina/:id',
-    component: AsignarRutinaComponent, // Necesitas crear este componente
-    canActivate: [AuthGuard],
-    data: { role: 'ENTRENADOR' }
-  },
-  {
-    path: 'dashboard-entrenador/progreso-usuario/:id',
-    component: ProgresoUsuarioComponent, // Necesitas crear este componente
-    canActivate: [AuthGuard],
-    data: { role: 'ENTRENADOR' }
-  },
-  */
 
   // RUTAS ADMIN
   { 
@@ -176,7 +116,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    // IMPORTANTE: Estas opciones pueden ayudar con problemas de navegación
+    enableTracing: false, // Cambiar a true solo para debugging
+    onSameUrlNavigation: 'reload'
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
