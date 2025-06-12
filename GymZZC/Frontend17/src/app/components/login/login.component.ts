@@ -29,119 +29,125 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('🔑 LoginComponent inicializado');
+    console.log('🚀 LoginComponent inicializado');
     
-    // Obtener returnUrl si existe
+    // Obtener URL de retorno
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
-    console.log('📍 Return URL:', this.returnUrl);
+    console.log('🎯 URL de retorno:', this.returnUrl);
     
-    // Si ya está logueado, redirigir
+    // Si ya está logueado, redirigir inmediatamente
     if (this.authService.isLoggedIn()) {
-      console.log('✅ Usuario ya logueado, redirigiendo...');
-      this.redirectBasedOnRole();
+      console.log('👤 Usuario ya logueado, redirigiendo...');
+      this.redirectUser();
     }
   }
   
-  private redirectBasedOnRole() {
+  private redirectUser(): void {
     const role = this.authService.getUserRole();
-    console.log('🎭 Redirigiendo basado en rol:', role);
+    console.log('🎭 Redirigiendo usuario con rol:', role);
     
-    // Si hay returnUrl y es válido, usarlo
+    // Si hay URL de retorno y es válida, usarla
     if (this.returnUrl && this.isValidReturnUrl(this.returnUrl)) {
-      console.log('🔄 Redirigiendo a return URL:', this.returnUrl);
-      this.router.navigate([this.returnUrl]);
+      console.log('↩️ Redirigiendo a URL de retorno:', this.returnUrl);
+      this.router.navigateByUrl(this.returnUrl);
       return;
     }
     
-    // Usar setTimeout para asegurar que la navegación ocurra después del ciclo actual
-    setTimeout(() => {
-      switch(role) {
-        case 'CLIENTE': 
-          console.log('👤 Navegando a dashboard-cliente');
-          this.router.navigate(['/dashboard-cliente']); 
-          break;
-        case 'ENTRENADOR': 
-          console.log('💪 Navegando a dashboard-entrenador');
-          this.router.navigate(['/dashboard-entrenador']); 
-          break;
-        case 'ADMIN': 
-          console.log('👑 Navegando a dashboard-admin');
-          this.router.navigate(['/dashboard-admin']);
-          break;
-        default: 
-          console.log('❓ Rol desconocido, navegando a login:', role);
-          this.router.navigate(['/login']);
-      }
-    }, 100);
-  }
-
-  private isValidReturnUrl(url: string): boolean {
-    // Validar que el returnUrl sea una ruta válida de la aplicación
-    const validPaths = [
-      '/dashboard-cliente',
-      '/dashboard-entrenador', 
-      '/dashboard-admin',
-      '/entrenador/usuarios',
-      '/entrenador/ejercicios',
-      '/entrenador/rutinas',
-      '/estadisticas',
-      '/temporizador',
-      '/perfil'
-    ];
+    // Redirección por defecto según rol
+    const dashboardRoute = this.getDashboardRoute(role);
+    console.log('🏠 Redirigiendo a dashboard:', dashboardRoute);
     
-    return validPaths.some(path => url.startsWith(path));
+    // Usar navigateByUrl para evitar problemas de navegación
+    this.router.navigateByUrl(dashboardRoute);
+  }
+  
+  private isValidReturnUrl(url: string): boolean {
+    // Validar que la URL de retorno sea segura y corresponda al rol del usuario
+    const role = this.authService.getUserRole();
+    
+    if (!role) return false;
+    
+    // URLs válidas por rol
+    const validUrls: { [key: string]: string[] } = {
+      'CLIENTE': ['/dashboard-cliente', '/estadisticas', '/temporizador', '/perfil'],
+      'ENTRENADOR': ['/dashboard-entrenador', '/entrenador/usuarios', '/entrenador/rutinas', '/entrenador/ejercicios', '/perfil'],
+      'ADMIN': ['/dashboard-admin', '/admin/usuarios', '/admin/entrenadores', '/perfil']
+    };
+    
+    const allowedUrls = validUrls[role] || [];
+    return allowedUrls.some(allowedUrl => url.startsWith(allowedUrl));
+  }
+  
+  private getDashboardRoute(role: string | null): string {
+    switch(role) {
+      case 'CLIENTE': return '/dashboard-cliente';
+      case 'ENTRENADOR': return '/dashboard-entrenador';
+      case 'ADMIN': return '/dashboard-admin';
+      default: return '/login';
+    }
   }
 
   onSubmit() {
     console.log('📝 Formulario enviado');
     
     if (this.loginForm.invalid) {
-      console.log('❌ Formulario inválido, marcando campos como tocados');
+      console.log('❌ Formulario inválido');
       this.markFormGroupTouched();
       return;
     }
 
     this.loading = true;
+    this.clearErrors(); // Limpiar errores previos
     
     const { rol, email, password } = this.loginForm.value;
-    console.log('🔐 Intentando login con:', { rol, email, password: '***' });
+    console.log('🔐 Intentando login:', { rol, email, password: '***' });
     
     this.authService.loginWithRole({ email, password }, rol).subscribe({
       next: (response) => {
-        console.log('✅ Login exitoso:', response);
+        console.log('✅ Login exitoso:', response.usuario.email);
         this.loading = false;
         
-        // Verificar que el estado de autenticación se haya actualizado
-        console.log('📊 Estado después del login:');
-        console.log('- isLoggedIn:', this.authService.isLoggedIn());
-        console.log('- userRole:', this.authService.getUserRole());
-        console.log('- currentUser:', this.authService.getCurrentUser());
-        
-        // Usar setTimeout para dar tiempo a que se actualice el estado
+        // Pequeña demora para asegurar que el estado se actualice
         setTimeout(() => {
-          this.redirectBasedOnRole();
-        }, 200);
+          this.redirectUser();
+        }, 100);
       },
       error: (err) => {
         this.loading = false;
         console.error('💥 Error en login:', err);
-        
-        // Manejo de errores del servidor
-        if (err.message && err.message.includes('Rol incorrecto')) {
-          this.loginForm.get('rol')?.setErrors({ serverError: 'No existe cuenta con este rol' });
-        } else if (err.status === 401) {
-          this.loginForm.get('password')?.setErrors({ serverError: 'Email o contraseña incorrectos' });
-        } else if (err.status === 0) {
-          this.loginForm.get('email')?.setErrors({ serverError: 'No se puede conectar con el servidor' });
-        } else {
-          this.loginForm.get('email')?.setErrors({ serverError: err.message || 'Error al iniciar sesión. Inténtalo de nuevo.' });
+        this.handleLoginError(err);
+      }
+    });
+  }
+  
+  private clearErrors(): void {
+    // Limpiar errores previos del formulario
+    Object.keys(this.loginForm.controls).forEach(key => {
+      const control = this.loginForm.get(key);
+      if (control?.errors?.['serverError']) {
+        delete control.errors['serverError'];
+        if (Object.keys(control.errors).length === 0) {
+          control.setErrors(null);
         }
       }
     });
   }
+  
+  private handleLoginError(err: any): void {
+    if (err.message && err.message.includes('Rol incorrecto')) {
+      this.loginForm.get('rol')?.setErrors({ serverError: 'No existe cuenta con este rol' });
+    } else if (err.status === 401) {
+      this.loginForm.get('password')?.setErrors({ serverError: 'Email o contraseña incorrectos' });
+    } else if (err.status === 0) {
+      this.loginForm.get('email')?.setErrors({ serverError: 'No se puede conectar con el servidor' });
+    } else {
+      this.loginForm.get('email')?.setErrors({ 
+        serverError: err.message || 'Error al iniciar sesión. Inténtalo de nuevo.' 
+      });
+    }
+  }
 
-  // Resto de métodos sin cambios...
-  private markFormGroupTouched() {
+  private markFormGroupTouched(): void {
     Object.keys(this.loginForm.controls).forEach(key => {
       const control = this.loginForm.get(key);
       if (control) {

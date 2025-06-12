@@ -8,11 +8,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { DashboardAdminComponent } from './components/dashboard-admin/dashboard-admin.component';
 import { EstadisticasComponent } from './components/dashboard-cliente/estadisticas/estadisticas.component';
 import { TemporizadorComponent } from './components/dashboard-cliente/temporizador/temporizador.component';
-
 import { GestionUsuariosComponent } from './components/dashboard-admin/gestion-usuarios/gestion-usuarios.component';
 import { GestionEntrenadoresComponent } from './components/dashboard-admin/gestion-entrenadores/gestion-entrenadores.component';
-
-import { Permission } from './models/auth.model';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -38,7 +35,7 @@ const routes: Routes = [
     data: { role: 'CLIENTE' } 
   },
   
-  // RUTAS DE ENTRENADOR
+  // RUTAS DE ENTRENADOR - Página principal
   { 
     path: 'dashboard-entrenador', 
     component: DashboardEntrenadorComponent, 
@@ -46,43 +43,13 @@ const routes: Routes = [
     data: { role: 'ENTRENADOR' } 
   },
   
-  // IMPORTANTE: Estas rutas DEBEN coincidir con los routerLink del dashboard-entrenador.component.ts
+  // RUTAS DE ENTRENADOR - Módulos específicos (Lazy Loading)
   {
-    path: 'entrenador/usuarios',
+    path: 'entrenador',
     loadChildren: () => import('./components/dashboard-entrenador/dashboard-entrenador.module')
       .then(m => m.DashboardEntrenadorModule),
     canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      requiredPermissions: [Permission.VIEW_USERS, Permission.VIEW_PROGRESS]
-    }
-  },
-
-  {
-    path: 'entrenador/ejercicios',
-    loadChildren: () => import('./components/dashboard-entrenador/ejercicios/ejercicios.module')
-      .then(m => m.EjerciciosModule),
-    canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [
-        Permission.VIEW_EXERCISES,
-        Permission.CREATE_EXERCISE,
-        Permission.EDIT_EXERCISE,
-        Permission.DELETE_EXERCISE
-      ]
-    }
-  },
-
-  {
-    path: 'entrenador/rutinas',
-    loadChildren: () => import('./components/dashboard-entrenador/dashboard-entrenador.module')
-      .then(m => m.DashboardEntrenadorModule),
-    canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.VIEW_ROUTINES]
-    }
+    data: { role: 'ENTRENADOR' }
   },
 
   // RUTAS ADMIN
@@ -105,6 +72,7 @@ const routes: Routes = [
     data: { role: 'ADMIN' } 
   },
   
+  // PERFIL - Accesible para todos los roles autenticados
   { 
     path: 'perfil', 
     component: PerfilComponent, 
@@ -116,9 +84,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    // IMPORTANTE: Estas opciones pueden ayudar con problemas de navegación
-    enableTracing: false, // Cambiar a true solo para debugging
+  imports: [RouterModule.forRoot(routes, { 
+    enableTracing: false, // Cambiar a true solo para debug
     onSameUrlNavigation: 'reload'
   })],
   exports: [RouterModule]

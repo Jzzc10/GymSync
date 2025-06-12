@@ -15,55 +15,53 @@ import { RutinaDetalleComponent } from './rutinas/rutina-detalle/rutina-detalle.
 import { RutinasComponent } from './rutinas/rutinas.component';
 import { UsuariosComponent } from './usuarios/usuarios.component';
 
-import { Permission } from '../../models/auth.model';
 import { AuthGuard } from '../../guards/auth.guard';
 
-// RUTAS CHILD - estas se cargan cuando se accede a /entrenador/*
 const routes: Routes = [
+  // Ruta base redirige a usuarios
+  { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
+  
+  // Gestión de usuarios/clientes
   {
-    path: 'usuarios', // Se accede como /entrenador/usuarios
+    path: 'usuarios',
     component: UsuariosComponent,
     canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      requiredPermissions: [Permission.VIEW_USERS, Permission.VIEW_PROGRESS] 
-    }
+    data: { role: 'ENTRENADOR' }
   },
+  
+  // Gestión de rutinas
   {
-    path: 'rutinas', // Se accede como /entrenador/rutinas
+    path: 'rutinas',
     component: RutinasComponent,
     canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.VIEW_ROUTINES]
-    }
+    data: { role: 'ENTRENADOR' }
   },
   {
     path: 'rutinas/crear',
     component: RutinaFormComponent,
     canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.CREATE_ROUTINE]
-    }
+    data: { role: 'ENTRENADOR' }
   },
   {
     path: 'rutinas/editar/:id',
     component: RutinaFormComponent,
     canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.EDIT_ROUTINE]
-    }
+    data: { role: 'ENTRENADOR' }
   },
   {
     path: 'rutinas/:id',
     component: RutinaDetalleComponent,
     canActivate: [AuthGuard],
-    data: { 
-      role: 'ENTRENADOR',
-      permissions: [Permission.VIEW_ROUTINES]
-    }
+    data: { role: 'ENTRENADOR' }
+  },
+  
+  // Lazy loading para ejercicios
+  {
+    path: 'ejercicios',
+    loadChildren: () => import('./ejercicios/ejercicios.module')
+      .then(m => m.EjerciciosModule),
+    canActivate: [AuthGuard],
+    data: { role: 'ENTRENADOR' }
   }
 ];
 
