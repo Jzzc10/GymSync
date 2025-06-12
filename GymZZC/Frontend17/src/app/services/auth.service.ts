@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
 import { UsuarioService, Usuario, LoginCredentials, LoginResponse } from './usuario.service';
+import { firstValueFrom } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
@@ -17,41 +17,71 @@ export class AuthService {
   }
 
   private initializeAuthState(): void {
-    const storedUser = localStorage.getItem('currentUser');
-    const storedToken = localStorage.getItem('authToken');
-    
-    if (storedUser && storedToken) {
-      try {
+    try {
+      const storedUser = localStorage.getItem('currentUser');
+      const storedToken = localStorage.getItem('authToken');
+      const storedRole = localStorage.getItem('userRole'); // Añadido para consistencia
+      
+      console.log('Inicializando estado de autenticación...');
+      console.log('Usuario almacenado:', storedUser);
+      console.log('Token almacenado:', !!storedToken);
+      console.log('Rol almacenado:', storedRole);
+      
+      if (storedUser && storedToken) {
         const user = JSON.parse(storedUser);
-        this.currentUserSubject.next(user);
-        this.isLoggedInSubject.next(true);
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-        this.logout();
+        if (this.isValidUser(user)) {
+          this.currentUserSubject.next(user);
+          this.isLoggedInSubject.next(true);
+          
+          // Sincronizar rol en localStorage si no existe
+          if (!storedRole && user.rol) {
+            localStorage.setItem('userRole', user.rol);
+          }
+          
+          console.log('Estado de auth inicializado correctamente para:', user.email, 'con rol:', user.rol);
+        } else {
+          console.log('Usuario almacenado no es válido, limpiando datos');
+          this.clearAuthData();
+        }
+      } else {
+        console.log('No hay datos de autenticación almacenados');
       }
+    } catch (error) {
+      console.error('Error initializing auth state:', error);
+      this.clearAuthData();
     }
   }
 
-  updateUserProfile(updatedUser: Usuario): void {
-    // Actualizar localStorage
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+  private isValidUser(user: any): boolean {
+    const isValid = user && 
+           typeof user.id === 'number' && 
+           typeof user.nombre === 'string' && 
+           typeof user.email === 'string' && 
+           ['CLIENTE', 'ENTRENADOR', 'ADMIN'].includes(user.rol);
     
-    // Actualizar BehaviorSubjects
-    this.currentUserSubject.next(updatedUser);
+    console.log('Validando usuario:', user, 'Es válido:', isValid);
+    return isValid;
   }
 
-  loginWithRole(credentials: LoginCredentials, role: string): Observable<LoginResponse> {
+  private clearAuthData(): void {
+    console.log('Limpiando datos de autenticación');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole'); // Añadido para consistencia
+    this.currentUserSubject.next(null);
+    this.isLoggedInSubject.next(false);
+  }
+
+  login(credentials: LoginCredentials) {
+    console.log('Intentando login con:', credentials.email);
     return this.usuarioService.login(credentials).pipe(
       tap(response => {
-        if (response && response.usuario && response.rol === role) {
-          localStorage.setItem('currentUser', JSON.stringify(response.usuario));
-          localStorage.setItem('authToken', 'logged-in');
-          localStorage.setItem('userRole', response.rol);
-          this.currentUserSubject.next(response.usuario);
-          this.isLoggedInSubject.next(true);
-          // SOLUCIÓN: Remover return innecesario
+        console.log('Respuesta de login recibida:', response);
+        if (response?.usuario && this.isValidUser(response.usuario)) {
+          this.setAuthData(response);
         } else {
-          throw new Error('Rol no coincide');
+          console.error('Respuesta de login inválida:', response);
+          throw new Error('Respuesta de login inválida');
         }
       }),
       catchError(error => {
@@ -61,84 +91,125 @@ export class AuthService {
     );
   }
 
-  login(credentials: LoginCredentials): Observable<LoginResponse> {
+  verifyPassword(credentials: LoginCredentials): Observable<boolean> {
+    return this.usuarioService.login(credentials).pipe(
+      map(response => {
+        // Solo verificar éxito sin alterar estado
+        return !!response?.usuario;
+      }),
+      catchError(() => of(false))
+    );
+  }
+
+  loginWithRole(credentials: LoginCredentials, expectedRole: string): Observable<LoginResponse> {
+    console.log('Intentando login con rol específico:', expectedRole, 'para:', credentials.email);
     return this.usuarioService.login(credentials).pipe(
       tap(response => {
-        if (response && response.usuario) {
-          // Guardar en localStorage
-          localStorage.setItem('currentUser', JSON.stringify(response.usuario));
-          localStorage.setItem('authToken', 'logged-in'); // Token simple para este ejemplo
-          localStorage.setItem('userRole', response.rol);
-          
-          // Actualizar BehaviorSubjects
-          this.currentUserSubject.next(response.usuario);
-          this.isLoggedInSubject.next(true);
+        console.log('Respuesta de loginWithRole:', response);
+        if (response?.usuario && this.isValidUser(response.usuario)) {
+          // Verificar que el rol del usuario coincida con el rol esperado
+          if (response.usuario.rol !== expectedRole) {
+            console.error(`Rol incorrecto. Esperado: ${expectedRole}, Actual: ${response.usuario.rol}`);
+            throw new Error(`Rol incorrecto. Se esperaba ${expectedRole} pero el usuario tiene rol ${response.usuario.rol}`);
+          }
+          this.setAuthData(response);
+        } else {
+          console.error('Respuesta de login inválida:', response);
+          throw new Error('Respuesta de login inválida');
         }
+      }),
+      catchError(error => {
+        console.error('Error de autenticación con rol:', error);
+        throw error;
       })
     );
   }
 
-  logout(): void {
-    // Limpiar localStorage
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
+  private setAuthData(response: LoginResponse): void {
+    console.log('Estableciendo datos de autenticación para:', response.usuario.email);
+    console.log('Rol del usuario:', response.usuario.rol);
     
-    // Actualizar BehaviorSubjects
-    this.currentUserSubject.next(null);
-    this.isLoggedInSubject.next(false);
+    // Guardar datos en localStorage
+    localStorage.setItem('currentUser', JSON.stringify(response.usuario));
+    localStorage.setItem('authToken', response.token || 'logged-in');
+    localStorage.setItem('userRole', response.usuario.rol); // Añadido para consistencia
+    
+    // Actualizar subjects
+    this.currentUserSubject.next(response.usuario);
+    this.isLoggedInSubject.next(true);
+    
+    console.log('Datos de auth establecidos correctamente');
+    console.log('Estado actual - Logueado:', this.isLoggedIn(), 'Rol:', this.getUserRole());
+  }
+
+  updateUserProfile(updatedUser: Usuario): void {
+    if (!this.isValidUser(updatedUser)) return;
+    
+    console.log('Actualizando perfil de usuario:', updatedUser);
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    localStorage.setItem('userRole', updatedUser.rol);
+    this.currentUserSubject.next(updatedUser);
+  }
+
+  logout(): void {
+    console.log('Cerrando sesión');
+    this.clearAuthData();
   }
 
   getCurrentUser(): Usuario | null {
-    return this.currentUserSubject.value;
+    const user = this.currentUserSubject.value;
+    console.log('getCurrentUser() retorna:', user);
+    return user;
   }
 
   getCurrentUserId(): number | null {
-    const user = this.getCurrentUser();
-    return user ? user.id || null : null;
+    const id = this.getCurrentUser()?.id || null;
+    console.log('getCurrentUserId() retorna:', id);
+    return id;
   }
 
   getUserRole(): string | null {
-    return localStorage.getItem('userRole');
+    // Priorizar el rol del usuario actual, fallback a localStorage
+    const userRole = this.getCurrentUser()?.rol || localStorage.getItem('userRole');
+    console.log('getUserRole() retorna:', userRole);
+    return userRole;
   }
 
   isLoggedIn(): boolean {
-    return this.isLoggedInSubject.value;
+    const loggedIn = this.isLoggedInSubject.value;
+    console.log('isLoggedIn() retorna:', loggedIn);
+    return loggedIn;
   }
-
-  isAdmin(): boolean {
-    const role = this.getUserRole();
-    return role === 'ADMIN';
-  }
-
-  isEntrenador(): boolean {
-    const role = this.getUserRole();
-    return role === 'ENTRENADOR';
-  }
-
-  isCliente(): boolean {
-    const role = this.getUserRole();
-    return role === 'CLIENTE';
-  }
-
-  // Método para verificar si el usuario tiene permisos para una acción específica
+  
   hasPermission(requiredRoles: string[]): boolean {
     const userRole = this.getUserRole();
-    return userRole ? requiredRoles.includes(userRole) : false;
+    const hasPermission = !!userRole && requiredRoles.includes(userRole);
+    console.log('hasPermission() - Rol del usuario:', userRole, 'Roles requeridos:', requiredRoles, 'Tiene permiso:', hasPermission);
+    return hasPermission;
   }
 
-  // Método para verificar si el usuario puede acceder a datos de otro usuario
   canAccessUser(targetUserId: number): boolean {
     const currentUser = this.getCurrentUser();
-    if (!currentUser) return false;
-
-    // Admin puede acceder a cualquier usuario
-    if (this.isAdmin()) return true;
-
-    // Entrenador puede acceder a sus clientes (esto requeriría lógica adicional)
-    if (this.isEntrenador()) return true;
-
-    // Cliente solo puede acceder a sus propios datos
-    return currentUser.id === targetUserId;
+    if (!currentUser) {
+      console.log('canAccessUser() - No hay usuario actual');
+      return false;
+    }
+    
+    const userRole = this.getUserRole();
+    
+    if (userRole === 'ADMIN') {
+      console.log('canAccessUser() - Usuario es ADMIN, acceso permitido');
+      return true;
+    }
+    
+    if (userRole === 'ENTRENADOR') {
+      // Lógica para verificar si el usuario es cliente del entrenador
+      console.log('canAccessUser() - Usuario es ENTRENADOR, implementar lógica específica');
+      return true;
+    }
+    
+    const canAccess = currentUser.id === targetUserId;
+    console.log('canAccessUser() - Acceso para usuario:', targetUserId, 'Permitido:', canAccess);
+    return canAccess;
   }
 }

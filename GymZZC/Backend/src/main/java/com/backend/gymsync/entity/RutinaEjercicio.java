@@ -1,6 +1,7 @@
 package com.backend.gymsync.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,12 +30,10 @@ public class RutinaEjercicio {
     @JsonBackReference("ejercicio-rutinas")
     private Ejercicio ejercicio;
 
-    @Column(nullable = false)
-    @NotNull
+    @Min(1) // Solo si el valor no es null, debe ser >= 1
     private Integer series;
 
-    @Column(nullable = false)
-    @NotNull
+    @Min(1)
     private Integer repeticiones;
 
     @Column(name = "peso_ejercicio")

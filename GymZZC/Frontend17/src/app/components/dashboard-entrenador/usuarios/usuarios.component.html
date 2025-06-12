@@ -1,0 +1,242 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      <i class="bi bi-people me-2"></i>Usuarios Asignados
+    </h2>
+    <!-- Botón Asignar Usuario -->
+    <button class="btn btn-lg px-4 py-3 shadow-lg fw-bold position-relative overflow-hidden nuevo-usuario-btn" 
+            (click)="asignarUsuario()"
+            *ngIf="!loading && usuarios.length > 0"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                   border: none; 
+                   color: white; 
+                   border-radius: 15px;
+                   transition: all 0.3s ease;
+                   transform: translateY(0px);">
+      <i class="bi bi-person-plus me-2" style="font-size: 1.1rem;"></i> 
+      Asignar Usuario
+    </button>
+  </div>
+
+  <!-- Barra de estadísticas -->
+  <div class="row mb-4" *ngIf="!loading && usuarios.length > 0">
+    <div class="col-md-12">
+      <div class="card shadow-sm" style="border: none; border-radius: 15px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);">
+        <div class="card-body py-3">
+          <div class="row text-center">
+            <div class="col-md-3">
+              <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-people-fill me-2" style="color: #667eea; font-size: 1.2rem;"></i>
+                <div>
+                  <h5 class="mb-0 fw-bold" style="color: #667eea;">{{ usuarios.length }}</h5>
+                  <small class="text-muted">Total Usuarios</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-graph-up me-2" style="color: #28a745; font-size: 1.2rem;"></i>
+                <div>
+                  <h5 class="mb-0 fw-bold" style="color: #28a745;">{{ getUsuariosActivos() }}</h5>
+                  <small class="text-muted">Activos</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-clock me-2" style="color: #ffc107; font-size: 1.2rem;"></i>
+                <div>
+                  <h5 class="mb-0 fw-bold" style="color: #ffc107;">{{ getPromedioProgreso() }}%</h5>
+                  <small class="text-muted">Progreso Medio</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-trophy me-2" style="color: #fd7e14; font-size: 1.2rem;"></i>
+                <div>
+                  <h5 class="mb-0 fw-bold" style="color: #fd7e14;">{{ getUsuariosCompletados() }}</h5>
+                  <small class="text-muted">Completaron</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem; border-color: #667eea; border-right-color: transparent;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando usuarios...</p>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!loading && usuarios.length === 0" class="text-center my-5">
+    <div class="py-5">
+      <i class="bi bi-person-x display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No tienes usuarios asignados</h4>
+      <p class="text-muted">Comienza asignando tu primer usuario</p>
+      <button class="btn mt-3 px-4 py-3 shadow-lg fw-bold primer-usuario-btn" 
+              (click)="asignarUsuario()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 15px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-person-plus me-2"></i> Asignar Primer Usuario
+      </button>
+    </div>
+  </div>
+
+  <!-- Lista de usuarios -->
+  <div class="card shadow" style="border-color: #667eea;" *ngIf="!loading && usuarios.length > 0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" class="text-white">
+            <tr>
+              <th scope="col" class="px-4 py-3 fw-bold" style="width: 30%;">
+                <i class="bi bi-person me-2"></i>Usuario
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 20%;">
+                <i class="bi bi-calendar3 me-2"></i>Último Entreno
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 25%;">
+                <i class="bi bi-graph-up me-2"></i>Progreso
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 25%;">
+                <i class="bi bi-gear me-2"></i>Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let usuario of usuarios; trackBy: trackByUsuario" 
+                class="align-middle border-0" style="border-bottom: 1px solid #e9ecef !important;">
+              <td class="px-4 py-4">
+                <div class="d-flex align-items-center">
+                  <div class="rounded-circle p-3 me-3" 
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-person-fill text-white" style="font-size: 1.2rem;"></i>
+                  </div>
+                  <div>
+                    <h4 class="mb-1 fw-bold text-dark" style="font-size: 1.25rem;">
+                      {{ usuario.nombre }} {{ usuario.apellido }}
+                    </h4>
+                    <small class="text-muted fw-normal" style="font-size: 0.875rem;">
+                      <i class="bi bi-envelope me-1"></i>{{ usuario.email || 'Sin email' }}
+                    </small>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <div class="d-flex flex-column align-items-center">
+                  <span class="badge rounded-pill px-3 py-2 fw-bold mb-1" 
+                        [ngClass]="getEstadoEntrenoBadge(usuario.progreso?.ultimaSesion)"
+                        style="font-size: 0.875rem; min-width: 100px;">
+                    {{ getEstadoEntrenoTexto(usuario.progreso?.ultimaSesion) }}
+                  </span>
+                  <small class="text-muted" *ngIf="usuario.progreso?.ultimaSesion">
+                    {{ formatearFecha(usuario.progreso?.ultimaSesion) }}
+                  </small>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <div class="d-flex flex-column align-items-center">
+                  <div class="progress mb-2" style="width: 100%; height: 8px; border-radius: 10px;">
+                    <div class="progress-bar" 
+                         [style.width.%]="usuario.progreso?.porcentajeCompletado || 0"
+                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px;">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between w-100">
+                    <small class="text-muted">
+                      {{ usuario.progreso?.ejerciciosCompletados || 0 }}/{{ usuario.progreso?.totalEjercicios || 0 }}
+                    </small>
+                    <small class="fw-bold" style="color: #667eea;">
+                      {{ usuario.progreso?.porcentajeCompletado || 0 }}%
+                    </small>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <div class="d-flex justify-content-center gap-2">
+                  <!-- Botón Ver Detalle -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn detail-btn position-relative overflow-hidden" 
+                    (click)="verDetalleUsuario(usuario.id)"
+                    title="Ver detalle del usuario"
+                    style="background: linear-gradient(135deg, #74b9ff, #0984e3);
+                           border: none;
+                           color: white;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 80px;">
+                    <i class="bi bi-eye" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-lg-inline ms-1">Ver</span>
+                  </button>
+                  
+                  <!-- Botón Asignar Rutina -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn routine-btn position-relative overflow-hidden" 
+                    (click)="asignarRutina(usuario.id)"
+                    title="Asignar rutina"
+                    style="background: linear-gradient(135deg, #00b894, #00a085);
+                           border: none;
+                           color: white;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 80px;">
+                    <i class="bi bi-clipboard-plus" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-lg-inline ms-1">Rutina</span>
+                  </button>
+                  
+                  <!-- Botón Progreso -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn progress-btn position-relative overflow-hidden" 
+                    (click)="verProgreso(usuario.id)"
+                    title="Ver progreso detallado"
+                    style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+                           border: none;
+                           color: #2d3436;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 80px;">
+                    <i class="bi bi-graph-up" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-lg-inline ms-1">Stats</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="card-footer bg-light py-4 px-4" style="border-color: #667eea;">
+      <div class="row align-items-center">
+        <div class="col-md-12">
+          <small class="text-muted fw-semibold">
+            <i class="bi bi-info-circle me-1"></i>
+            Total: {{ usuarios.length }} usuario{{ usuarios.length !== 1 ? 's' : '' }} asignado{{ usuarios.length !== 1 ? 's' : '' }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="actionSuccessToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" style="border-radius: 12px;">
+    <div class="toast-body bg-success text-white d-flex align-items-center fw-semibold" style="border-radius: 12px; padding: 1rem;">
+      <i class="bi bi-check-circle me-2"></i>
+      <span id="toastMessage">Acción completada</span>
+    </div>
+  </div>
+</div>

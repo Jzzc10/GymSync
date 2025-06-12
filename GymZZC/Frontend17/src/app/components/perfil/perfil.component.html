@@ -17,8 +17,8 @@
           id="nombre" 
           formControlName="nombre"
           class="form-control"
-          [class.is-invalid]="profileForm.get('nombre')?.invalid && profileForm.get('nombre')?.touched">
-        <div *ngIf="profileForm.get('nombre')?.invalid && profileForm.get('nombre')?.touched" class="invalid-feedback">
+          [class.is-invalid]="isFieldInvalid('profile', 'nombre')">
+        <div *ngIf="hasError('profile', 'nombre', 'required')" class="invalid-feedback">
           El nombre es requerido
         </div>
       </div>
@@ -30,11 +30,11 @@
           id="email" 
           formControlName="email"
           class="form-control"
-          [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
-        <div *ngIf="profileForm.get('email')?.errors?.['required'] && profileForm.get('email')?.touched" class="invalid-feedback">
+          [class.is-invalid]="isFieldInvalid('profile', 'email')">
+        <div *ngIf="hasError('profile', 'email', 'required')" class="invalid-feedback">
           Email es requerido
         </div>
-        <div *ngIf="profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched" class="invalid-feedback">
+        <div *ngIf="hasError('profile', 'email', 'email')" class="invalid-feedback">
           Email inválido
         </div>
       </div>
@@ -67,9 +67,12 @@
           id="currentPassword" 
           formControlName="currentPassword"
           class="form-control"
-          [class.is-invalid]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
-        <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" class="invalid-feedback">
+          [class.is-invalid]="isFieldInvalid('password', 'currentPassword') || passwordForm.get('currentPassword')?.errors?.['incorrect']">
+        <div *ngIf="hasError('password', 'currentPassword', 'required')" class="invalid-feedback">
           Contraseña actual es requerida
+        </div>
+        <div *ngIf="passwordForm.get('currentPassword')?.errors?.['incorrect']" class="invalid-feedback">
+          La contraseña actual es incorrecta
         </div>
       </div>
 
@@ -80,11 +83,11 @@
           id="newPassword" 
           formControlName="newPassword"
           class="form-control"
-          [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
-        <div *ngIf="passwordForm.get('newPassword')?.errors?.['required']" class="invalid-feedback">
+          [class.is-invalid]="isFieldInvalid('password', 'newPassword')">
+        <div *ngIf="hasError('password', 'newPassword', 'required')" class="invalid-feedback">
           Nueva contraseña es requerida
         </div>
-        <div *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']" class="invalid-feedback">
+        <div *ngIf="hasError('password', 'newPassword', 'minlength')" class="invalid-feedback">
           La contraseña debe tener al menos 8 caracteres
         </div>
       </div>
@@ -96,12 +99,15 @@
           id="confirmPassword" 
           formControlName="confirmPassword"
           class="form-control"
-          [class.is-invalid]="passwordForm.get('confirmPassword')?.errors?.['mismatch'] || (passwordForm.get('confirmPassword')?.touched && passwordForm.invalid)">
-        <div *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']" class="invalid-feedback">
+          [class.is-invalid]="isFieldInvalid('password', 'confirmPassword') || hasFormError('mismatch')">
+        <div *ngIf="hasError('password', 'confirmPassword', 'required')" class="invalid-feedback">
           Confirmación de contraseña es requerida
         </div>
-        <div *ngIf="passwordForm.get('confirmPassword')?.errors?.['mismatch']" class="invalid-feedback">
+        <div *ngIf="hasFormError('mismatch')" class="invalid-feedback">
           Las contraseñas no coinciden
+        </div>
+        <div *ngIf="hasFormError('sameAsCurrent')" class="invalid-feedback">
+          La nueva contraseña no puede ser igual a la actual
         </div>
       </div>
 

@@ -7,11 +7,10 @@ import { Progreso } from './progreso.service';
 
 export interface RutinaEjercicio {
   rutina?: Rutina;
-  ejercicio?: any; // Referencia al ejercicio
-  series: number;
-  repeticiones: number;
-  pesoEjercicio?: number;
-  // Métodos de conveniencia que vienen del backend
+  ejercicio?: any;
+  series: number | null;
+  repeticiones: number | null;
+  pesoEjercicio?: number | null;
   rutinaId?: number;
   ejercicioId?: number;
   ejercicioNombre?: string;
@@ -105,8 +104,12 @@ export class RutinaService {
   }
 
   // MÉTODO FALTANTE - Asignar rutina a cliente
-  asignarRutinaACliente(rutinaId: number, clienteId: number): Observable<Rutina> {
-    return this.http.put<Rutina>(`${this.apiUrl}/${rutinaId}/asignar-cliente/${clienteId}`, {});
+  assignRutinaToClient(rutinaId: number, clientId: number): Observable<Rutina> {
+    return this.http.put<Rutina>(`${this.apiUrl}/${rutinaId}/assign-client/${clientId}`, {});
+  }
+
+  unassignRutinaFromClient(rutinaId: number): Observable<Rutina> {
+    return this.http.put<Rutina>(`${this.apiUrl}/${rutinaId}/unassign-client`, {});
   }
 
   // MÉTODOS PARA GESTIÓN DE EJERCICIOS EN RUTINAS

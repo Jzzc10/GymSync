@@ -1,0 +1,77 @@
+/* Efectos hover para botón Nueva Rutina */
+.nueva-rutina-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4) !important;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+}
+
+.nueva-rutina-btn:active {
+  transform: translateY(-1px) !important;
+}
+
+/* Efectos hover para botón de estado vacío */
+.primera-rutina-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+}
+
+/* Efectos hover para botones de acción */
+.action-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.action-btn:hover::before {
+  left: 100%;
+}
+
+.view-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(116, 185, 255, 0.4);
+  background: linear-gradient(135deg, #0984e3, #6c5ce7) !important;
+}
+
+.edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(253, 203, 110, 0.4);
+  background: linear-gradient(135deg, #fdcb6e, #e17055) !important;
+}
+
+/* Hover suave para toda la fila de la tabla */
+.table-hover tbody tr:hover {
+  background-color: rgba(102, 126, 234, 0.05) !important;
+}
+
+/* Efectos adicionales de hover */
+.action-btn:active {
+  transform: translateY(0px);
+}
+
+/* Mejora visual para el select */
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Animación para el spinner */
+.spinner-border {
+  animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -16,6 +16,7 @@ INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Admin Sistema', 'admin@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ADMIN');
 select * from usuarios;
 select * from rutinas;
+
 -- Ejercicios
 INSERT INTO ejercicios (nombre, tipo, descripcion, url_imagen, url_video) VALUES
 ('Press de banca', 'PECHO', 'Ejercicio para pectorales con barra', 'https://i.postimg.cc/7JCJ34Sk/pressbanca.png', 'https://www.youtube.com/watch?v=jlFl7WJ1TzI'),
@@ -41,6 +42,7 @@ select * from rutinas;
 -- ALTER TABLE rutina_ejercicios AUTO_INCREMENT = 1;
 -- SET SQL_SAFE_UPDATES = 1;
 select * from ejercicios;
+
 -- Rutina-Ejercicios
 INSERT INTO rutina_ejercicios (rutina_id, ejercicio_id, series, repeticiones, peso_ejercicio) VALUES
 (1, 1, 4, 10, 60),

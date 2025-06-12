@@ -28,6 +28,7 @@ export interface LoginResponse {
 }
 
 export interface PasswordChangeRequest {
+  currentPassword: string;
   nuevaPassword: string;
 }
 
@@ -78,11 +79,6 @@ export class UsuarioService {
 
   // NUEVOS MÉTODOS PARA ENTRENADORES
 
-  // Obtener clientes asignados a un entrenador específico
-  getClientesAsignados(entrenadorId: number): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(`${this.apiUrl}/entrenador/${entrenadorId}/clientes`);
-  }
-
   // Obtener clientes asignados al entrenador logueado (usando token)
   getMisClientes(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.apiUrl}/mis-clientes`);
@@ -120,6 +116,10 @@ export class UsuarioService {
     return this.http.put<Usuario>(`${this.apiUrl}/${id}`, usuario);
   }
 
+  getClientesAsignados(entrenadorId: number): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/entrenador/${entrenadorId}/clientes`);
+  }
+
   // Eliminar usuario
   deleteUsuario(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
@@ -132,7 +132,10 @@ export class UsuarioService {
 
   // Cambiar contraseña
   cambiarPassword(id: number, passwordData: PasswordChangeRequest): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.apiUrl}/${id}/password`, passwordData);
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/${id}/password`, 
+      passwordData
+    );
   }
 
   // Activar/Desactivar usuario

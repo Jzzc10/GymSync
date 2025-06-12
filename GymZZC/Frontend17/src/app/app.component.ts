@@ -13,10 +13,17 @@ export class AppComponent {
 
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
+
       if (event instanceof NavigationEnd) {
-        // Hide header on login page
+        // Hide header en login
         this.showHeader = !event.url.includes('/login');
       }
+      
+      // if (!authService.isLoggedIn()) {
+      //   localStorage.removeItem('authToken');
+      //   localStorage.removeItem('userRole');
+      //   localStorage.removeItem('currentUser');
+      // }
     });
   }
 }

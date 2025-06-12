@@ -7,10 +7,9 @@ import { Progreso } from './progreso.model';
 export interface RutinaEjercicio {
   rutina?: Rutina;
   ejercicio?: Ejercicio;
-  series: number;
-  repeticiones: number;
-  pesoEjercicio?: number;
-  // Métodos de conveniencia que vienen del backend
+  series: number | null; 
+  repeticiones: number | null; 
+  pesoEjercicio?: number; // Opcional, puede ser null si no aplica
   rutinaId?: number;
   ejercicioId?: number;
   ejercicioNombre?: string;
@@ -44,11 +43,10 @@ export interface RutinaCreacionRequest {
 
 export interface RutinaEjercicioRequest {
   ejercicioId: number;
-  series: number;
-  repeticiones: number;
-  pesoEjercicio?: number;
+  series: number | null;
+  repeticiones: number | null;
+  pesoEjercicio?: number | null;
 }
-
 // Interface para actualizar rutina
 export interface RutinaActualizacionRequest {
   descripcion?: string;
@@ -90,7 +88,9 @@ export class RutinaHelper {
   }
 
   static calcularTotalSeries(rutina: Rutina): number {
-    return rutina.ejercicios?.reduce((total, ejercicio) => total + ejercicio.series, 0) || 0;
+    return rutina.ejercicios?.reduce((total, ejercicio) => {
+      return total + (ejercicio.series ?? 0); // Si es null, suma 0
+    }, 0) || 0;
   }
 
   static obtenerTiposEjerciciosEnRutina(rutina: Rutina): string[] {
@@ -130,13 +130,14 @@ export class RutinaHelper {
     }
 
     rutina.ejercicios?.forEach((ejercicio, index) => {
-      if (ejercicio.series <= 0) {
+      if (ejercicio.series === null || ejercicio.series <= 0) {
         errores.push(`El ejercicio ${index + 1} debe tener al menos 1 serie`);
       }
-      if (ejercicio.repeticiones <= 0) {
+      if (ejercicio.repeticiones === null || ejercicio.repeticiones <= 0) {
         errores.push(`El ejercicio ${index + 1} debe tener al menos 1 repetición`);
       }
     });
+
 
     return errores;
   }

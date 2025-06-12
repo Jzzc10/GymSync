@@ -1,0 +1,170 @@
+<div class="container mt-4" *ngIf="rutina">
+    <!-- Header con navegación -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item">
+            <a href="#" style="color: #667eea; text-decoration: none;">
+                <i class="bi bi-house-door"></i> Inicio
+            </a>
+            </li>
+            <li class="breadcrumb-item">
+            <a href="#" style="color: #667eea; text-decoration: none;">Rutinas</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Detalle</li>
+        </ol>
+        </nav>
+        <h2 class="mb-0 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        <i class="bi bi-calendar-check me-2"></i>Rutina de {{ rutina.cliente?.nombre || 'Cliente no asignado' }}
+        </h2>
+    </div>
+    
+    <button class="btn btn-outline-secondary px-4 py-2 shadow-sm fw-semibold back-btn"
+            style="border-radius: 10px; border-color: #667eea; color: #667eea;"
+            onclick="history.back()">
+        <i class="bi bi-arrow-left me-2"></i>Volver
+    </button>
+    </div>
+
+    <!-- Card principal con toggle y descripción -->
+    <div class="card shadow-lg mb-4" style="border-color: #667eea; border-radius: 20px; border-width: 2px;">
+    <div class="card-body p-4">
+        <div class="row align-items-center">
+        <div class="col-md-6">
+            <!-- Toggle de estado activo -->
+            <div class="d-flex align-items-center mb-3">
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input custom-switch" 
+                        type="checkbox" 
+                        id="activaSwitch"
+                        [checked]="rutina.activa" 
+                        (change)="toggleActiva()"
+                        style="transform: scale(1.5);">
+            </div>
+            <div>
+                <h5 class="mb-0 fw-bold" [style.color]="rutina.activa ? '#00b894' : '#636e72'">
+                {{ rutina.activa ? 'Rutina Activa' : 'Rutina Inactiva' }}
+                </h5>
+                <small class="text-muted">{{ rutina.activa ? 'Esta rutina está siendo utilizada' : 'Esta rutina no está en uso' }}</small>
+            </div>
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <span class="badge rounded-pill px-4 py-2 fw-bold" 
+                [style.background]="rutina.activa ? 'linear-gradient(135deg, #00b894, #00cec9)' : 'linear-gradient(135deg, #636e72, #2d3436)'"
+                style="color: white; font-size: 1rem;">
+            <i class="bi bi-{{ rutina.activa ? 'check-circle' : 'x-circle' }} me-2"></i>
+            {{ rutina.activa ? 'ACTIVA' : 'INACTIVA' }}
+            </span>
+        </div>
+        </div>
+        
+        <!-- Descripción -->
+        <div class="mt-3 p-3 rounded-3" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));">
+        <h6 class="fw-bold text-dark mb-2">
+            <i class="bi bi-card-text me-2" style="color: #667eea;"></i>Descripción:
+        </h6>
+        <p class="mb-0 text-dark" style="font-size: 1.1rem; line-height: 1.6;">
+            {{ rutina.descripcion || 'Sin descripción disponible' }}
+        </p>
+        </div>
+    </div>
+    </div>
+
+    <!-- Sección de ejercicios -->
+    <div class="card shadow-lg" style="border-color: #667eea; border-radius: 20px; border-width: 2px;">
+    <div class="card-header py-4 px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 18px 18px 0 0;">
+        <div class="d-flex justify-content-between align-items-center">
+        <h3 class="mb-0 fw-bold text-white">
+            <i class="bi bi-list-ul me-2"></i>Ejercicios de la Rutina
+        </h3>
+        <span class="badge bg-white text-dark px-3 py-2 fw-bold" style="font-size: 0.9rem;">
+            {{ rutina.ejercicios?.length || 0 }} ejercicio{{ (rutina.ejercicios?.length || 0) !== 1 ? 's' : '' }}
+        </span>
+        </div>
+    </div>
+    
+    <div class="card-body p-4">
+        <!-- Estado vacío de ejercicios -->
+        <div *ngIf="!rutina.ejercicios || rutina.ejercicios.length === 0" class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h4 class="mt-3 text-muted">No hay ejercicios asignados</h4>
+        <p class="text-muted">Esta rutina aún no tiene ejercicios configurados</p>
+        </div>
+
+        <!-- Lista de ejercicios -->
+        <div class="row" *ngIf="rutina.ejercicios && rutina.ejercicios.length > 0">
+        <div class="col-lg-6 mb-4" *ngFor="let ejercicio of rutina.ejercicios; let i = index">
+            <div class="card h-100 ejercicio-card shadow-sm" 
+                style="border-radius: 16px; border: 2px solid transparent; transition: all 0.3s ease;">
+            <div class="card-body p-4">
+                <!-- Header del ejercicio -->
+                <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle p-3 me-3" 
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-dumbbell text-white" style="font-size: 1.1rem;"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="mb-1 fw-bold text-dark">
+                    {{ ejercicio.ejercicio?.nombre || 'Ejercicio no disponible' }}
+                    </h5>
+                    <small class="text-muted fw-semibold">
+                    {{ ejercicio.ejercicio?.tipo || 'Sin categoría' }}
+                    </small>
+                </div>
+                <div class="badge bg-light text-dark px-2 py-1 fw-bold">
+                    #{{ i + 1 }}
+                </div>
+                </div>
+
+                <!-- Detalles del ejercicio -->
+                <div class="row text-center">
+                <div class="col-4">
+                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(116, 185, 255, 0.1), rgba(116, 185, 255, 0.05));">
+                    <div class="stat-number fw-bold text-dark" style="font-size: 1.5rem;">
+                        {{ ejercicio.series || 0 }}
+                    </div>
+                    <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                        Series
+                    </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(255, 234, 167, 0.3), rgba(255, 234, 167, 0.1));">
+                    <div class="stat-number fw-bold text-dark" style="font-size: 1.5rem;">
+                        {{ ejercicio.repeticiones || 0 }}
+                    </div>
+                    <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                        Repeticiones
+                    </div>
+                    </div>
+                </div>
+                <div class="col-4" *ngIf="ejercicio.pesoEjercicio">
+                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(0, 184, 148, 0.05));">
+                    <div class="stat-number fw-bold text-dark" style="font-size: 1.5rem;">
+                        {{ ejercicio.pesoEjercicio }}
+                    </div>
+                    <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                        kg
+                    </div>
+                    </div>
+                </div>
+                <div class="col-4" *ngIf="!ejercicio.pesoEjercicio">
+                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(99, 110, 114, 0.1), rgba(99, 110, 114, 0.05));">
+                    <div class="stat-number fw-bold text-muted" style="font-size: 1.2rem;">
+                        -
+                    </div>
+                    <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                        Sin peso
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>

@@ -16,11 +16,11 @@
             <option *ngFor="let role of roles" [value]="role">{{role}}</option>
           </select>
           <div *ngIf="loginForm.get('rol')?.invalid && loginForm.get('rol')?.touched" class="invalid-feedback">
-            Por favor selecciona un rol
+            {{getRolError()}}
           </div>
         </div>
 
-        <!-- Gmail -->
+        <!-- Email -->
         <div class="form-group">
           <label for="email">Email</label>
           <input 
@@ -30,11 +30,8 @@
             class="form-control"
             [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
             placeholder="tu@gmail.com">
-          <div *ngIf="loginForm.get('email')?.errors?.['required'] && loginForm.get('email')?.touched" class="invalid-feedback">
-            Email es requerido
-          </div>
-          <div *ngIf="loginForm.get('email')?.errors?.['email'] && loginForm.get('email')?.touched" class="invalid-feedback">
-            Email inválido
+          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="invalid-feedback">
+            {{getEmailError()}}
           </div>
         </div>
 
@@ -48,15 +45,10 @@
             class="form-control"
             [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
             placeholder="••••••••">
-          <div *ngIf="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched" class="invalid-feedback">
-            Contraseña es requerida
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
+            {{getPasswordError()}}
           </div>
         </div>
-      </div>
-
-      <!-- Mensaje de error -->
-      <div *ngIf="errorMessage" class="alert alert-danger">
-        {{errorMessage}}
       </div>
 
       <!-- Botón de envío -->

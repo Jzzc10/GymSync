@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { DashboardClienteComponent } from './components/dashboard-cliente/dashboard-cliente.component';
-import { DashboardEntrenadorComponent } from './components/dashboard-entrenador/dashboard-entrenador.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { EstadisticasComponent } from './components/dashboard-cliente/estadisticas/estadisticas.component';
@@ -21,31 +20,54 @@ import { AppRoutingModule } from './app-routing.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
+import { OrderByPipe } from './pipes/order-by.pipe';
+import { MadridTimePipe } from './pipes/madridTime.pipe';
+import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { GestionUsuariosComponent } from './components/dashboard-admin/gestion-usuarios/gestion-usuarios.component';
+import { GestionEntrenadoresComponent } from './components/dashboard-admin/gestion-entrenadores/gestion-entrenadores.component';
+import { UsuarioFormComponent } from './components/dashboard-admin/gestion-usuarios/usuario-form/usuario-form.component';
+import { DashboardEntrenadorModule } from './components/dashboard-entrenador/dashboard-entrenador.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardClienteComponent,
-    DashboardEntrenadorComponent,
     HeaderComponent,
     EstadisticasComponent,
     TemporizadorComponent,
     PerfilComponent,
     LoginComponent,
     DashboardAdminComponent,
+    OrderByPipe,
+    MadridTimePipe,
+    GestionUsuariosComponent,
+    GestionEntrenadoresComponent,
+    UsuarioFormComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule, // para HTTP
-    AppRoutingModule, // Módulo de rutas principal
+    HttpClientModule,
+    AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
+    MatDialogModule,
     BrowserAnimationsModule,
-    RouterModule, // para router-outlet
+    RouterModule,
+    MatTableModule,
+    MatSlideToggleModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    DashboardEntrenadorModule
   ],
   providers: [
     {

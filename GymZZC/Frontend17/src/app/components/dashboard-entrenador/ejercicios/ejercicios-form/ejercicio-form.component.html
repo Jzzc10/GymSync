@@ -1,0 +1,55 @@
+<div class="container mt-4">
+  <h2>{{ isEditMode ? 'Editar Ejercicio' : 'Crear Nuevo Ejercicio' }}</h2>
+  
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  
+  <form [formGroup]="ejercicioForm" (ngSubmit)="onSubmit()">
+    <!-- Campo Nombre -->
+    <div class="mb-3">
+      <label class="form-label">Nombre *</label>
+      <input type="text" formControlName="nombre" class="form-control" 
+            [class.is-invalid]="nombre.invalid && (nombre.dirty || nombre.touched)">
+      <div *ngIf="nombre?.invalid && (nombre?.dirty || nombre?.touched)" class="invalid-feedback">
+        <div *ngIf="nombre?.errors?.['required']">Nombre obligatorio</div>
+        <div *ngIf="nombre?.errors?.['maxlength']">Máx. 100 caracteres</div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo *</label>
+      <select formControlName="tipo" class="form-select"
+              [class.is-invalid]="tipo.invalid && (tipo.dirty || tipo.touched)">
+        <option value="" disabled>Seleccione un tipo</option>
+        <option *ngFor="let tipo of tiposEjercicio" [value]="tipo">
+          {{ getTipoDisplayName(tipo) }}
+        </option>
+      </select>
+    </div>
+    
+    <!-- Campo Descripción -->
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea formControlName="descripcion" class="form-control" rows="3"
+                [class.is-invalid]="descripcion.invalid && (descripcion.dirty || descripcion.touched)"></textarea>
+      <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)" class="invalid-feedback">
+        <div *ngIf="descripcion.errors?.['maxlength']">Máx. 500 caracteres</div>
+      </div>
+    </div>
+    
+    <!-- Botones -->
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-secondary" 
+              [disabled]="isLoading"
+              (click)="router.navigate(['/entrenador/ejercicios'])">
+        Cancelar
+      </button>
+      
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+        {{ isEditMode ? 'Actualizar' : 'Crear' }}
+      </button>
+    </div>
+  </form>
+</div>

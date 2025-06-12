@@ -1,4 +1,4 @@
-// models/index.ts
+// src/app/models/index.ts
 export * from './usuario.model';
 export * from './ejercicio.model';
 export * from './rutina.model';

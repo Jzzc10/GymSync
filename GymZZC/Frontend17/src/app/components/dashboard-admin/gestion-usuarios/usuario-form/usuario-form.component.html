@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" required>
+      <mat-error *ngIf="form.get('nombre')?.hasError('required')">
+        Nombre es requerido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required>
+      <mat-error *ngIf="form.get('email')?.hasError('required')">
+        Email es requerido
+      </mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">
+        Formato de email inválido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Rol</mat-label>
+      <mat-select formControlName="rol">
+        <mat-option *ngFor="let rol of roles" [value]="rol.value">
+          {{ rol.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" *ngIf="!isEditMode">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" formControlName="password" required>
+      <mat-error *ngIf="form.get('password')?.hasError('required')">
+        Contraseña es requerida
+      </mat-error>
+      <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+        Mínimo 8 caracteres
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="guardar()">
+    {{ isEditMode ? 'Actualizar' : 'Crear' }}
+  </button>
+</mat-dialog-actions>

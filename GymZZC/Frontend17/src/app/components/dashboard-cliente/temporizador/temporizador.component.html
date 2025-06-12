@@ -1,0 +1,74 @@
+<div class="temporizador-container">
+  <h2>Temporizador</h2>
+  
+  <div class="configuracion" *ngIf="!estaActivo">
+    <div class="form-group">
+      <label for="minutos">Minutos</label>
+      <input 
+        type="number" 
+        id="minutos" 
+        [(ngModel)]="minutos" 
+        min="0" 
+        max="59"
+        (change)="validarMinutos()"
+        [disabled]="estaActivo">
+    </div>
+    
+    <div class="form-group">
+      <label for="segundos">Segundos</label>
+      <input 
+        type="number" 
+        id="segundos" 
+        [(ngModel)]="segundos" 
+        min="0" 
+        max="59"
+        (change)="validarSegundos()"
+        [disabled]="estaActivo">
+    </div>
+    
+    <div class="form-group">
+      <label for="repeticiones">Repeticiones</label>
+      <input 
+        type="number" 
+        id="repeticiones" 
+        [(ngModel)]="repeticiones" 
+        min="1"
+        (change)="validarRepeticiones()"
+        [disabled]="estaActivo">
+    </div>
+    
+    <button 
+      class="btn-iniciar"
+      (click)="iniciarTemporizador()"
+      [disabled]="estaActivo">
+      Iniciar
+    </button>
+  </div>
+  
+  <div class="temporizador-display" *ngIf="estaActivo">
+    <div class="tiempo">{{ tiempoFormateado }}</div>
+    <div class="repeticiones">Repeticiones restantes: {{ repeticionesRestantes }}</div>
+    
+    <div class="controles">
+      <button 
+        class="btn-pausar" 
+        *ngIf="!estaPausado" 
+        (click)="pausarTemporizador()">
+        Pausar
+      </button>
+      
+      <button 
+        class="btn-reanudar" 
+        *ngIf="estaPausado" 
+        (click)="reanudarTemporizador()">
+        Reanudar
+      </button>
+      
+      <button 
+        class="btn-resetear"
+        (click)="resetearTemporizador()">
+        Resetear
+      </button>
+    </div>
+  </div>
+</div>

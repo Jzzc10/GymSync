@@ -1,255 +1,121 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { Permission } from '../models/auth.model';
 
-// Interfaz para el usuario almacenado en localStorage
-interface UsuarioAlmacenado {
-  id: number;
-  nombre: string;
-  email: string;
-  rol: 'CLIENTE' | 'ENTRENADOR' | 'ADMIN';
-}
+@Injectable({ providedIn: 'root' })
+export class AuthGuard {
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard implements CanActivate {
-
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  ): boolean {
+    console.log('AuthGuard ejecutándose para ruta:', state.url);
     
-    // Verificar si hay un usuario logueado
-    const usuarioStr = localStorage.getItem('usuario');
-    if (!usuarioStr) {
-      this.router.navigate(['/login']);
+    const requiredPermissions = route.data['requiredPermissions'] as Permission[];
+    const requiredRole = route.data?.['role'] as string;
+    
+    // Verificar autenticación
+    if (!this.authService.isLoggedIn()) {
+      console.log('Usuario no autenticado, redirigiendo a login');
+      this.router.navigate(['/login'], { 
+        queryParams: { returnUrl: state.url },
+        replaceUrl: true // Reemplazar la URL actual en el historial
+      });
       return false;
     }
 
-    try {
-      const usuario: UsuarioAlmacenado = JSON.parse(usuarioStr);
-      
-      // Verificar que el usuario tenga los datos necesarios
-      if (!usuario.id || !usuario.rol) {
-        this.router.navigate(['/login']);
-        return false;
-      }
+    // Obtener datos del usuario
+    const userRole = this.authService.getUserRole();
+    const currentUser = this.authService.getCurrentUser();
+    
+    console.log('Usuario logueado:', !!currentUser);
+    console.log('Rol del usuario:', userRole);
+    console.log('Rol requerido:', requiredRole);
+    
+    // Verificar que los datos del usuario sean válidos
+    if (!userRole || !currentUser) {
+      console.error('Datos de usuario inválidos, limpiando sesión');
+      this.authService.logout();
+      this.router.navigate(['/login'], { replaceUrl: true });
+      return false;
+    }
+    
+    // Verificar rol requerido
+    if (requiredRole && !this.hasRequiredRole(userRole, requiredRole)) {
+      console.log('Rol insuficiente, redirigiendo al dashboard apropiado');
+      this.redirectToUserDashboard(userRole);
+      return false;
+    }
 
-      // Verificar roles específicos si están definidos en la ruta
-      const rolesPermitidos = route.data?.['roles'] as string[];
-      if (rolesPermitidos && rolesPermitidos.length > 0) {
-        if (!rolesPermitidos.includes(usuario.rol)) {
-          // Redirigir según el rol del usuario
-          this.redirigirSegunRol(usuario.rol);
+    // Verificar permisos requeridos
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      for (const perm of requiredPermissions) {
+        if (!this.authService.hasPermission([perm as unknown as string])) {
+          console.log('Permisos insuficientes para:', perm);
+          this.redirectToUserDashboard(userRole);
           return false;
         }
       }
+    }
 
+    console.log('Acceso permitido a:', state.url);
+    return true;
+  }
+
+  private hasRequiredRole(userRole: string | null, requiredRole: string): boolean {
+    if (!userRole) {
+      console.log('No hay rol de usuario');
+      return false;
+    }
+    
+    // El admin puede acceder a todo
+    if (userRole === 'ADMIN') {
+      console.log('Usuario es ADMIN, acceso permitido');
       return true;
-
-    } catch (error) {
-      console.error('Error al parsear usuario del localStorage:', error);
-      localStorage.removeItem('usuario');
-      this.router.navigate(['/login']);
-      return false;
     }
-  }
-
-  private redirigirSegunRol(rol: string): void {
-    switch (rol) {
-      case 'ADMIN':
-        this.router.navigate(['/admin']);
-        break;
-      case 'ENTRENADOR':
-        this.router.navigate(['/entrenador']);
-        break;
-      case 'CLIENTE':
-        this.router.navigate(['/cliente']);
-        break;
-      default:
-        this.router.navigate(['/login']);
-    }
-  }
-}
-
-@Injectable({
-  providedIn: 'root'
-})
-export class EntrenadorGuard implements CanActivate {
-
-  constructor(private router: Router) {}
-
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
     
-    const usuarioStr = localStorage.getItem('usuario');
-    if (!usuarioStr) {
-      this.router.navigate(['/login']);
-      return false;
+    // El entrenador puede acceder a rutas de entrenador y cliente
+    if (userRole === 'ENTRENADOR' && (requiredRole === 'ENTRENADOR' || requiredRole === 'CLIENTE')) {
+      console.log('Usuario es ENTRENADOR, acceso permitido a:', requiredRole);
+      return true;
     }
-
-    try {
-      const usuario: UsuarioAlmacenado = JSON.parse(usuarioStr);
-      
-      // Solo ENTRENADOR y ADMIN pueden acceder a rutas de entrenador
-      if (usuario.rol === 'ENTRENADOR' || usuario.rol === 'ADMIN') {
-        return true;
-      }
-
-      // Si es cliente, redirigir a su dashboard
-      if (usuario.rol === 'CLIENTE') {
-        this.router.navigate(['/cliente']);
-      } else {
-        this.router.navigate(['/login']);
-      }
-      
-      return false;
-
-    } catch (error) {
-      console.error('Error al verificar permisos de entrenador:', error);
-      localStorage.removeItem('usuario');
-      this.router.navigate(['/login']);
-      return false;
-    }
-  }
-}
-
-@Injectable({
-  providedIn: 'root'
-})
-export class ClienteGuard implements CanActivate {
-
-  constructor(private router: Router) {}
-
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
     
-    const usuarioStr = localStorage.getItem('usuario');
-    if (!usuarioStr) {
-      this.router.navigate(['/login']);
-      return false;
-    }
-
-    try {
-      const usuario: UsuarioAlmacenado = JSON.parse(usuarioStr);
-      
-      // Solo CLIENTE puede acceder a rutas de cliente
-      if (usuario.rol === 'CLIENTE') {
-        return true;
-      }
-
-      // Redirigir según el rol
-      if (usuario.rol === 'ENTRENADOR') {
-        this.router.navigate(['/entrenador']);
-      } else if (usuario.rol === 'ADMIN') {
-        this.router.navigate(['/admin']);
-      } else {
-        this.router.navigate(['/login']);
-      }
-      
-      return false;
-
-    } catch (error) {
-      console.error('Error al verificar permisos de cliente:', error);
-      localStorage.removeItem('usuario');
-      this.router.navigate(['/login']);
-      return false;
-    }
+    // Verificación exacta de rol
+    const hasRole = userRole === requiredRole;
+    console.log('Verificación exacta de rol:', hasRole);
+    return hasRole;
   }
-}
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AdminGuard implements CanActivate {
-
-  constructor(private router: Router) {}
-
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  private redirectToUserDashboard(userRole: string | null): void {
+    if (!userRole) {
+      console.log('Sin rol, redirigiendo a login');
+      this.router.navigate(['/login'], { replaceUrl: true });
+      return;
+    }
     
-    const usuarioStr = localStorage.getItem('usuario');
-    if (!usuarioStr) {
-      this.router.navigate(['/login']);
-      return false;
+    console.log('Redirigiendo según rol:', userRole);
+    
+    // Usar replaceUrl para evitar bucles de navegación
+    switch (userRole) {
+      case 'ADMIN': 
+        this.router.navigate(['/dashboard-admin'], { replaceUrl: true }); 
+        break;
+      case 'ENTRENADOR': 
+        this.router.navigate(['/dashboard-entrenador'], { replaceUrl: true }); 
+        break;
+      case 'CLIENTE': 
+        this.router.navigate(['/dashboard-cliente'], { replaceUrl: true }); 
+        break;
+      default: 
+        console.log('Rol desconocido:', userRole);
+        this.authService.logout();
+        this.router.navigate(['/login'], { replaceUrl: true });
     }
-
-    try {
-      const usuario: UsuarioAlmacenado = JSON.parse(usuarioStr);
-      
-      // Solo ADMIN puede acceder a rutas de administrador
-      if (usuario.rol === 'ADMIN') {
-        return true;
-      }
-
-      // Redirigir según el rol
-      if (usuario.rol === 'ENTRENADOR') {
-        this.router.navigate(['/entrenador']);
-      } else if (usuario.rol === 'CLIENTE') {
-        this.router.navigate(['/cliente']);
-      } else {
-        this.router.navigate(['/login']);
-      }
-      
-      return false;
-
-    } catch (error) {
-      console.error('Error al verificar permisos de administrador:', error);
-      localStorage.removeItem('usuario');
-      this.router.navigate(['/login']);
-      return false;
-    }
-  }
-}
-
-// Servicio auxiliar para obtener información del usuario logueado
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService {
-  
-  getUsuarioActual(): UsuarioAlmacenado | null {
-    const usuarioStr = localStorage.getItem('usuario');
-    if (!usuarioStr) return null;
-
-    try {
-      return JSON.parse(usuarioStr);
-    } catch (error) {
-      console.error('Error al obtener usuario actual:', error);
-      return null;
-    }
-  }
-
-  isLoggedIn(): boolean {
-    return this.getUsuarioActual() !== null;
-  }
-
-  isEntrenador(): boolean {
-    const usuario = this.getUsuarioActual();
-    return usuario?.rol === 'ENTRENADOR' || usuario?.rol === 'ADMIN';
-  }
-
-  isCliente(): boolean {
-    const usuario = this.getUsuarioActual();
-    return usuario?.rol === 'CLIENTE';
-  }
-
-  isAdmin(): boolean {
-    const usuario = this.getUsuarioActual();
-    return usuario?.rol === 'ADMIN';
-  }
-
-  logout(): void {
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('token'); // Si usas tokens
   }
 }

@@ -9,79 +9,68 @@
 
     <!-- Sección para mostrar detalles de la rutina seleccionada -->
     <div *ngIf="rutinaDetalle" class="rutina-detalle">
-    <h3>Detalles de la Rutina: {{rutinaDetalle.descripcion || 'Rutina ' + rutinaDetalle.id}}</h3>
-    <ul>
-      <li *ngFor="let ejercicio of rutinaDetalle.ejercicios">
-        <strong>{{ejercicio.ejercicioNombre}}</strong>:
-        {{ejercicio.series}} series x {{ejercicio.repeticiones}} repeticiones
-        <span *ngIf="ejercicio.pesoEjercicio">({{ejercicio.pesoEjercicio}} kg)</span>
-      </li>
-    </ul>
-  </div>
+      <h3>
+        {{ rutinaDetalle.descripcion || 'Rutina ' + (rutinaDetalle.id || '') }}
+      </h3>
+      <ul>
+        <li *ngFor="let ejercicio of rutinaDetalle.ejercicios">
+          <strong>{{ejercicio.ejercicioNombre}}</strong>:
+          {{ejercicio.series}} series x {{ejercicio.repeticiones}} repeticiones
+          <span *ngIf="ejercicio.pesoEjercicio">({{ejercicio.pesoEjercicio}} kg)</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Mensaje de error general -->
+    <div *ngIf="error" class="alert alert-danger" style="color: #dc3545; background-color: #f8d7da; border-color: #f5c6cb; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem;">
+      {{error}}
+    </div>
 
     <form class="exercise-form" (ngSubmit)="registrarEjercicio()">
       <!-- Select Rutina -->
       <div class="form-group" *ngIf="rutinas.length > 0">
-        <label for="rutina">Rutina</label>
+        <label for="rutina">Rutina *</label>
         <select 
-        id="rutina" 
-        [(ngModel)]="selectedRutinaId" 
-        name="rutina"
-        class="form-select"
-        required
-        (change)="onRutinaChange()">
+          id="rutina" 
+          [(ngModel)]="selectedRutinaId" 
+          name="rutina"
+          class="form-select"
+          required
+          [class.is-invalid]="hasRutinaError()"
+          (change)="onRutinaChange()">
+          <option value="">Selecciona una rutina</option>
           <option *ngFor="let rutina of rutinas" [value]="rutina.id">
             {{rutina.descripcion || 'Rutina ' + rutina.id}}
           </option>
         </select>
+        <div *ngIf="hasRutinaError()" class="invalid-feedback">
+          Debe seleccionar una rutina
+        </div>
       </div>
 
       <!-- Select Ejercicio -->
       <div class="form-group">
-        <label for="ejercicio">Ejercicio</label>
+        <label for="ejercicio">Ejercicio *</label>
         <select 
           id="ejercicio" 
           [(ngModel)]="selectedExerciseId" 
           name="ejercicio"
           class="form-select"
           required
+          [disabled]="!selectedRutinaId || exercisesForSelectedRutina.length === 0"
+          [class.is-invalid]="hasEjercicioError()"
           (change)="onExerciseChange()">
-          <option value="">Selecciona un ejercicio</option>
-          <option *ngFor="let ejercicio of ejercicios" [value]="ejercicio.id">
+          <option value="">
+            {{!selectedRutinaId ? 'Primero selecciona una rutina' : 
+              (exercisesForSelectedRutina.length === 0 ? 'No hay ejercicios disponibles' : 'Selecciona un ejercicio')}}
+          </option>
+          <option *ngFor="let ejercicio of exercisesForSelectedRutina" [value]="ejercicio.id">
             {{ejercicio.nombre}} ({{ejercicio.tipo}})
           </option>
         </select>
-        
-        <!-- Recomendaciones -->
-        <div *ngIf="ejercicioRecomendado" class="recomendacion p-2 mt-2 rounded bg-light">
-          <div class="d-flex justify-content-between">
-            <span>
-              <strong>Recomendado:</strong> 
-              {{ejercicioRecomendado.series}} series x 
-              {{ejercicioRecomendado.repeticiones}} repeticiones
-              <span *ngIf="ejercicioRecomendado.pesoEjercicio">
-                ({{ejercicioRecomendado.pesoEjercicio}} kg)
-              </span>
-            </span>
-            <span class="badge bg-primary">Rutina</span>
-          </div>
+        <div *ngIf="hasEjercicioError()" class="invalid-feedback">
+          Debe seleccionar un ejercicio
         </div>
-      </div>
-
-      <!-- Select Repeticiones -->
-      <div class="form-group">
-        <label for="repeticiones">Repeticiones</label>
-        <select 
-          id="repeticiones" 
-          [(ngModel)]="selectedRepetitions" 
-          name="repeticiones"
-          class="form-select"
-          required>
-          <option value="0">Selecciona repeticiones</option>
-          <option *ngFor="let rep of repeticiones" [value]="rep">
-            {{rep}} repeticiones
-          </option>
-        </select>
       </div>
 
       <!-- Select Series -->
@@ -92,10 +81,26 @@
           [(ngModel)]="selectedSeries" 
           name="series"
           class="form-select"
-          required>
-          <option value="0">Selecciona series</option>
+          [disabled]="!selectedExerciseId">
+          <option value="">Selecciona el número de series</option>
           <option *ngFor="let serie of series" [value]="serie">
             {{serie}} {{serie === 1 ? 'serie' : 'series'}}
+          </option>
+        </select>
+      </div>
+
+      <!-- Select Repeticiones -->
+      <div class="form-group">
+        <label for="repeticiones">Repeticiones</label>
+        <select 
+          id="repeticiones" 
+          [(ngModel)]="selectedRepetitions" 
+          name="repeticiones"
+          class="form-select"
+          [disabled]="!selectedExerciseId">
+          <option value="">Selecciona el número de repeticiones</option>
+          <option *ngFor="let rep of repeticiones" [value]="rep">
+            {{rep}} repeticiones
           </option>
         </select>
       </div>
@@ -109,32 +114,25 @@
           [(ngModel)]="pesoUtilizado" 
           name="peso"
           class="form-select"
-          placeholder="Opcional"
+          placeholder="Opcional - deja vacío si no aplica"
           min="0"
-          step="0.5">
-      </div>
-
-      <!-- Sección para mostrar imagen y video del ejercicio -->
-      <div *ngIf="selectedExercise" class="exercise-detail">
-        <div *ngIf="selectedExercise.urlImagen" class="exercise-image">
-          <img [src]="selectedExercise.urlImagen" 
-              alt="Imagen de {{selectedExercise.nombre}}"
-              style="max-height: 200px; border-radius: 8px;">
-        </div>
-        <div *ngIf="selectedExercise.urlVideo" class="exercise-video mt-2">
-          <a [href]="selectedExercise.urlVideo" 
-            target="_blank" 
-            class="video-link"
-            style="display: block; text-align: center;">
-            <mat-icon>play_circle</mat-icon> Ver video del ejercicio
-          </a>
+          step="0.5"
+          [disabled]="!selectedExerciseId"
+          [class.is-invalid]="validationErrors.includes('El peso debe ser un número positivo o vacío')">
+        <div *ngIf="validationErrors.includes('El peso debe ser un número positivo o vacío')" class="invalid-feedback">
+          El peso debe ser un número positivo o vacío
         </div>
       </div>
 
       <!-- Botón Registrar -->
-      <button type="submit" class="btn-register">
-        <span class="btn-icon">✓</span>
-        Registrar Ejercicio
+      <button 
+        type="submit" 
+        class="btn-register"
+        [disabled]="isSubmitting || !selectedRutinaId || !selectedExerciseId"
+        [class.disabled]="isSubmitting || !selectedRutinaId || !selectedExerciseId">
+        <span class="btn-icon" *ngIf="!isSubmitting">✓</span>
+        <span *ngIf="isSubmitting" class="spinner"></span>
+        {{isSubmitting ? 'Registrando...' : 'Registrar Ejercicio'}}
       </button>
     </form>
   </div>
@@ -158,16 +156,28 @@
             <strong>{{exercise.pesoUtilizado}}</strong> kg
           </span>
         </div>
+
         <div class="exercise-time">
-          {{exercise.fechaRegistro | date:'short'}}
+          {{ exercise.fechaRegistro }}
         </div>
       </div>
       <button class="btn-delete" (click)="eliminarEjercicio(exercise.id!)">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="3,6 5,6 21,6"></polyline>
-          <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+          <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,2h4a2,2 0 0,1 2,2v2"></path>
         </svg>
       </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showDeleteModal">
+    <div class="delete-modal">
+      <h3>Confirmar eliminación</h3>
+      <p>¿Estás seguro de que quieres eliminar este registro?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelDelete()">Cancelar</button>
+        <button class="btn-confirm" (click)="confirmDelete()">Eliminar</button>
+      </div>
     </div>
   </div>
 </div>

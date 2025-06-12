@@ -8,8 +8,8 @@ export interface Progreso {
   usuario?: Usuario;
   rutina?: Rutina;
   ejercicio?: Ejercicio;
-  series: number;
-  repeticiones: number;
+  series?: number;
+  repeticiones?: number;
   pesoUtilizado?: number;
   fechaRegistro?: string; // LocalDate se maneja como string en JSON (YYYY-MM-DD)
   observaciones?: string;
@@ -139,23 +139,31 @@ export class ProgresoHelper {
         pesoPromedio: 0,
         seriesTotal: 0,
         repeticionesTotal: 0,
-        progresoPeso: []
+        progresoPeso: [],
+        fechaUltimoEntrenamiento: undefined
       };
     }
 
-    const pesos = progresos.map(p => p.pesoUtilizado || 0);
-    const pesoMaximo = Math.max(...pesos);
-    const pesoPromedio = pesos.reduce((sum, peso) => sum + peso, 0) / pesos.length;
-    const seriesTotal = progresos.reduce((sum, p) => sum + p.series, 0);
-    const repeticionesTotal = progresos.reduce((sum, p) => sum + p.repeticiones, 0);
+    // Filtrar progresos con valores válidos para cálculos
+    const progresosValidos = progresos.filter(p => 
+      (p.series ?? 0) > 0 && (p.repeticiones ?? 0) > 0
+    );
 
-    const progresoPeso = progresos
-      .filter(p => p.pesoUtilizado && p.fechaRegistro)
+    const pesos = progresosValidos.map(p => p.pesoUtilizado ?? 0);
+    const pesoMaximo = progresosValidos.length > 0 ? Math.max(...pesos) : 0;
+    const pesoPromedio = progresosValidos.length > 0 ? 
+      pesos.reduce((sum, peso) => sum + peso, 0) / pesos.length : 0;
+
+    const seriesTotal = progresosValidos.reduce((sum, p) => sum + (p.series ?? 0), 0);
+    const repeticionesTotal = progresosValidos.reduce((sum, p) => sum + (p.repeticiones ?? 0), 0);
+
+    const progresoPeso = progresosValidos
+      .filter(p => (p.pesoUtilizado ?? 0) > 0 && p.fechaRegistro)
       .map(p => ({
         fecha: p.fechaRegistro!,
         peso: p.pesoUtilizado!,
-        repeticiones: p.repeticiones,
-        series: p.series
+        repeticiones: p.repeticiones ?? 0,
+        series: p.series ?? 0
       }))
       .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
 
@@ -173,5 +181,4 @@ export class ProgresoHelper {
       progresoPeso
     };
   }
-
 }

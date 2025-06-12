@@ -56,6 +56,11 @@ export class ProgresoService {
     );
   }
 
+  getResumenProgreso(usuarioId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/resumen/${usuarioId}`);
+  }
+
+  
   // Registrar progreso
   registrarProgreso(progreso: Progreso): Observable<Progreso> {
     return this.http.post<Progreso>(this.apiUrl, progreso);
