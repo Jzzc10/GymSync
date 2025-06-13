@@ -14,7 +14,6 @@ export class UsuarioFormComponent implements OnInit {
   isEditMode = false;
   
   roles = [
-    { value: 'ADMIN', viewValue: 'Administrador' },
     { value: 'ENTRENADOR', viewValue: 'Entrenador' },
     { value: 'CLIENTE', viewValue: 'Cliente' }
   ];

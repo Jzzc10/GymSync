@@ -6,14 +6,14 @@ import { Component } from '@angular/core';
   standalone: false,
   template: `
     <div class="dashboard-container">
-      <a class="dashboard-card" routerLink="/entrenador/usuarios"> 
+      <!--<a class="dashboard-card" routerLink="/entrenador/usuarios"> 
         <div 
           class="card-bg" 
           style="background-image: url('assets/fotos/usuarios.jpg')">
         </div>
         <div class="overlay"></div>
         <h2>USUARIOS</h2>
-      </a>
+      </a>-->
       
       <a class="dashboard-card" routerLink="/entrenador/ejercicios">
         <div 

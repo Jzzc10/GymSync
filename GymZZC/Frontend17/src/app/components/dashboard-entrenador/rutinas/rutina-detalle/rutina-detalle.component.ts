@@ -21,19 +21,14 @@ export class RutinaDetalleComponent implements OnInit {
   }
 
   cargarRutina(id: number): void {
-    this.rutinaService.getRutinaById(id).subscribe(
-      rutina => this.rutina = rutina,
-      error => console.error('Error cargando rutina', error)
-    );
-  }
-
-  toggleActiva(): void {
-    if (this.rutina) {
-      this.rutina.activa = !this.rutina.activa;
-      this.rutinaService.updateRutina(this.rutina.id!, this.rutina).subscribe(
-        () => console.log('Estado actualizado'),
-        error => console.error('Error actualizando estado', error)
-      );
-    }
+    this.rutinaService.getRutinaById(id).subscribe({
+      next: (rutina) => {
+        this.rutina = rutina;
+        console.log('Rutina cargada:', rutina);
+      },
+      error: (error) => {
+        console.error('Error cargando rutina:', error);
+      }
+    });
   }
 }

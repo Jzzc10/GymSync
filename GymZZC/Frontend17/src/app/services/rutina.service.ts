@@ -17,6 +17,7 @@ export interface RutinaEjercicio {
   ejercicioTipo?: string;
 }
 
+// Updated Rutina interface to match backend expectations
 export interface Rutina {
   id?: number;
   cliente?: Usuario;
@@ -27,10 +28,14 @@ export interface Rutina {
   fechaCreacion?: string;
   fechaModificacion?: string;
   activa?: boolean;
-  // Métodos de conveniencia que vienen del backend
-  clienteId?: number;
-  clienteNombre?: string;
+  
+  // Backend database fields (use these for API calls)
+  usuarioId?: number;      // This matches the database column
   entrenadorId?: number;
+  
+  // Convenience fields (for display purposes)
+  clienteId?: number;      // Keep for backward compatibility
+  clienteNombre?: string;
   entrenadorNombre?: string;
 }
 

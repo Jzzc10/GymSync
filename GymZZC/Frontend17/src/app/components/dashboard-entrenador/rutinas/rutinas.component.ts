@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RutinaService, Rutina } from '../../../services/rutina.service';
 import { AuthService } from '../../../services/auth.service';
-import { UsuarioService } from '../../../services/usuario.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,14 +10,13 @@ import { Router } from '@angular/router';
 })
 export class RutinasComponent implements OnInit {
   rutinas: Rutina[] = [];
-  clientes: any[] = [];
+  rutinasFiltradas: Rutina[] = [];
   cargando = true;
-  filtroClienteId: number | null = null;
+  searchTerm = '';
 
   constructor(
     private rutinaService: RutinaService,
     private authService: AuthService,
-    private usuarioService: UsuarioService,
     private router: Router
   ) {}
 
@@ -34,7 +32,8 @@ export class RutinasComponent implements OnInit {
       this.rutinaService.getRutinasByEntrenador(entrenadorId).subscribe({
         next: rutinas => {
           this.rutinas = rutinas;
-          this.cargarClientes();
+          this.rutinasFiltradas = [...rutinas];
+          this.cargando = false;
         },
         error: err => {
           console.error('Error cargando rutinas', err);
@@ -44,34 +43,26 @@ export class RutinasComponent implements OnInit {
     }
   }
 
-  onFiltroClienteChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.filtroClienteId = select.value === '' ? null : +select.value;
-  }
-
-  cargarClientes(): void {
-    const entrenadorId = this.authService.getCurrentUserId();
-    if (entrenadorId) {
-      this.usuarioService.getClientesAsignados(entrenadorId).subscribe({
-        next: clientes => {
-          this.clientes = clientes;
-          this.cargando = false;
-        },
-        error: err => {
-          console.error('Error cargando clientes', err);
-          this.cargando = false;
-        }
-      });
+  buscarRutinas(): void {
+    if (this.searchTerm.trim()) {
+      const termino = this.searchTerm.toLowerCase().trim();
+      this.rutinasFiltradas = this.rutinas.filter(rutina => 
+        (rutina.clienteNombre && rutina.clienteNombre.toLowerCase().includes(termino)) ||
+        (rutina.descripcion && rutina.descripcion.toLowerCase().includes(termino))
+      );
+    } else {
+      this.rutinasFiltradas = [...this.rutinas];
     }
   }
 
-  get rutinasFiltradas(): Rutina[] {
-    return this.rutinas.filter(rutina => {
-      const coincideCliente = !this.filtroClienteId || 
-                            rutina.clienteId === this.filtroClienteId;
-      
-      return coincideCliente;
-    });
+  // Método para búsqueda en tiempo real
+  onSearchChange(): void {
+    this.buscarRutinas();
+  }
+
+  limpiarBusqueda(): void {
+    this.searchTerm = '';
+    this.rutinasFiltradas = [...this.rutinas];
   }
 
   crearRutina(): void {
