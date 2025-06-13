@@ -1,0 +1,324 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      <i class="bi bi-dumbbell me-2"></i>Gestión de Ejercicios
+    </h2>
+    <!-- Botón Nuevo Ejercicio Mejorado -->
+    <button class="btn btn-lg px-4 py-3 shadow-lg fw-bold position-relative overflow-hidden nuevo-ejercicio-btn" 
+            (click)="nuevoEjercicio()"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                   border: none; 
+                   color: white; 
+                   border-radius: 15px;
+                   transition: all 0.3s ease;
+                   transform: translateY(0px);">
+      <i class="bi bi-plus-circle me-2" style="font-size: 1.1rem;"></i> 
+      Nuevo Ejercicio
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda mejorada -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group shadow-sm">
+        <span class="input-group-text bg-light" style="border-color: #667eea;">
+          <i class="bi bi-search" style="color: #667eea;"></i>
+        </span>
+        <input 
+          type="text" 
+          class="form-control" 
+          style="border-color: #667eea;"
+          placeholder="Buscar por nombre o tipo de ejercicio..." 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearchChange()"
+          (keyup.enter)="buscarEjercicios()">
+        <button 
+          class="btn btn-clear-search" 
+          type="button" 
+          (click)="limpiarBusqueda()"
+          *ngIf="searchTerm"
+          title="Limpiar búsqueda"
+          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                 border: none; 
+                 color: white;
+                 transition: all 0.3s ease;">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6 d-flex align-items-center">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Mostrando {{ ejerciciosPaginados.length }} de {{ ejerciciosFiltrados.length }} ejercicios
+      </small>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem; border-color: #667eea; border-right-color: transparent;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando ejercicios...</p>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!isLoading && ejercicios.length === 0" class="text-center my-5">
+    <div class="py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No hay ejercicios registrados</h4>
+      <p class="text-muted">Empieza creando tu primer ejercicio</p>
+      <button class="btn mt-3 px-4 py-3 shadow-lg fw-bold primer-ejercicio-btn" 
+              (click)="nuevoEjercicio()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 15px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-plus-circle me-2"></i> Crear Primer Ejercicio
+      </button>
+    </div>
+  </div>
+
+  <!-- Resultado de búsqueda vacío -->
+  <div *ngIf="!isLoading && ejercicios.length > 0 && ejerciciosFiltrados.length === 0" class="text-center my-5">
+    <div class="py-4">
+      <i class="bi bi-search display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No se encontraron resultados</h4>
+      <p class="text-muted">Intenta con otros términos de búsqueda</p>
+      <button class="btn px-4 py-3 shadow-lg fw-bold mostrar-todos-btn" 
+              (click)="limpiarBusqueda()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 15px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-arrow-clockwise me-2"></i> Mostrar todos
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de ejercicios -->
+  <div class="card shadow" style="border-color: #667eea;" *ngIf="!isLoading && ejerciciosFiltrados.length > 0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" class="text-white">
+            <tr>
+              <th scope="col" class="px-4 py-3 fw-bold" style="width: 45%;">
+                <i class="bi bi-card-text me-2"></i>Ejercicio
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 25%;">
+                <i class="bi bi-tags me-2"></i>Categoría
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 30%;">
+                <i class="bi bi-gear me-2"></i>Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ejercicio of ejerciciosPaginados; trackBy: trackByEjercicio" 
+                class="align-middle border-0" style="border-bottom: 1px solid #e9ecef !important;">
+              <td class="px-4 py-4">
+                <div class="d-flex align-items-center">
+                  <div class="rounded-circle p-3 me-3" 
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;">
+                    <i class="{{getIconoEjercicio(ejercicio.tipo)}} text-white" style="font-size: 1.2rem;"></i>
+                  </div>
+                  <div>
+                    <h4 class="mb-1 fw-bold text-dark" style="font-size: 1.25rem;">{{ ejercicio.nombre }}</h4>
+                    <small class="text-muted fw-normal" *ngIf="ejercicio.descripcion" style="font-size: 0.875rem;">
+                      {{ ejercicio.descripcion | slice:0:60 }}{{ ejercicio.descripcion.length > 60 ? '...' : '' }}
+                    </small>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="badge rounded-pill px-4 py-2 fw-bold" 
+                      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                             color: white; 
+                             font-size: 0.875rem; 
+                             min-width: 120px;
+                             display: inline-block;
+                             text-align: center;">
+                  {{ getTipoDisplayName(ejercicio.tipo) }}
+                </span>
+              </td>
+              <td class="px-4 py-4">
+                <div class="d-flex justify-content-center gap-3">
+                  <!-- Botón Editar Mejorado -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn edit-btn position-relative overflow-hidden" 
+                    (click)="editarEjercicio(ejercicio.id!)"
+                    title="Editar ejercicio"
+                    style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+                           border: none;
+                           color: #2d3436;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 90px;">
+                    <i class="bi bi-pencil-square me-1" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-md-inline">Editar</span>
+                  </button>
+                  
+                  <!-- Botón Eliminar Mejorado -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn delete-btn position-relative overflow-hidden" 
+                    (click)="mostrarModalEliminar(ejercicio)"
+                    title="Eliminar ejercicio"
+                    style="background: linear-gradient(135deg, #ff7675, #fd79a8);
+                           border: none;
+                           color: white;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 90px;">
+                    <i class="bi bi-trash3 me-1" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-md-inline">Eliminar</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Footer con paginación mejorada -->
+    <div class="card-footer bg-light py-4 px-4" style="border-color: #667eea;">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <small class="text-muted fw-semibold">
+            <i class="bi bi-info-circle me-1"></i>
+            Página {{ currentPage }} de {{ totalPages }} 
+            ({{ ejerciciosFiltrados.length }} ejercicio{{ ejerciciosFiltrados.length !== 1 ? 's' : '' }} total{{ ejerciciosFiltrados.length !== 1 ? 'es' : '' }})
+          </small>
+        </div>
+        <div class="col-md-6" *ngIf="totalPages > 1">
+          <nav aria-label="Paginación de ejercicios">
+            <ul class="pagination pagination-sm justify-content-end mb-0 gap-1">
+              <!-- Botón Anterior -->
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link pagination-btn prev-btn shadow-sm" 
+                        (click)="paginaAnterior()" 
+                        [disabled]="currentPage === 1"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                               border: none;
+                               color: white;
+                               border-radius: 8px;
+                               width: 40px;
+                               height: 40px;
+                               display: flex;
+                               align-items: center;
+                               justify-content: center;
+                               transition: all 0.3s ease;">
+                  <i class="bi bi-chevron-left" style="font-size: 0.9rem;"></i>
+                </button>
+              </li>
+              
+              <!-- Números de página -->
+              <li class="page-item" *ngFor="let page of getPaginasVisibles()" 
+                  [class.active]="page === currentPage">
+                <button class="page-link pagination-btn number-btn shadow-sm" 
+                        (click)="cambiarPagina(page)"
+                        [style.background]="page === currentPage ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'"
+                        [style.color]="page === currentPage ? 'white' : '#667eea'"
+                        style="border: 2px solid #667eea;
+                               border-radius: 8px;
+                               width: 40px;
+                               height: 40px;
+                               display: flex;
+                               align-items: center;
+                               justify-content: center;
+                               font-weight: bold;
+                               transition: all 0.3s ease;">
+                  {{ page }}
+                </button>
+              </li>
+              
+              <!-- Botón Siguiente -->
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link pagination-btn next-btn shadow-sm" 
+                        (click)="paginaSiguiente()" 
+                        [disabled]="currentPage === totalPages"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                               border: none;
+                               color: white;
+                               border-radius: 8px;
+                               width: 40px;
+                               height: 40px;
+                               display: flex;
+                               align-items: center;
+                               justify-content: center;
+                               transition: all 0.3s ease;">
+                  <i class="bi bi-chevron-right" style="font-size: 0.9rem;"></i>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación para Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <!-- Header minimalista -->
+      <div class="modal-header border-0 pb-2 pt-4 px-4 position-relative">
+        <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" id="deleteModalLabel">
+          Eliminar ejercicio
+        </h5>
+        <button type="button" class="btn-close position-absolute" data-bs-dismiss="modal" aria-label="Close" style="top: 1rem; right: 1rem;"></button>
+      </div>
+      
+      <!-- Body minimalista -->
+      <div class="modal-body px-4 py-3 text-center">
+        <div class="mb-3">
+          <i class="bi bi-trash3 text-danger" style="font-size: 2.5rem; opacity: 0.8;"></i>
+        </div>
+        
+        <p class="text-muted mb-3" *ngIf="ejercicioAEliminar">
+          ¿Eliminar <strong class="text-dark">{{ ejercicioAEliminar.nombre }}</strong>?
+        </p>
+        
+        <small class="text-muted">Esta acción no se puede deshacer</small>
+      </div>
+      
+      <!-- Footer minimalista -->
+      <div class="modal-footer border-0 px-4 pb-4 pt-2">
+        <div class="d-flex w-100 gap-2">
+          <button type="button" 
+                  class="btn btn-light flex-fill py-2 fw-semibold"
+                  data-bs-dismiss="modal"
+                  style="border-radius: 10px;">
+            Cancelar
+          </button>
+          <button type="button" 
+                  class="btn btn-danger flex-fill py-2 fw-semibold"
+                  (click)="confirmarEliminacion()"
+                  [disabled]="isDeleting"
+                  style="border-radius: 10px;">
+            <span *ngIf="!isDeleting">Eliminar</span>
+            <span *ngIf="isDeleting" class="d-flex align-items-center justify-content-center">
+              <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              Eliminando...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="deleteSuccessToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" style="border-radius: 12px;">
+    <div class="toast-body bg-success text-white d-flex align-items-center fw-semibold" style="border-radius: 12px; padding: 1rem;">
+      <i class="bi bi-check-circle me-2"></i>
+      Ejercicio eliminado
+    </div>
+  </div>
+</div>

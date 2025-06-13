@@ -1,0 +1,517 @@
+# 🏋️ Manual de API GymSync
+
+- **Base URL**: `http://localhost:8080`
+- **Formato**: JSON
+- **Documentación Swagger**: `http://localhost:8080/swagger-ui.html`
+- **API Docs**: `http://localhost:8080/api-docs`
+
+---
+
+## 🔐 Autenticación
+
+### Login
+```http
+POST /api/usuarios/login
+Content-Type: application/json
+
+{
+  "email": "juan.perez@email.com",
+  "password": "12345678"
+}
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "message": "Login exitoso",
+  "usuario": {
+    "id": 1,
+    "nombre": "Juan Pérez",
+    "email": "juan.perez@email.com",
+    "rol": "CLIENTE"
+  },
+  "rol": "CLIENTE"
+}
+```
+
+---
+
+## 👥 Usuarios
+
+### Obtener todos los usuarios
+```http
+GET /api/usuarios
+```
+
+**Filtros disponibles:**
+- `?nombre=Juan` - Buscar por nombre
+- `?rol=ENTRENADOR` - Filtrar por rol
+- `?email=juan@email.com` - Buscar por email
+
+### Obtener usuario por ID
+```http
+GET /api/usuarios/{id}
+```
+
+### Obtener solo entrenadores
+```http
+GET /api/usuarios/entrenadores
+```
+
+### Crear usuario
+```http
+POST /api/usuarios
+Content-Type: application/json
+
+{
+  "nombre": "Jorge Zhou",
+  "email": "jorge.zhou@email.com",
+  "password": "12345678",
+  "rol": "CLIENTE"
+}
+```
+
+**Roles disponibles:** `CLIENTE`, `ENTRENADOR`, `ADMIN`
+
+### Actualizar usuario
+```http
+PUT /api/usuarios/{id}
+Content-Type: application/json
+
+{
+  "nombre": "Juan Pérez Actualizado",
+  "email": "juan.nuevo@email.com",
+  "rol": "CLIENTE"
+}
+```
+
+### Cambiar contraseña
+```http
+PUT /api/usuarios/{id}/password
+Content-Type: application/json
+
+{
+  "nuevaPassword": "nuevaContrasenia123"
+}
+```
+
+### Eliminar usuario
+```http
+DELETE /api/usuarios/{id}
+```
+
+---
+
+## 💪 Ejercicios
+
+### Obtener todos los ejercicios
+```http
+GET /api/ejercicios
+```
+
+### Obtener ejercicio por ID
+```http
+GET /api/ejercicios/{id}
+```
+
+### Crear ejercicio
+```http
+POST /api/ejercicios
+Content-Type: application/json
+
+{
+  "nombre": "Press de banca",
+  "tipo": "PECHO",
+  "descripcion": "Ejercicio para desarrollar el pectoral mayor",
+  "urlImagen": "https://ejemplo.com/imagen.jpg",
+  "urlVideo": "https://ejemplo.com/video.mp4"
+}
+```
+
+**Tipos disponibles:** `PECHO`, `ABDOMINALES`, `PIERNAS`, `ESPALDA`, `TRICEPS`, `BICEPS`, `HOMBRO`, `GLUTEO`
+
+### Actualizar ejercicio
+```http
+PUT /api/ejercicios/{id}
+Content-Type: application/json
+
+{
+  "nombre": "Mancuernas pecho",
+  "tipo": "PECHO",
+  "descripcion": "Ejercicio para desarrollar el pectoral mayor",
+  "urlImagen": "https://ejemplo.com/imagen.jpg",
+  "urlVideo": "https://ejemplo.com/video.mp4"
+}
+```
+
+### Eliminar ejercicio
+```http
+DELETE /api/ejercicios/{id}
+```
+
+---
+
+## 📋 Rutinas
+
+### Obtener todas las rutinas
+```http
+GET /api/rutinas
+```
+
+### Obtener rutina por ID
+```http
+GET /api/rutinas/{id}
+```
+
+### Obtener rutinas de un cliente
+```http
+GET /api/rutinas/cliente/{clienteId}
+```
+
+### Obtener rutinas de un entrenador
+```http
+GET /api/rutinas/entrenador/{entrenadorId}
+```
+
+### Obtener progresos de una rutina
+```http
+GET /api/rutinas/{id}/progresos
+```
+
+### Obtener progresos de rutina por usuario
+```http
+GET /api/rutinas/{id}/progresos/usuario/{usuarioId}
+```
+
+### Obtener progresos de rutina por ejercicio
+```http
+GET /api/rutinas/{id}/progresos/ejercicio/{ejercicioId}
+```
+
+### Obtener progresos específicos (usuario + ejercicio)
+```http
+GET /api/rutinas/{id}/progresos/usuario/{usuarioId}/ejercicio/{ejercicioId}
+```
+
+### Crear rutina
+```http
+POST /api/rutinas
+Content-Type: application/json
+
+{
+  "cliente": {
+    "id": 1
+  },
+  "entrenador": {
+    "id": 2
+  },
+  "descripcion": "Rutina de pecho y tríceps"
+}
+```
+
+### Actualizar rutina
+```http
+PUT /api/rutinas/{id}
+Content-Type: application/json
+
+{
+  "descripcion": "Rutina actualizada de pecho y tríceps"
+}
+```
+
+### Eliminar rutina
+```http
+DELETE /api/rutinas/{id}
+```
+
+---
+
+## 🔗 Rutina-Ejercicios
+
+### Obtener ejercicios de una rutina
+```http
+GET /api/rutinas/{rutinaId}/ejercicios
+```
+
+### Obtener ejercicio específico en rutina
+```http
+GET /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
+```
+
+### Agregar ejercicio a rutina
+```http
+POST /api/rutinas/{rutinaId}/ejercicios
+Content-Type: application/json
+
+{
+  "ejercicio": {
+    "id": 1
+  },
+  "series": 3,
+  "repeticiones": 12,
+  "pesoEjercicio": 80
+}
+```
+
+### Actualizar ejercicio en rutina
+```http
+PUT /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
+Content-Type: application/json
+
+{
+  "series": 4,
+  "repeticiones": 10,
+  "pesoEjercicio": 85
+}
+```
+
+### Quitar ejercicio de rutina
+```http
+DELETE /api/rutinas/{rutinaId}/ejercicios/{ejercicioId}
+```
+
+---
+
+## 📈 Progreso
+
+### Obtener todo el progreso
+```http
+GET /api/progresos
+```
+
+### Obtener progreso por ID
+```http
+GET /api/progresos/{id}
+```
+
+### Obtener progreso de un usuario
+```http
+GET /api/progresos/usuario/{usuarioId}
+```
+
+### Obtener progreso de usuario en rutina específica
+```http
+GET /api/progresos/usuarios/{usuarioId}/rutinas/{rutinaId}
+```
+
+### Obtener progreso de usuario en ejercicio específico
+```http
+GET /api/progresos/usuarios/{usuarioId}/ejercicios/{ejercicioId}
+```
+
+### Obtener progreso específico completo
+```http
+GET /api/progresos/usuarios/2/rutinas/3/ejercicios/2
+```
+
+### Registrar progreso
+```http
+POST /api/progresos
+Content-Type: application/json
+
+{
+  "usuario": {
+    "id": 1
+  },
+  "rutina": {
+    "id": 1
+  },
+  "ejercicio": {
+    "id": 1
+  },
+  "series": 3,
+  "repeticiones": 12,
+  "pesoUtilizado": 80.5,
+  "observaciones": "Buen rendimiento, aumentar peso la próxima vez",
+  "fechaRegistro": "2025-06-09"
+}
+```
+
+### Actualizar progreso
+```http
+PUT /api/progreso/{id}
+Content-Type: application/json
+
+{
+  "usuario": {
+    "id": 1
+  },
+  "rutina": {
+    "id": 1
+  },
+  "ejercicio": {
+    "id": 1
+  },
+  "series": 4,
+  "repeticiones": 10,
+  "pesoUtilizado": 85.0,
+  "observaciones": "Aumento de peso según lo planeado",
+  "fechaRegistro": "2025-06-09"
+}
+```
+
+### Eliminar progreso
+```http
+DELETE /api/progreso/{id}
+```
+
+---
+
+## 📊 Códigos de Respuesta
+
+| Código | Descripción |
+|--------|-------------|
+| 200    | OK - Operación exitosa |
+| 201    | Created - Recurso creado exitosamente |
+| 204    | No Content - Eliminación exitosa |
+| 400    | Bad Request - Datos inválidos |
+| 401    | Unauthorized - Credenciales inválidas |
+| 404    | Not Found - Recurso no encontrado |
+| 500    | Internal Server Error - Error del servidor |
+
+---
+
+## 🚀 Ejemplos de Uso
+
+### Flujo completo: Crear usuario y rutina
+
+#### 1. Crear entrenador
+```bash
+curl -X POST http://localhost:8080/api/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Carlos Trainer",
+    "email": "carlos@gym.com",
+    "password": "trainer123",
+    "rol": "ENTRENADOR"
+  }'
+```
+
+#### 2. Crear cliente
+```bash
+curl -X POST http://localhost:8080/api/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Ana Cliente",
+    "email": "ana@email.com",
+    "password": "cliente123",
+    "rol": "CLIENTE"
+  }'
+```
+
+#### 3. Crear ejercicio
+```bash
+curl -X POST http://localhost:8080/api/ejercicios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Sentadillas",
+    "tipo": "PIERNAS",
+    "descripcion": "Ejercicio básico para piernas"
+  }'
+```
+
+#### 4. Crear rutina
+```bash
+curl -X POST http://localhost:8080/api/rutinas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cliente": {"id": 2},
+    "entrenador": {"id": 1},
+    "descripcion": "Rutina de piernas para principiantes"
+  }'
+```
+
+#### 5. Agregar ejercicio a rutina
+```bash
+curl -X POST http://localhost:8080/api/rutinas/1/ejercicios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ejercicio": {"id": 1},
+    "series": 3,
+    "repeticiones": 15,
+    "pesoEjercicio": 0
+  }'
+```
+
+#### 6. Registrar progreso
+```bash
+curl -X POST http://localhost:8080/api/progreso \
+  -H "Content-Type: application/json" \
+  -d '{
+    "usuario": {"id": 2},
+    "rutina": {"id": 1},
+    "ejercicio": {"id": 1},
+    "series": 3,
+    "repeticiones": 15,
+    "pesoUtilizado": 0,
+    "observaciones": "Primera sesión completada"
+  }'
+```
+
+### Consultas útiles
+
+#### Obtener todas las rutinas de un cliente con filtros
+```bash
+curl "http://localhost:8080/api/rutinas/cliente/2"
+```
+
+#### Obtener progreso específico de un usuario
+```bash
+curl "http://localhost:8080/api/progreso/usuario/2/rutina/1"
+```
+
+#### Login de usuario
+```bash
+curl -X POST http://localhost:8080/api/usuarios/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "ana@email.com",
+    "password": "cliente123"
+  }'
+```
+
+---
+
+## 🔧 Configuración de Swagger
+
+Para acceder a la documentación interactiva:
+
+1. Asegúrate de tener las dependencias en tu `pom.xml`
+2. Inicia la aplicación
+3. Visita: `http://localhost:8080/swagger-ui.html`
+
+**Características de Swagger UI:**
+- Explorar todos los endpoints
+- Probar requests directamente
+- Ver esquemas de datos
+- Descargar especificación OpenAPI
+
+---
+
+## 💡 Consejos de Uso
+
+1. **Validaciones**: Todos los campos marcados como `@NotNull` o `@NotBlank` son obligatorios
+2. **Relaciones**: Siempre verifica que existan las entidades relacionadas antes de crear nuevos registros
+3. **Fechas**: Las fechas de progreso se asignan automáticamente si no se proporcionan
+4. **Passwords**: Las contraseñas se encriptan automáticamente al guardar usuarios
+5. **CORS**: Todos los endpoints tienen CORS habilitado para desarrollo
+
+---
+
+## 🐛 Troubleshooting
+
+### Error 400 - Bad Request
+- Verifica que todos los campos obligatorios estén presentes
+- Revisa el formato JSON
+- Confirma que los tipos de datos sean correctos
+
+### Error 404 - Not Found
+- Verifica que los IDs en las URLs existan
+- Confirma que las relaciones entre entidades sean válidas
+
+### Error 500 - Internal Server Error
+- Revisa los logs del servidor
+- Verifica la conexión a la base de datos
+- Confirma que no haya conflictos de integridad referencial
+
+---

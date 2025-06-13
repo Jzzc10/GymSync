@@ -1,0 +1,285 @@
+<div class="container mt-4">
+  <!-- Header mejorado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="header-content">
+      <h2 class="mb-0 fw-bold header-title">
+        <i class="bi bi-clipboard-check me-2"></i>
+        {{ isEditMode ? 'Editar Rutina' : 'Crear Nueva Rutina' }}
+      </h2>
+      <p class="text-muted mb-0 mt-2">
+        <i class="bi bi-info-circle me-1"></i>
+        {{ isEditMode ? 'Modifica los datos de la rutina existente' : 'Completa los campos para crear una nueva rutina' }}
+      </p>
+    </div>
+    
+    <!-- Botón Volver -->
+    <button class="btn btn-outline-secondary px-4 py-3 shadow-sm fw-bold back-btn" 
+            (click)="cancelar()"
+            type="button">
+      <i class="bi bi-arrow-left me-2"></i>
+      Volver
+    </button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border loading-spinner" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando datos...</p>
+  </div>
+
+  <!-- Formulario principal -->
+  <div class="card main-card shadow-lg" *ngIf="!isLoading">
+    <div class="card-body p-5">
+      <form [formGroup]="rutinaForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Información básica -->
+        <div class="section-card mb-4">
+          <div class="section-header">
+            <h4 class="section-title">
+              <i class="bi bi-person-circle me-2"></i>
+              Información Básica
+            </h4>
+          </div>
+          
+          <div class="row">
+            <!-- Cliente -->
+            <div class="col-md-12 mb-4">
+              <label for="cliente" class="form-label fw-semibold">
+                <i class="bi bi-person me-2" style="color: #667eea;"></i>Cliente
+              </label>
+              <select id="cliente" 
+                      formControlName="clienteId" 
+                      class="form-select form-control-modern">
+                <option value="">Seleccionar cliente...</option>
+                <option *ngFor="let usuario of usuarios" [value]="usuario.id">
+                  {{ usuario.nombre }} - {{ usuario.email }}
+                </option>
+              </select>
+              <div *ngIf="rutinaForm.get('clienteId')?.invalid && rutinaForm.get('clienteId')?.touched" 
+                   class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                Debe seleccionar un cliente
+              </div>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="row">
+            <div class="col-md-12 mb-4">
+              <label for="descripcion" class="form-label fw-semibold">
+                <i class="bi bi-card-text me-2" style="color: #667eea;"></i>Descripción
+              </label>
+              <div class="textarea-container">
+                <textarea id="descripcion" 
+                          formControlName="descripcion" 
+                          class="form-control form-control-modern"
+                          rows="4"
+                          placeholder="Describe los objetivos y características de esta rutina..."
+                          maxlength="500"></textarea>
+                <div class="char-counter">
+                  {{ rutinaForm.get('descripcion')?.value?.length || 0 }}/500
+                </div>
+              </div>
+              <div *ngIf="rutinaForm.get('descripcion')?.invalid && rutinaForm.get('descripcion')?.touched" 
+                   class="error-message">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                La descripción es obligatoria (máx. 500 caracteres)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de Ejercicios -->
+        <div class="section-card mb-4">
+          <div class="section-header mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="section-title">
+                  <i class="bi bi-dumbbell me-2"></i>
+                  Ejercicios de la Rutina
+                </h4>
+                <p class="section-subtitle">
+                  Añade y configura los ejercicios 
+                  <span class="badge bg-primary ms-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; font-size: 1rem; padding: 0.5rem 1rem;">
+                    {{ ejerciciosFormArray.length }} ejercicio{{ ejerciciosFormArray.length !== 1 ? 's' : '' }}
+                  </span>
+                </p>
+              </div>
+              
+              <!-- Botón Añadir Ejercicio -->
+              <button type="button" 
+                      class="btn btn-lg px-4 py-3 shadow-lg fw-bold" 
+                      style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none;"
+                      (click)="agregarEjercicio()">
+                <i class="bi bi-plus-circle me-2"></i>
+                Añadir Ejercicio
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de ejercicios -->
+          <div formArrayName="ejercicios" class="ejercicios-container">
+            <!-- Estado vacío -->
+            <div *ngIf="ejerciciosFormArray.length === 0" class="empty-exercises-state">
+              <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted mb-3" style="opacity: 0.5;"></i>
+                <h5 class="text-muted">No hay ejercicios en esta rutina</h5>
+                <p class="text-muted">Comienza añadiendo el primer ejercicio</p>
+                <button type="button" 
+                        class="btn btn-lg px-4 py-3 shadow-lg fw-bold" 
+                        style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none;"
+                        (click)="agregarEjercicio()">
+                  <i class="bi bi-plus-circle me-2"></i>
+                  Primer Ejercicio
+                </button>
+              </div>
+            </div>
+
+            <!-- Ejercicios existentes -->
+            <div *ngFor="let ejercicio of ejerciciosFormArray.controls; let i = index" 
+                 [formGroupName]="i" 
+                 class="ejercicio-card mb-4">
+              
+              <div class="ejercicio-header">
+                <div class="ejercicio-number">
+                  <span class="number" style="font-size: 1.5rem; font-weight: bold;">{{ i + 1 }}</span>
+                </div>
+                <h5 class="ejercicio-title">Ejercicio {{ i + 1 }}</h5>
+                <button type="button" 
+                        class="btn btn-sm delete-exercise-btn" 
+                        style="background-color: #dc3545; color: white; border: none; padding: 0.5rem;"
+                        (click)="eliminarEjercicio(i)"
+                        title="Eliminar ejercicio">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+
+              <div class="ejercicio-body">
+                <div class="row">
+                  <!-- Selección de ejercicio -->
+                  <div class="col-md-12 mb-4">
+                    <label class="form-label fw-semibold">
+                      <i class="bi bi-list-ul me-2" style="color: #667eea;"></i>Tipo de Ejercicio
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text input-icon">
+                        <i class="bi bi-dumbbell"></i>
+                      </span>
+                      <select formControlName="ejercicioId" class="form-select form-control-modern">
+                        <option value="">Seleccionar ejercicio...</option>
+                        <option *ngFor="let ejercicio of ejercicios" [value]="ejercicio.id">
+                          {{ ejercicio.nombre }} ({{ ejercicio.tipo }})
+                        </option>
+                      </select>
+                    </div>
+                    <div *ngIf="ejercicio.get('ejercicioId')?.invalid && ejercicio.get('ejercicioId')?.touched" 
+                         class="error-message">
+                      <i class="bi bi-exclamation-circle me-1"></i>
+                      Debe seleccionar un ejercicio
+                    </div>
+                  </div>
+
+                  <!-- Configuración del ejercicio -->
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-semibold">
+                      <i class="bi bi-repeat me-2" style="color: #667eea;"></i>Series
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text input-icon">
+                        <i class="bi bi-hash"></i>
+                      </span>
+                      <input type="number" 
+                             formControlName="series" 
+                             class="form-control form-control-modern"
+                             min="1"
+                             placeholder="3">
+                    </div>
+                    <div *ngIf="ejercicio.get('series')?.invalid && ejercicio.get('series')?.touched" 
+                         class="error-message">
+                      <i class="bi bi-exclamation-circle me-1"></i>
+                      Mínimo 1 serie
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-semibold">
+                      <i class="bi bi-arrow-repeat me-2" style="color: #667eea;"></i>Repeticiones
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text input-icon">
+                        <i class="bi bi-arrow-clockwise"></i>
+                      </span>
+                      <input type="number" 
+                             formControlName="repeticiones" 
+                             class="form-control form-control-modern"
+                             min="1"
+                             placeholder="10">
+                    </div>
+                    <div *ngIf="ejercicio.get('repeticiones')?.invalid && ejercicio.get('repeticiones')?.touched" 
+                         class="error-message">
+                      <i class="bi bi-exclamation-circle me-1"></i>
+                      Mínimo 1 repetición
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-semibold">
+                      <i class="bi bi-weight me-2" style="color: #667eea;"></i>Peso (kg)
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text input-icon">
+                        <i class="bi bi-speedometer2"></i>
+                      </span>
+                      <input type="number" 
+                             formControlName="pesoEjercicio" 
+                             class="form-control form-control-modern"
+                             min="0" 
+                             step="0.5"
+                             placeholder="0">
+                      <span class="input-group-text" style="background: #f8f9fa; border-color: #e9ecef;">kg</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+          <button type="button" 
+                  class="btn btn-lg px-5 py-3 shadow-sm fw-bold cancel-btn" 
+                  (click)="cancelar()">
+            <i class="bi bi-x-circle me-2"></i>
+            Cancelar
+          </button>
+          
+          <button type="submit" 
+                  class="btn btn-lg px-5 py-3 shadow-lg fw-bold submit-btn" 
+                  [disabled]="rutinaForm.invalid || isSubmitting">
+            <span *ngIf="!isSubmitting">
+              <i class="bi bi-check-circle me-2"></i>
+              {{ isEditMode ? 'Actualizar' : 'Crear' }} Rutina
+            </span>
+            <span *ngIf="isSubmitting" class="d-flex align-items-center justify-content-center">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="successToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+    <div class="toast-body bg-success text-white d-flex align-items-center fw-semibold" style="border-radius: 12px; padding: 1rem; background: linear-gradient(135deg, #00b894, #55a3ff) !important;">
+      <i class="bi bi-check-circle me-2"></i>
+      {{ isEditMode ? 'Rutina actualizada' : 'Rutina creada' }} correctamente
+    </div>
+  </div>
+</div>

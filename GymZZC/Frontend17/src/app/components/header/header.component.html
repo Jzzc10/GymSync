@@ -1,0 +1,23 @@
+<mat-toolbar color="primary">
+  <!-- Logo izquierda -->
+  <a mat-button routerLink="/" class="logo">
+    GymSync
+  </a>
+
+  <!-- Espacio intermedio -->
+  <span class="spacer"></span>
+
+  <!-- Botones derecha -->
+  <ng-container *ngIf="isClient()">
+    <a mat-button routerLink="/estadisticas" routerLinkActive="active-link">
+      Estadísticas/Progresos
+    </a>
+    <a mat-button routerLink="/temporizador" routerLinkActive="active-link">
+      Temporizador
+    </a>
+  </ng-container>
+  
+  <a mat-button routerLink="/perfil" routerLinkActive="active-link">
+    Perfil de Usuario
+  </a>
+</mat-toolbar>

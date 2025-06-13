@@ -1,0 +1,194 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      <i class="bi bi-calendar-check me-2"></i>Gestión de Rutinas
+    </h2>
+    <!-- Botón Nueva Rutina -->
+    <button class="btn btn-lg px-4 py-3 shadow-lg fw-bold position-relative overflow-hidden nueva-rutina-btn" 
+            (click)="crearRutina()"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                   border: none; 
+                   color: white; 
+                   border-radius: 15px;
+                   transition: all 0.3s ease;
+                   transform: translateY(0px);">
+      <i class="bi bi-plus-circle me-2" style="font-size: 1.1rem;"></i> 
+      Nueva Rutina
+    </button>
+  </div>
+
+  <!-- Buscador -->
+  <div class="card shadow-sm mb-4" style="border-color: #667eea; border-radius: 16px;">
+    <div class="card-body p-4">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="form-group mb-0">
+            <label for="searchTerm" class="form-label fw-semibold text-dark mb-2">
+              <i class="bi bi-search me-2" style="color: #667eea;"></i>Buscar rutinas:
+            </label>
+            <div class="input-group">
+              <input 
+                id="searchTerm"
+                type="text" 
+                class="form-control shadow-sm"
+                style="border-color: #667eea; border-radius: 10px 0 0 10px; padding: 12px 16px;"
+                placeholder="Busca por nombre del cliente o descripción..."
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()">
+              <button 
+                class="btn btn-outline-secondary btn-clear-search"
+                style="border-color: #667eea; color: #667eea; border-radius: 0 10px 10px 0;"
+                type="button"
+                *ngIf="searchTerm"
+                (click)="limpiarBusqueda()"
+                title="Limpiar búsqueda">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-end">
+          <small class="text-muted fw-semibold">
+            <i class="bi bi-info-circle me-1"></i>
+            Mostrando {{ rutinasFiltradas.length }} rutina{{ rutinasFiltradas.length !== 1 ? 's' : '' }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" class="text-center my-5">
+    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem; border-color: #667eea; border-right-color: transparent;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando rutinas...</p>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!cargando && rutinasFiltradas.length === 0 && !searchTerm" class="text-center my-5">
+    <div class="py-5">
+      <i class="bi bi-calendar-x display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No hay rutinas registradas</h4>
+      <p class="text-muted">Empieza creando tu primera rutina</p>
+      <button class="btn mt-3 px-4 py-3 shadow-lg fw-bold primera-rutina-btn" 
+              (click)="crearRutina()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 15px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-plus-circle me-2"></i> Crear Primera Rutina
+      </button>
+    </div>
+  </div>
+
+  <!-- Estado vacío para búsqueda sin resultados -->
+  <div *ngIf="!cargando && rutinasFiltradas.length === 0 && searchTerm" class="text-center my-5">
+    <div class="py-5">
+      <i class="bi bi-search display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No se encontraron rutinas</h4>
+      <p class="text-muted">No hay rutinas que coincidan con "{{ searchTerm }}"</p>
+      <button class="btn mt-3 px-4 py-2 shadow-sm fw-bold mostrar-todos-btn" 
+              (click)="limpiarBusqueda()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 10px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-arrow-clockwise me-2"></i> Mostrar Todas
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de rutinas -->
+  <div class="card shadow" style="border-color: #667eea; border-radius: 16px;" *ngIf="!cargando && rutinasFiltradas.length > 0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" class="text-white">
+            <tr>
+              <th scope="col" class="px-4 py-3 fw-bold" style="width: 35%;">
+                <i class="bi bi-person me-2"></i>Cliente
+              </th>
+              <th scope="col" class="px-4 py-3 fw-bold" style="width: 45%;">
+                <i class="bi bi-card-text me-2"></i>Descripción
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 10%;">
+                <i class="bi bi-list-ol me-2"></i>Ejercicios
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 10%;">
+                <i class="bi bi-gear me-2"></i>Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rutina of rutinasFiltradas; trackBy: trackByRutina" 
+                class="align-middle border-0" style="border-bottom: 1px solid #e9ecef !important;">
+              <td class="px-4 py-4">
+                <div class="d-flex align-items-center">
+                  <div class="rounded-circle p-3 me-3" 
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-person-fill text-white" style="font-size: 1.2rem;"></i>
+                  </div>
+                  <div>
+                    <h4 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">
+                      {{ rutina.clienteNombre || 'Sin cliente' }}
+                    </h4>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <div>
+                  <p class="mb-0 text-dark" style="font-size: 0.95rem;">
+                    {{ rutina.descripcion ? truncate(rutina.descripcion, 100) : 'Sin descripción' }}
+                  </p>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="badge rounded-pill px-3 py-2 fw-bold" 
+                      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                             color: white; 
+                             font-size: 0.9rem;">
+                  {{ rutina.ejercicios?.length || 0 }}
+                </span>
+              </td>
+              <td class="px-4 py-4">
+                <div class="d-flex justify-content-center gap-2">
+                  <!-- Botón Ver -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn view-btn position-relative overflow-hidden" 
+                    (click)="verDetalle(rutina.id!)"
+                    title="Ver detalle"
+                    style="background: linear-gradient(135deg, #74b9ff, #0984e3);
+                           border: none;
+                           color: white;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 45px;">
+                    <i class="bi bi-eye" style="font-size: 0.95rem;"></i>
+                  </button>
+                  
+                  <!-- Botón Editar -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn edit-btn position-relative overflow-hidden" 
+                    (click)="editarRutina(rutina.id!)"
+                    title="Editar rutina"
+                    style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+                           border: none;
+                           color: #2d3436;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 45px;">
+                    <i class="bi bi-pencil-square" style="font-size: 0.95rem;"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

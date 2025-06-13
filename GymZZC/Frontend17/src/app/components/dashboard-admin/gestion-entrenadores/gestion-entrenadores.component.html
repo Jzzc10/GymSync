@@ -1,0 +1,254 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+      <i class="bi bi-people me-2"></i>Gestión de Entrenadores
+    </h2>
+    <!-- Botón Nuevo Entrenador Mejorado -->
+    <button class="btn btn-lg px-4 py-3 shadow-lg fw-bold position-relative overflow-hidden nuevo-entrenador-btn" 
+            (click)="abrirFormulario()"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                   border: none; 
+                   color: white; 
+                   border-radius: 15px;
+                   transition: all 0.3s ease;
+                   transform: translateY(0px);">
+      <i class="bi bi-person-plus me-2" style="font-size: 1.1rem;"></i> 
+      Nuevo Entrenador
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda mejorada -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group shadow-sm">
+        <span class="input-group-text bg-light" style="border-color: #667eea;">
+          <i class="bi bi-search" style="color: #667eea;"></i>
+        </span>
+        <input 
+          type="text" 
+          class="form-control" 
+          style="border-color: #667eea;"
+          placeholder="Buscar por nombre o email..." 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearchChange()">
+        <button 
+          class="btn btn-clear-search" 
+          type="button" 
+          (click)="limpiarBusqueda()"
+          *ngIf="searchTerm"
+          title="Limpiar búsqueda"
+          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                 border: none; 
+                 color: white;
+                 transition: all 0.3s ease;">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6 d-flex align-items-center">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Mostrando {{ usuariosFiltrados.length }} entrenador{{ usuariosFiltrados.length !== 1 ? 'es' : '' }}
+      </small>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem; border-color: #667eea; border-right-color: transparent;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando entrenadores...</p>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!isLoading && usuarios.length === 0" class="text-center my-5">
+    <div class="py-5">
+      <i class="bi bi-people display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No hay entrenadores registrados</h4>
+      <p class="text-muted">Empieza registrando el primer entrenador</p>
+      <button class="btn mt-3 px-4 py-3 shadow-lg fw-bold primer-entrenador-btn" 
+              (click)="abrirFormulario()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 15px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-person-plus me-2"></i> Registrar Primer Entrenador
+      </button>
+    </div>
+  </div>
+
+  <!-- Resultado de búsqueda vacío -->
+  <div *ngIf="!isLoading && usuarios.length > 0 && usuariosFiltrados.length === 0" class="text-center my-5">
+    <div class="py-4">
+      <i class="bi bi-search display-1 text-muted"></i>
+      <h4 class="mt-3 text-muted">No se encontraron resultados</h4>
+      <p class="text-muted">Intenta con otros términos de búsqueda</p>
+      <button class="btn px-4 py-3 shadow-lg fw-bold mostrar-todos-btn" 
+              (click)="limpiarBusqueda()"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                     border: none; 
+                     color: white;
+                     border-radius: 15px;
+                     transition: all 0.3s ease;">
+        <i class="bi bi-arrow-clockwise me-2"></i> Mostrar todos
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de entrenadores -->
+  <div class="card shadow" style="border-color: #667eea; border-radius: 16px;" *ngIf="!isLoading && usuariosFiltrados.length > 0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" class="text-white">
+            <tr>
+              <th scope="col" class="px-4 py-3 fw-bold" style="width: 35%; border-top-left-radius: 16px;">
+                <i class="bi bi-person me-2"></i>Entrenador
+              </th>
+              <th scope="col" class="px-4 py-3 fw-bold" style="width: 35%;">
+                <i class="bi bi-envelope me-2"></i>Email
+              </th>
+              <th scope="col" class="px-4 py-3 text-center fw-bold" style="width: 30%; border-top-right-radius: 16px;">
+                <i class="bi bi-gear me-2"></i>Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let usuario of usuariosFiltrados; trackBy: trackByUsuario" 
+                class="align-middle border-0" style="border-bottom: 1px solid #e9ecef !important;">
+              <td class="px-4 py-4">
+                <div class="d-flex align-items-center">
+                  <div class="rounded-circle p-3 me-3" 
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-person-fill text-white" style="font-size: 1.2rem;"></i>
+                  </div>
+                  <div>
+                    <h4 class="mb-1 fw-bold text-dark" style="font-size: 1.25rem;">{{ usuario.nombre }}</h4>
+                    <small class="text-muted fw-normal" style="font-size: 0.875rem;">
+                      Entrenador registrado
+                    </small>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-envelope-fill me-2 text-muted"></i>
+                  <span class="text-dark">{{ usuario.email }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <div class="d-flex justify-content-center gap-3">
+                  <!-- Botón Editar Mejorado -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn edit-btn position-relative overflow-hidden" 
+                    (click)="abrirFormulario(usuario)"
+                    title="Editar entrenador"
+                    style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+                           border: none;
+                           color: #2d3436;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 90px;">
+                    <i class="bi bi-pencil-square me-1" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-md-inline">Editar</span>
+                  </button>
+                  
+                  <!-- Botón Eliminar Mejorado -->
+                  <button 
+                    class="btn px-3 py-2 shadow-sm fw-bold action-btn delete-btn position-relative overflow-hidden" 
+                    (click)="mostrarModalEliminar(usuario)"
+                    title="Eliminar entrenador"
+                    style="background: linear-gradient(135deg, #ff7675, #fd79a8);
+                           border: none;
+                           color: white;
+                           border-radius: 10px;
+                           transition: all 0.3s ease;
+                           min-width: 90px;">
+                    <i class="bi bi-trash3 me-1" style="font-size: 0.95rem;"></i>
+                    <span class="d-none d-md-inline">Eliminar</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Footer con información -->
+    <div class="card-footer bg-light py-4 px-4" style="border-color: #667eea; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+      <div class="row align-items-center">
+        <div class="col-12">
+          <small class="text-muted fw-semibold">
+            <i class="bi bi-info-circle me-1"></i>
+            Total: {{ usuariosFiltrados.length }} entrenador{{ usuariosFiltrados.length !== 1 ? 'es' : '' }} registrado{{ usuariosFiltrados.length !== 1 ? 's' : '' }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación para Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <!-- Header minimalista -->
+      <div class="modal-header border-0 pb-2 pt-4 px-4 position-relative">
+        <h5 class="modal-title fw-bold text-dark w-100 text-center m-0" id="deleteModalLabel">
+          Eliminar entrenador
+        </h5>
+        <button type="button" class="btn-close position-absolute" data-bs-dismiss="modal" aria-label="Close" style="top: 1rem; right: 1rem;"></button>
+      </div>
+      
+      <!-- Body minimalista -->
+      <div class="modal-body px-4 py-3 text-center">
+        <div class="mb-3">
+          <i class="bi bi-person-x text-danger" style="font-size: 2.5rem; opacity: 0.8;"></i>
+        </div>
+        
+        <p class="text-muted mb-3" *ngIf="usuarioAEliminar">
+          ¿Eliminar a <strong class="text-dark">{{ usuarioAEliminar.nombre }}</strong>?
+        </p>
+        
+        <small class="text-muted">Esta acción no se puede deshacer</small>
+      </div>
+      
+      <!-- Footer minimalista -->
+      <div class="modal-footer border-0 px-4 pb-4 pt-2">
+        <div class="d-flex w-100 gap-2">
+          <button type="button" 
+                  class="btn btn-light flex-fill py-2 fw-semibold cancel-btn"
+                  data-bs-dismiss="modal"
+                  style="border-radius: 10px;">
+            Cancelar
+          </button>
+          <button type="button" 
+                  class="btn btn-danger flex-fill py-2 fw-semibold delete-confirm-btn"
+                  (click)="confirmarEliminacion()"
+                  [disabled]="isDeleting"
+                  style="border-radius: 10px;">
+            <span *ngIf="!isDeleting">Eliminar</span>
+            <span *ngIf="isDeleting" class="d-flex align-items-center justify-content-center">
+              <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              Eliminando...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="deleteSuccessToast" class="toast border-0 shadow-sm" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" style="border-radius: 12px;">
+    <div class="toast-body bg-success text-white d-flex align-items-center fw-semibold" style="border-radius: 12px; padding: 1rem;">
+      <i class="bi bi-check-circle me-2"></i>
+      Entrenador eliminado correctamente
+    </div>
+  </div>
+</div>

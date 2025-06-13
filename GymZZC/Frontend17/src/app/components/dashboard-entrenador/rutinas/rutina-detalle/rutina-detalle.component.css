@@ -1,0 +1,83 @@
+/* Estilos para el switch personalizado */
+.custom-switch {
+    --bs-form-check-bg: #dee2e6;
+    --bs-form-switch-color: #667eea;
+}
+
+.custom-switch:checked {
+    --bs-form-check-bg: #667eea;
+    --bs-form-switch-color: white;
+}
+
+/* Efectos hover para el botón de volver */
+.back-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border-color: transparent !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Efectos hover para las cards de ejercicios */
+.ejercicio-card:hover {
+    transform: translateY(-5px);
+    border-color: #667eea !important;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15) !important;
+}
+
+/* Animación para las estadísticas */
+.stat-item {
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+}
+
+/* Mejora visual para el breadcrumb */
+.breadcrumb {
+    background: none;
+    padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #667eea;
+    font-weight: bold;
+}
+
+/* Efectos de transición suave */
+.card {
+    transition: all 0.3s ease;
+}
+
+/* Hover para enlaces del breadcrumb */
+.breadcrumb-item a:hover {
+    color: #5a67d8 !important;
+    text-decoration: underline !important;
+}
+
+/* Animación para el badge de estado */
+.badge {
+    transition: all 0.3s ease;
+}
+
+/* Sombra suave para las cards principales */
+.shadow-lg {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+    padding: 10px;
+    }
+    
+    .card-body {
+    padding: 1.5rem !important;
+    }
+    
+    .stat-number {
+    font-size: 1.2rem !important;
+    }
+}

@@ -1,0 +1,120 @@
+<div class="container mt-4" *ngIf="rutina">
+    <!-- Header con navegación -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <i class="fas fa-calendar-check me-2"></i>Rutina de {{ rutina.cliente?.nombre || rutina.clienteNombre || 'Cliente no disponible' }}
+            </h2>
+        </div>
+        
+        <button class="btn btn-outline-secondary px-4 py-2 shadow-sm fw-semibold back-btn"
+                style="border-radius: 10px; border-color: #667eea; color: #667eea;"
+                onclick="history.back()">
+            <i class="fas fa-arrow-left me-2"></i>Volver
+        </button>
+    </div>
+
+    <!-- Sección de ejercicios -->
+    <div class="card shadow-lg" style="border-color: #667eea; border-radius: 20px; border-width: 2px;">
+        <div class="card-header py-4 px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 18px 18px 0 0;">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0 fw-bold text-white">
+                    <i class="fas fa-dumbbell me-2"></i>Ejercicios de la Rutina
+                </h3>
+                <span class="badge bg-white text-dark px-3 py-2 fw-bold" style="font-size: 0.9rem;">
+                    {{ rutina.ejercicios?.length || 0 }} ejercicio{{ (rutina.ejercicios?.length || 0) !== 1 ? 's' : '' }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body p-4">
+            <!-- Estado vacío de ejercicios -->
+            <div *ngIf="!rutina.ejercicios || rutina.ejercicios.length === 0" class="text-center py-5">
+                <i class="fas fa-inbox display-1 text-muted"></i>
+                <h4 class="mt-3 text-muted">No hay ejercicios asignados</h4>
+                <p class="text-muted">Esta rutina aún no tiene ejercicios configurados</p>
+            </div>
+
+            <!-- Lista de ejercicios -->
+            <div class="row" *ngIf="rutina.ejercicios && rutina.ejercicios.length > 0">
+                <div class="col-lg-6 mb-4" *ngFor="let ejercicio of rutina.ejercicios; let i = index">
+                    <div class="card h-100 ejercicio-card shadow-sm" 
+                        style="border-radius: 16px; border: 2px solid transparent; transition: all 0.3s ease;">
+                        <div class="card-body p-4">
+                            <!-- Header del ejercicio -->
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle p-3 me-3" 
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-dumbbell text-white" style="font-size: 1.1rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1 fw-bold text-dark">
+                                        {{ ejercicio.ejercicio?.nombre || ejercicio.ejercicioNombre || 'Nombre no disponible' }}
+                                    </h5>
+                                    <small class="text-muted fw-semibold">
+                                        {{ ejercicio.ejercicio?.tipo || ejercicio.ejercicioTipo || 'Sin categoría' }}
+                                    </small>
+                                </div>
+                                <div class="badge bg-light text-dark px-2 py-1 fw-bold">
+                                    #{{ i + 1 }}
+                                </div>
+                            </div>
+
+                            <!-- Detalles del ejercicio -->
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(116, 185, 255, 0.1), rgba(116, 185, 255, 0.05));">
+                                        <div class="stat-number fw-bold text-dark" style="font-size: 1.5rem;">
+                                            {{ ejercicio.series || 0 }}
+                                        </div>
+                                        <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                                            Series
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(255, 234, 167, 0.3), rgba(255, 234, 167, 0.1));">
+                                        <div class="stat-number fw-bold text-dark" style="font-size: 1.5rem;">
+                                            {{ ejercicio.repeticiones || 0 }}
+                                        </div>
+                                        <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                                            Repeticiones
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4" *ngIf="ejercicio.pesoEjercicio && ejercicio.pesoEjercicio > 0">
+                                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(0, 184, 148, 0.05));">
+                                        <div class="stat-number fw-bold text-dark" style="font-size: 1.5rem;">
+                                            {{ ejercicio.pesoEjercicio }}
+                                        </div>
+                                        <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                                            kg
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4" *ngIf="!ejercicio.pesoEjercicio || ejercicio.pesoEjercicio === 0">
+                                    <div class="stat-item p-3 rounded-3" style="background: linear-gradient(135deg, rgba(99, 110, 114, 0.1), rgba(99, 110, 114, 0.05));">
+                                        <div class="stat-number fw-bold text-muted" style="font-size: 1.2rem;">
+                                            <i class="fas fa-minus"></i>
+                                        </div>
+                                        <div class="stat-label text-muted fw-semibold" style="font-size: 0.85rem;">
+                                            Sin peso
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Descripción del ejercicio si existe -->
+                            <div *ngIf="ejercicio.ejercicio?.descripcion" class="mt-3 p-2 rounded bg-light">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    {{ ejercicio.ejercicio.descripcion }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
