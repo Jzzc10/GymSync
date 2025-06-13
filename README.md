@@ -1,2 +1,2 @@
-# ProyectoFinalGalileo
-Web Gym
+# GymSync
+Proyecto Final 2DAW Galileo
