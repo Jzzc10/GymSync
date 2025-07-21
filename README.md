@@ -1,193 +1,189 @@
-🏋️‍♂️ GymSync
-GymSync es una plataforma web y móvil diseñada para modernizar la gestión de entrenamientos en gimnasios. Conecta entrenadores, usuarios y administradores en un ecosistema digital eficiente que automatiza rutinas, mide progreso físico y optimiza la comunicación.
+# 🏋️‍♂️ GymSync
 
-🎯 Objetivo
-Automatizar y personalizar rutinas de entrenamiento.
+Una plataforma web y móvil moderna diseñada para revolucionar la gestión de entrenamientos en gimnasios. Conecta entrenadores, usuarios y administradores en un ecosistema digital eficiente que automatiza rutinas, mide progreso físico y optimiza la comunicación.
 
-Facilitar el seguimiento del progreso físico.
+## 🎯 Objetivos
 
-Mejorar la comunicación entre entrenadores y clientes.
+- **Automatizar** y personalizar rutinas de entrenamiento
+- **Facilitar** el seguimiento del progreso físico
+- **Mejorar** la comunicación entre entrenadores y clientes
+- **Centralizar** la gestión del gimnasio en una plataforma accesible
 
-Centralizar la gestión del gimnasio en una plataforma accesible.
+## 🚀 Características Principales
 
-📱 Descripción General
-Roles
-Rol	Funciones principales
-Administrador	Gestiona entrenadores, usuarios, membresías y métricas
-Entrenador	Crea rutinas, monitorea clientes, ajusta planes
-Cliente	Consulta rutinas, registra entrenamientos, sigue progreso
+- 📅 **Calendario de entrenamientos** - Planifica y organiza sesiones
+- 📈 **Gráficos de evolución física** - Visualiza el progreso en tiempo real
+- 🔔 **Notificaciones automáticas** - Mantente al día con recordatorios
+- 🧠 **Biblioteca multimedia** - Videos y descripciones de ejercicios
+- 🔐 **Autenticación segura** - Sistema JWT con encriptación bcrypt
 
-Funcionalidades clave
-📅 Calendario de entrenamientos
+## 👥 Roles del Sistema
 
-📈 Gráficos de evolución física
+| Rol | Funciones Principales |
+|-----|---------------------|
+| **Cliente** | Visualiza rutinas, registra progreso diario, consulta evolución |
+| **Entrenador** | Crea rutinas personalizadas, monitorea clientes, ajusta planes |
+| **Administrador** | Gestiona usuarios, entrenadores, membresías y métricas generales |
 
-🔔 Notificaciones automáticas
+## 🛠️ Stack Tecnológico
 
-🧠 Biblioteca multimedia de ejercicios (videos y descripciones)
+### Frontend
+- **Framework:** Angular 19.2.9
+- **UI Library:** Angular Material
+- **Librerías:** RxJS, SweetAlert2
+- **Autenticación:** JWT
 
-💡 Motivación
-Detectamos la necesidad de digitalizar procesos que aún se gestionan con planillas físicas, WhatsApp o Excel. GymSync busca:
+### Backend
+- **Framework:** Spring Boot (Java 23)
+- **Base de Datos:** MySQL
+- **Servidor:** Apache Tomcat 11
+- **Seguridad:** JWT + bcrypt
 
-Brindar seguimiento personalizado a los clientes.
+## 📋 Requisitos del Sistema
 
-Mejorar la eficiencia operativa del gimnasio.
+### Hardware Mínimo
+- Procesador ≥ 2GHz
+- Memoria RAM ≥ 4GB
 
-Escalar a cadenas deportivas con inteligencia artificial para rutinas adaptativas futuras.
+### Software Requerido
 
-🧱 Arquitectura Técnica
-Frontend
-Tecnología: Angular 19.2.9
+| Tecnología | Versión | Enlace de Descarga |
+|------------|---------|-------------------|
+| Java | 23.0.2 | [Oracle JDK](https://jdk.java.net/) |
+| Apache Maven | 3.9.9 | [Maven Download](https://maven.apache.org/download.cgi) |
+| Node.js | 22.13.1 | [Node.js](https://nodejs.org/) |
+| Angular CLI | 19.2.9 | `npm install -g @angular/cli@19.2.9` |
+| MySQL | Última estable | [MySQL Downloads](https://dev.mysql.com/downloads/) |
 
-Componentes: Autenticación JWT, Dashboard, Rutinas, Progreso
+## 🚀 Instalación y Configuración
 
-Librerías: Angular Material, SweetAlert2, RxJS
+### 1. Verificar Prerrequisitos
 
-Backend
-Tecnología: Spring Boot (Java 23)
-
-Base de datos: MySQL
-
-Seguridad: JWT para autenticación, bcrypt para contraseñas cifradas
-
-Servidor: Apache Tomcat 11
-
-⚙️ Requisitos Técnicos
-Hardware
-Procesador ≥ 2GHz
-
-Memoria RAM ≥ 4GB
-
-Software
-Tecnología	Versión Requerida	URL de Descarga
-Java	23.0.2	https://jdk.java.net/
-Apache Maven	3.9.9	https://maven.apache.org/download.cgi
-Node.js	22.13.1	https://nodejs.org/
-NPM	10.9.2	https://nodejs.org/
-Angular CLI	19.2.9 (global)	npm install -g @angular/cli@19.2.9
-MySQL	Última versión estable	https://dev.mysql.com/downloads/
-Navegadores	Chrome, Firefox, Edge	Últimas versiones recomendadas
-IDE recomendado	Visual Studio Code o IntelliJ IDEA con extensiones para Java y Angular	
-
-👥 Roles y Funcionalidades
-Rol	Funciones principales
-Cliente	Visualiza rutinas, registra progreso diario, consulta evolución
-Entrenador	Crea rutinas personalizadas, monitorea clientes, ajusta planes
-Administrador	Alta/baja de usuarios y entrenadores, asigna clientes, gestiona membresías
-
-🗂 Modelo Relacional (Resumen)
-Entidades principales: USUARIO, RUTINA, EJERCICIO, RUTINA_EJERCICIO, PROGRESO
-
-Relaciones claras entre clientes, entrenadores, rutinas y progreso.
-
-Ejemplo:
-
-plaintext
-Copiar
-Editar
-USUARIO(1, 'Ana', 'ana@gmail.com', ..., 'cliente')
-RUTINA(1, 1, 2, 'Rutina de fuerza inicial')
-EJERCICIO(1, 'Sentadillas', 'piernas', ...)
-🔧 APIs Disponibles
-Recurso	Método	Ruta	Descripción
-Usuarios	GET	/api/usuarios	Lista todos los usuarios
-POST	/api/usuarios	Crear usuario
-PUT	/api/usuarios/{id}	Editar usuario
-DELETE	/api/usuarios/{id}	Eliminar usuario
-Rutinas	GET	/api/rutinas/cliente/{id}	Rutinas de un cliente
-POST	/api/rutinas	Crear rutina
-PUT	/api/rutinas/{id}	Editar rutina
-Ejercicios	GET	/api/ejercicios	Todos los ejercicios
-POST	/api/ejercicios	Crear ejercicio
-PUT	/api/ejercicios/{id}	Editar ejercicio
-Progreso	GET	/api/progreso/usuario/{id}	Progreso por usuario
-POST	/api/progreso	Registrar progreso
-PUT	/api/progreso/{id}	Actualizar progreso
-
-🛠️ Instalación y Configuración
-1. Prerrequisitos
-Java 23.0.2 instalado y configurado
-
-bash
-Copiar
-Editar
+```bash
+# Verificar Java
 java -version
-Apache Maven 3.9.9 configurado
 
-bash
-Copiar
-Editar
+# Verificar Maven
 mvn -version
-Node.js y NPM instalados
 
-bash
-Copiar
-Editar
+# Verificar Node.js y NPM
 node -v
 npm -v
-Angular CLI instalado globalmente
 
-bash
-Copiar
-Editar
+# Instalar Angular CLI globalmente
 npm install -g @angular/cli@19.2.9
-MySQL Server y cliente SQL configurados (crear base gymsync).
+```
 
-2. Clonar el proyecto
-bash
-Copiar
-Editar
-git clone https://github.com/tuusuario/gymsync.git
+### 2. Clonar el Repositorio
+
+```bash
+git clone https://github.com/Jzzc10/gymsync.git
 cd gymsync
-Deberías ver dos carpetas principales:
+```
 
-/frontend → Angular
+### 3. Configurar Base de Datos
 
-/backend → Spring Boot
+Crear base de datos MySQL:
+```sql
+CREATE DATABASE gymsync;
+```
 
-3. Configurar conexión a base de datos
-Editar application.properties o application.yml en /backend/src/main/resources:
-
-properties
-Copiar
-Editar
+Editar `backend/src/main/resources/application.properties`:
+```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/gymsync
 spring.datasource.username=tu_usuario
 spring.datasource.password=tu_password
-4. Backend
-bash
-Copiar
-Editar
+```
+
+### 4. Ejecutar Backend
+
+```bash
 cd backend
 mvn clean install
 mvn spring-boot:run
-El servidor iniciará en: http://localhost:8080
+```
 
-5. Frontend
-bash
-Copiar
-Editar
+El servidor estará disponible en: `http://localhost:8080`
+
+### 5. Ejecutar Frontend
+
+```bash
 cd frontend
 npm install
 ng serve
-La app estará en: http://localhost:4200
+```
 
-🧪 Pruebas y Uso
-Regístrate como cliente, entrenador o administrador.
+La aplicación estará disponible en: `http://localhost:4200`
 
-Asigna rutinas y registra progreso.
+## 📚 API Endpoints
 
-Observa estadísticas y prueba todas las funcionalidades.
+| Recurso | Método | Endpoint | Descripción |
+|---------|--------|----------|-------------|
+| **Usuarios** | GET | `/api/usuarios` | Lista todos los usuarios |
+| | POST | `/api/usuarios` | Crear nuevo usuario |
+| | PUT | `/api/usuarios/{id}` | Editar usuario |
+| | DELETE | `/api/usuarios/{id}` | Eliminar usuario |
+| **Rutinas** | GET | `/api/rutinas/cliente/{id}` | Rutinas de un cliente |
+| | POST | `/api/rutinas` | Crear nueva rutina |
+| | PUT | `/api/rutinas/{id}` | Editar rutina |
+| **Ejercicios** | GET | `/api/ejercicios` | Todos los ejercicios |
+| | POST | `/api/ejercicios` | Crear ejercicio |
+| **Progreso** | GET | `/api/progreso/usuario/{id}` | Progreso por usuario |
+| | POST | `/api/progreso` | Registrar progreso |
 
-❗ Problemas Comunes y Soluciones
-Error	Solución
-Cannot connect to DB	Verificar credenciales y puerto MySQL
-ng serve no encontrado	Reinstalar Angular CLI globalmente
-mvn no encontrado	Configurar correctamente MAVEN_HOME
+## 🗄️ Modelo de Datos
 
-🧑‍💻 Autor
-Jzzc10
-GitHub: https://github.com/Jzzc10
+El sistema maneja las siguientes entidades principales:
 
-📄 Licencia
-Este proyecto está bajo la licencia MIT. Consulta el archivo LICENSE.md para más detalles.
+- **USUARIO** - Información de clientes, entrenadores y administradores
+- **RUTINA** - Planes de entrenamiento personalizados
+- **EJERCICIO** - Biblioteca de ejercicios con descripciones
+- **RUTINA_EJERCICIO** - Relación entre rutinas y ejercicios
+- **PROGRESO** - Registro de evolución física de los usuarios
+
+## 🧪 Uso de la Aplicación
+
+1. **Registro** - Crea tu cuenta como cliente, entrenador o administrador
+2. **Asignación** - Los entrenadores crean y asignan rutinas personalizadas
+3. **Seguimiento** - Los clientes registran su progreso diario
+4. **Análisis** - Visualiza estadísticas y evolución a través de gráficos
+
+## ❗ Problemas Comunes
+
+| Error | Solución |
+|-------|----------|
+| `Cannot connect to DB` | Verificar credenciales y puerto de MySQL |
+| `ng serve no encontrado` | Reinstalar Angular CLI globalmente |
+| `mvn no encontrado` | Configurar correctamente `MAVEN_HOME` |
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Para cambios importantes:
+
+1. Fork el proyecto
+2. Crea tu rama de característica (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📈 Roadmap Futuro
+
+- 🤖 **Inteligencia Artificial** para rutinas adaptativas
+- 📱 **App móvil nativa** para iOS y Android
+- 🏢 **Escalabilidad** para cadenas de gimnasios
+- 📊 **Analytics avanzados** y reportes
+
+## 👨‍💻 Autor
+
+**Jzzc10**
+- GitHub: [@Jzzc10](https://github.com/Jzzc10)
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE.md](LICENSE.md) para más detalles.
+
+---
+
+⭐ Si este proyecto te fue útil, ¡dale una estrella en GitHub!
+
+📧 Para preguntas o sugerencias, no dudes en abrir un [issue](https://github.com/Jzzc10/gymsync/issues).
