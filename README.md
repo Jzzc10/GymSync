@@ -188,7 +188,7 @@ ng serve no encontrado	Reinstalar Angular CLI globalmente
 mvn no encontrado	Configurar correctamente MAVEN_HOME
 
 🧑‍💻 Autor
-Jzzc
+Jzzc10
 GitHub: https://github.com/Jzzc10
 
 📄 Licencia
