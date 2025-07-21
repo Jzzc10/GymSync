@@ -1,3 +1,7 @@
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)]()
+[![License](https://img.shields.io/badge/license-MIT-green)]()
+
 # 🏋️‍♂️ GymSync
 
 Una plataforma web y móvil moderna diseñada para revolucionar la gestión de entrenamientos en gimnasios. Conecta entrenadores, usuarios y administradores en un ecosistema digital eficiente que automatiza rutinas, mide progreso físico y optimiza la comunicación.
