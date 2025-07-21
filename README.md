@@ -24,8 +24,6 @@ Funcionalidades clave
 
 🔔 Notificaciones automáticas
 
-💬 Chat integrado
-
 🧠 Biblioteca multimedia de ejercicios (videos y descripciones)
 
 💡 Motivación
