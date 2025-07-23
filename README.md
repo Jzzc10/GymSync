@@ -120,7 +120,7 @@ mvn spring-boot:run
 <img width="853" height="131" alt="mvn_spring_boot_run" src="https://github.com/user-attachments/assets/ddd30ebd-553d-4dea-973e-1f1376b5a185" />
 
 
-RECUERDA! La base de datos tiene que estar arrancado antes.
+RECUERDA! La base de datos y tu usuario tiene que estar creado y arrancado antes.
 
 El servidor estará disponible en: `http://localhost:8080`
 <img width="1111" height="564" alt="home_page_spring_boot" src="https://github.com/user-attachments/assets/a5096bdd-7f66-45a9-ad14-9e719b99b6a0" />
