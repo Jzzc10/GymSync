@@ -1,12 +1,23 @@
--- Crear base de datos y usuario
-CREATE DATABASE IF NOT EXISTS backend;
-CREATE USER IF NOT EXISTS 'gymsync'@'localhost' IDENTIFIED BY 'gymsync';
-GRANT ALL PRIVILEGES ON backend.* TO 'gymsync'@'localhost';
-FLUSH PRIVILEGES;
-USE backend;
+-- ================================
+-- SCRIPT DE BASE DE DATOS GYMSYNC
+-- ================================
 
--- ALTER TABLE usuario DROP CHECK usuario_chk_1;
--- Usuarios
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS gymsync;
+
+-- Crear usuario solo para gymsync
+CREATE USER IF NOT EXISTS 'tu_usuario'@'localhost' IDENTIFIED BY 'tu_password';
+GRANT SELECT, INSERT, UPDATE, DELETE ON gymsync.* TO 'tu_usuario'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Usar la base de datos
+USE gymsync;
+
+-- ================================
+-- INSERTAR DATOS DE PRUEBA
+-- ================================
+
+-- Insertar usuarios de prueba (cliente, entrenador, admin)
 -- password: 12345678
 INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Juan Pérez', 'juan.perez@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'CLIENTE'),
@@ -14,8 +25,6 @@ INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Carlos López', 'carlos.lopez@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ENTRENADOR'),
 ('Ana Martínez', 'ana.martinez@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ENTRENADOR'),
 ('Admin Sistema', 'admin@gmail.com', '$2a$12$AB9qGFUgcShf6u16K/bUbuiTkEwNxmGw.gP1jVe9wcPF2zF.lIwmi', 'ADMIN');
-select * from usuarios;
-select * from rutinas;
 
 -- Ejercicios
 INSERT INTO ejercicios (nombre, tipo, descripcion, url_imagen, url_video) VALUES
@@ -28,7 +37,6 @@ INSERT INTO ejercicios (nombre, tipo, descripcion, url_imagen, url_video) VALUES
 ('Peso muerto', 'ESPALDA', 'Ejercicio compuesto para espalda baja y piernas', 'https://i.postimg.cc/ftq0SytC/peso-Muerto.png', 'https://www.youtube.com/watch?v=0XL4cZR2Ink'),
 ('Elevaciones laterales', 'HOMBRO', 'Ejercicio para deltoides laterales', 'https://i.postimg.cc/XGYCvdJX/eleveaciones-Laterales.png', 'https://www.youtube.com/watch?v=hgLpdwMtEEs'),
 ('Hip thrust', 'GLUTEO', 'Ejercicio específico para glúteos', 'https://i.postimg.cc/MvCVYnsr/Captura-de-pantalla-2025-06-09-180250.png', 'https://www.youtube.com/watch?v=pUdIL5x0fWg');
-select * from ejercicios;
 
 -- Rutinas
 INSERT INTO rutinas (usuario_id, entrenador_id, descripcion) VALUES
@@ -36,12 +44,6 @@ INSERT INTO rutinas (usuario_id, entrenador_id, descripcion) VALUES
 (1, 4, 'Rutina de mantenimiento'),
 (2, 3, 'Rutina definición'),
 (2, 4, 'Rutina fuerza');
-select * from rutinas;
--- SET SQL_SAFE_UPDATES = 0;
--- DELETE FROM rutina_ejercicios;
--- ALTER TABLE rutina_ejercicios AUTO_INCREMENT = 1;
--- SET SQL_SAFE_UPDATES = 1;
-select * from ejercicios;
 
 -- Rutina-Ejercicios
 INSERT INTO rutina_ejercicios (rutina_id, ejercicio_id, series, repeticiones, peso_ejercicio) VALUES
@@ -74,3 +76,52 @@ INSERT INTO progresos (usuario_id, rutina_id, ejercicio_id, series, repeticiones
 (2, 4, 1, 4, 5, 80.0, '2023-01-13', 'Enfoque en fuerza máxima'),
 (2, 4, 1, 4, 5, 82.5, '2023-01-20', 'Pequeño incremento de peso');
 
+-- Solucionar problemas de ID: Desactivar el safe, borrar y volver a insertar los datos
+-- SET SQL_SAFE_UPDATES = 0;
+-- DELETE FROM rutina_ejercicios;
+-- ALTER TABLE rutina_ejercicios AUTO_INCREMENT = 1;
+-- SET SQL_SAFE_UPDATES = 1;
+
+-- ================================
+-- CONSULTAS ÚTILES PARA VERIFICAR
+-- ================================
+
+-- Ver todos los usuarios por rol
+-- SELECT id, nombre, email, rol FROM usuarios ORDER BY rol, nombre;
+
+-- Ver rutinas con nombres de cliente y entrenador
+-- SELECT r.id,
+--        c.nombre as cliente, 
+--        e.nombre as entrenador,
+--        r.descripcion
+-- FROM rutinas r
+-- JOIN usuarios c ON r.usuario_id = c.id
+-- JOIN usuarios e ON r.entrenador_id = e.id;
+
+-- Ver ejercicios de cada rutina
+-- SELECT r.id as rutina_id,
+--        r.descripcion as rutina,
+--        c.nombre as cliente,
+--        ej.nombre as ejercicio,
+--        re.series,
+--        re.repeticiones,
+--        re.peso_ejercicio
+-- FROM rutinas r
+-- JOIN usuarios c ON r.usuario_id = c.id
+-- JOIN rutina_ejercicios re ON r.id = re.rutina_id
+-- JOIN ejercicios ej ON re.ejercicio_id = ej.id
+-- ORDER BY r.id, ej.nombre;
+
+-- Ver progreso reciente
+-- SELECT p.fecha_registro, 
+--        u.nombre as usuario, 
+--        e.nombre as ejercicio, 
+--        p.series, 
+--        p.repeticiones, 
+--        p.peso_utilizado, 
+--        p.observaciones
+-- FROM progresos p
+-- JOIN usuarios u ON p.usuario_id = u.id
+-- JOIN ejercicios e ON p.ejercicio_id = e.id
+-- ORDER BY p.fecha_registro DESC
+-- LIMIT 20;
