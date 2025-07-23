@@ -1,6 +1,13 @@
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+<!-- Estado del proyecto -->
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+<!-- Tecnologías -->
+![Java](https://img.shields.io/badge/java-23.0.2-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=spring)
+![Angular](https://img.shields.io/badge/Angular-17.3.17-red?logo=angular)
+![MySQL](https://img.shields.io/badge/MySQL-latest-blue?logo=mysql)
 
 # 🏋️‍♂️ GymSync
 
