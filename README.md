@@ -76,6 +76,7 @@ npm -v
 # Instalar Angular CLI globalmente
 npm install -g @angular/cli@17.3.17
 ```
+<img width="674" height="723" alt="versiones" src="https://github.com/user-attachments/assets/d75c72f2-7ea3-474d-9892-9ceeef035984" />
 
 ### 2. Clonar el Repositorio
 
@@ -83,6 +84,7 @@ npm install -g @angular/cli@17.3.17
 git clone https://github.com/Jzzc10/gymsync.git
 cd gymsync
 ```
+<img width="655" height="316" alt="clonar_repo" src="https://github.com/user-attachments/assets/9a71c36c-ffbe-4579-8126-5ca15828cdaf" />
 
 ### 3. Configurar Base de Datos
 
@@ -97,6 +99,8 @@ spring.datasource.url=jdbc:mysql://localhost:3306/gymsync
 spring.datasource.username=tu_usuario
 spring.datasource.password=tu_password
 ```
+<img width="1112" height="770" alt="bd_mysql" src="https://github.com/user-attachments/assets/327bb33c-b5b5-4896-852a-2b760eeb12fa" />
+
 
 ### 4. Ejecutar Backend
 
@@ -105,20 +109,29 @@ cd backend
 mvn clean install
 mvn spring-boot:run
 ```
+<img width="857" height="427" alt="mvn_clean_install" src="https://github.com/user-attachments/assets/8a279d11-6e75-4a37-b612-49e709104794" />
+<img width="853" height="131" alt="mvn_spring_boot_run" src="https://github.com/user-attachments/assets/ddd30ebd-553d-4dea-973e-1f1376b5a185" />
+
+
+RECUERDA! La base de datos tiene que estar arrancado antes.
 
 El servidor estará disponible en: `http://localhost:8080`
+<img width="1111" height="564" alt="home_page_spring_boot" src="https://github.com/user-attachments/assets/a5096bdd-7f66-45a9-ad14-9e719b99b6a0" />
+
 
 ### 5. Ejecutar Frontend
 
+Abre un nuevo terminal en VS Studio, o si prefieres en git bash, cmd o powershell.
 ```bash
 cd frontend
 npm install
 ng serve
 ```
+<img width="741" height="293" alt="image" src="https://github.com/user-attachments/assets/4651f63b-3709-4517-9ed3-c4fc387b14d5" />
+<img width="1222" height="1316" alt="image" src="https://github.com/user-attachments/assets/d89ca7a3-2b83-47ea-b4f5-4177bb7fbed5" />
+
 
 La aplicación estará disponible en: `http://localhost:4200`
-
-<img width="674" height="723" alt="Captura de pantalla 2025-07-21 161124" src="https://github.com/user-attachments/assets/d75c72f2-7ea3-474d-9892-9ceeef035984" />
 
 ## 📚 API Endpoints
 
@@ -160,6 +173,8 @@ El sistema maneja las siguientes entidades principales:
 | `Cannot connect to DB` | Verificar credenciales y puerto de MySQL |
 | `ng serve no encontrado` | Reinstalar Angular CLI globalmente |
 | `mvn no encontrado` | Configurar correctamente `MAVEN_HOME` |
+| `Port 8080 was already in use` | Hacer un taskkil en el puerto 8080 |
+<img width="638" height="152" alt="image" src="https://github.com/user-attachments/assets/73f9f56d-397c-4f84-b1a4-6140761e1b32" />
 
 ## 🤝 Contribuciones
 
@@ -177,6 +192,8 @@ Las contribuciones son bienvenidas. Para cambios importantes:
 - 📱 **App móvil nativa** para iOS y Android
 - 🏢 **Escalabilidad** para cadenas de gimnasios
 - 📊 **Analytics avanzados** y reportes
+- Notificaciones rutina
+- Chat Integrado
 
 ## 👨‍💻 Autor
 
