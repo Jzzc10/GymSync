@@ -108,6 +108,8 @@ spring.datasource.password=tu_password
 ```
 <img width="1112" height="770" alt="bd_mysql" src="https://github.com/user-attachments/assets/327bb33c-b5b5-4896-852a-2b760eeb12fa" />
 
+El script SQL estan en /src/main/resources/sql/
+<img width="879" height="412" alt="image" src="https://github.com/user-attachments/assets/f1c5326f-8f0c-4068-87ce-fba300f724a5" />
 
 ### 4. Ejecutar Backend
 
