@@ -3,7 +3,7 @@
 -- ================================
 
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS gymsync;
+CREATE DATABASE IF NOT EXISTS gymsync CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Crear usuario solo para gymsync
 CREATE USER IF NOT EXISTS 'tu_usuario'@'localhost' IDENTIFIED BY 'tu_password';
