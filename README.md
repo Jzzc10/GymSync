@@ -17,7 +17,6 @@ Una plataforma web y móvil moderna diseñada para revolucionar la gestión de e
 
 - 📅 **Calendario de entrenamientos** - Planifica y organiza sesiones
 - 📈 **Gráficos de evolución física** - Visualiza el progreso en tiempo real
-- 🔔 **Notificaciones automáticas** - Mantente al día con recordatorios
 - 🧠 **Biblioteca multimedia** - Videos y descripciones de ejercicios
 - 🔐 **Autenticación segura** - Sistema JWT con encriptación bcrypt
 
@@ -32,7 +31,7 @@ Una plataforma web y móvil moderna diseñada para revolucionar la gestión de e
 ## 🛠️ Stack Tecnológico
 
 ### Frontend
-- **Framework:** Angular 19.2.9
+- **Framework:** Angular 17.3.17
 - **UI Library:** Angular Material
 - **Librerías:** RxJS, SweetAlert2
 - **Autenticación:** JWT
@@ -56,7 +55,7 @@ Una plataforma web y móvil moderna diseñada para revolucionar la gestión de e
 | Java | 23.0.2 | [Oracle JDK](https://jdk.java.net/) |
 | Apache Maven | 3.9.9 | [Maven Download](https://maven.apache.org/download.cgi) |
 | Node.js | 22.13.1 | [Node.js](https://nodejs.org/) |
-| Angular CLI | 19.2.9 | `npm install -g @angular/cli@19.2.9` |
+| Angular CLI | 17.3.17 | `npm install -g @angular/cli@17.3.17` |
 | MySQL | Última estable | [MySQL Downloads](https://dev.mysql.com/downloads/) |
 
 ## 🚀 Instalación y Configuración
@@ -75,7 +74,7 @@ node -v
 npm -v
 
 # Instalar Angular CLI globalmente
-npm install -g @angular/cli@19.2.9
+npm install -g @angular/cli@17.3.17
 ```
 
 ### 2. Clonar el Repositorio
@@ -118,6 +117,8 @@ ng serve
 ```
 
 La aplicación estará disponible en: `http://localhost:4200`
+
+<img width="674" height="723" alt="Captura de pantalla 2025-07-21 161124" src="https://github.com/user-attachments/assets/d75c72f2-7ea3-474d-9892-9ceeef035984" />
 
 ## 📚 API Endpoints
 
