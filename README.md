@@ -355,7 +355,7 @@ ng e2e
 **Jorge Zárate** (Jzzc10)
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Jzzc10)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/jorge-zarate)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/zechengzhou)
 
 *Desarrollador Full Stack apasionado por crear soluciones tecnológicas innovadoras*
 
