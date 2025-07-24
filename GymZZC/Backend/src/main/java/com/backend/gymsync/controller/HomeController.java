@@ -8,6 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
+        // Endpoint para verificar que el backend está funcionando
         return "Spring Boot está funcionando 🚀";
     }
 }

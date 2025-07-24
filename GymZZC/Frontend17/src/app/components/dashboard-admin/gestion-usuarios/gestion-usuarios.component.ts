@@ -25,7 +25,7 @@ export class GestionUsuariosComponent {
   itemsPerPage = 8;
   totalPages = 0;
 
-  // Variables para el modal de eliminación
+  // Variables para el modal de eliminacion
   usuarioAEliminar: Usuario | null = null;
   isDeleting = false;
   private deleteModal: any;

@@ -30,7 +30,7 @@
   opacity: 0.7;
 }
 
-/* Animación suave del modal */
+/* Animacion suave del modal */
 .modal.fade .modal-dialog {
   transform: translate(0, -20px) scale(0.98);
   transition: all 0.2s ease-out;

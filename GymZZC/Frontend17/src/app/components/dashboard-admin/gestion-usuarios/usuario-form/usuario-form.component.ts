@@ -42,6 +42,7 @@ export class UsuarioFormComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // Validar el formulario
   guardar(): void {
     if (this.form.valid) {
       const usuario: Usuario = this.form.value;

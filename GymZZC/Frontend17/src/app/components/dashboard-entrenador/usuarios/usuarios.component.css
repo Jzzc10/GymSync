@@ -241,7 +241,7 @@
   outline-offset: 2px;
 }
 
-/* Animación suave para cards */
+/* Animacion suave para cards */
 .card {
   transition: all 0.3s ease;
 }

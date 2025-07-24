@@ -285,7 +285,7 @@
   border-left: 3px solid var(--danger);
 }
 
-/* Botones de acción */
+/* Botones de accion */
 .action-buttons {
   display: flex;
   gap: 1rem;

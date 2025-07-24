@@ -55,7 +55,7 @@ export class RutinasComponent implements OnInit {
     }
   }
 
-  // Método para búsqueda en tiempo real
+  // Metodo para búsqueda en tiempo real
   onSearchChange(): void {
     this.buscarRutinas();
   }

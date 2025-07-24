@@ -17,7 +17,6 @@ export interface RutinaEjercicio {
   ejercicioTipo?: string;
 }
 
-// Updated Rutina interface to match backend expectations
 export interface Rutina {
   id?: number;
   cliente?: Usuario;
@@ -119,22 +118,22 @@ export class RutinaService {
 
   // MÉTODOS PARA GESTIÓN DE EJERCICIOS EN RUTINAS
 
-  // Obtener ejercicios de una rutina
+  // Obtener ejercicios
   getEjerciciosDeRutina(rutinaId: number): Observable<RutinaEjercicio[]> {
     return this.http.get<RutinaEjercicio[]>(`${this.apiUrl}/${rutinaId}/ejercicios`);
   }
 
-  // Obtener ejercicio específico en una rutina
+  // Obtener ejercicio específico
   getEjercicioEnRutina(rutinaId: number, ejercicioId: number): Observable<RutinaEjercicio> {
     return this.http.get<RutinaEjercicio>(`${this.apiUrl}/${rutinaId}/ejercicios/${ejercicioId}`);
   }
 
-  // Agregar ejercicio a rutina
+  // Agregar ejercicio
   agregarEjercicioARutina(rutinaId: number, rutinaEjercicio: RutinaEjercicio): Observable<RutinaEjercicio> {
     return this.http.post<RutinaEjercicio>(`${this.apiUrl}/${rutinaId}/ejercicios`, rutinaEjercicio);
   }
 
-  // Actualizar ejercicio en rutina
+  // Actualizar ejercicio
   actualizarEjercicioEnRutina(
     rutinaId: number, 
     ejercicioId: number, 
@@ -146,7 +145,7 @@ export class RutinaService {
     );
   }
 
-  // Quitar ejercicio de rutina
+  // Quitar ejercicio
   quitarEjercicioDeRutina(rutinaId: number, ejercicioId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${rutinaId}/ejercicios/${ejercicioId}`);
   }

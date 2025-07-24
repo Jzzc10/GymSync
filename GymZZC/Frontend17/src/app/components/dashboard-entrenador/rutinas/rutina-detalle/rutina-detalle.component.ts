@@ -20,6 +20,8 @@ export class RutinaDetalleComponent implements OnInit {
     this.cargarRutina(id);
   }
 
+  // Cargar rutina por ID
+  // Este método se llama al inicializar el componente
   cargarRutina(id: number): void {
     this.rutinaService.getRutinaById(id).subscribe({
       next: (rutina) => {
