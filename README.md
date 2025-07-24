@@ -341,13 +341,6 @@ ng e2e
 - [ ] 📋 **Planes nutricionales** - Integración con nutrición
 - [ ] 🏆 **Gamificación** - Sistema de logros y ranking
 
-## 📊 Estado del Proyecto
-
-![Progreso](https://img.shields.io/badge/Progreso-85%25-green)
-![Issues](https://img.shields.io/github/issues/Jzzc10/gymsync)
-![Forks](https://img.shields.io/github/forks/Jzzc10/gymsync)
-![Stars](https://img.shields.io/github/stars/Jzzc10/gymsync)
-
 ## 👨‍💻 Autor
 
 <div align="center">
@@ -374,7 +367,7 @@ Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENS
 **📧 ¿Preguntas? Abre un [issue](https://github.com/Jzzc10/gymsync/issues)**
 
 **🐛 ¿Encontraste un bug? [Repórtalo aquí](https://github.com/Jzzc10/gymsync/issues/new?template=bug_report.md)**
-
+ 
 ---
 
 *Hecho con ❤️ para la comunidad fitness*
