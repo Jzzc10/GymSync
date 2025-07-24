@@ -9,6 +9,7 @@ import { Router, NavigationEnd } from '@angular/router';
 })
 
 export class AppComponent {
+  title = 'Frontend17'; // <- Esto debe existir para pruebas unitarias
   showHeader = true;
 
   constructor(private router: Router) {

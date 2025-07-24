@@ -1,347 +1,382 @@
 # 🏋️‍♂️ GymSync
 
-<!-- Estado del proyecto -->
+<div align="center">
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+**Una plataforma web moderna para revolucionar la gestión de entrenamientos en gimnasios**
 
-<!-- Tecnologías -->
-![Java](https://img.shields.io/badge/java-23.0.2-orange?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=spring)
-![Angular](https://img.shields.io/badge/Angular-17.3.17-red?logo=angular)
-![MySQL](https://img.shields.io/badge/MySQL-latest-blue?logo=mysql)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/Jzzc10/gymsync)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/Jzzc10/gymsync/releases)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE.md)
+[![Contributors](https://img.shields.io/badge/contributors-1-orange)](https://github.com/Jzzc10/gymsync/graphs/contributors)
 
-Una plataforma web y móvil moderna diseñada para revolucionar la gestión de entrenamientos en gimnasios. Conecta entrenadores, usuarios y administradores en un ecosistema digital eficiente que automatiza rutinas, mide progreso físico y optimiza la comunicación.
+![Java](https://img.shields.io/badge/Java-23.0.2-ED8B00?style=flat&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=flat&logo=spring&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-17.3.17-DD0031?style=flat&logo=angular&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=flat&logo=mysql&logoColor=white)
 
-## 🎯 Objetivos
+[🚀 Demo](#-demo-en-vivo) • [📖 Documentación](#-documentación) • [🛠️ Instalación](#-instalación-y-configuración) • [🤝 Contribuir](#-contribuciones)
 
-- **Automatizar** y personalizar rutinas de entrenamiento
-- **Facilitar** el seguimiento del progreso físico
-- **Mejorar** la comunicación entre entrenadores y clientes
-- **Centralizar** la gestión del gimnasio en una plataforma accesible
+</div>
 
 ---
 
-📋 Tabla de Contenidos
+## 🎯 Acerca del Proyecto
 
-🎯 Objetivos
-🚀 Características Principales
-🌐 Demo y Capturas
-🏗️ Arquitectura del Sistema
-👥 Roles del Sistema
-🛠️ Stack Tecnológico
-📋 Requisitos del Sistema
-🚀 Instalación Detallada
-🐳 Docker Setup
-📚 Documentación API
-🔐 Seguridad
-🧪 Testing
-⚡ Performance
-🚀 Deployment
-❗ Troubleshooting
-🤝 Contribuciones
-📈 Roadmap
-📄 Licencia
+GymSync es una plataforma integral que conecta entrenadores, usuarios y administradores en un ecosistema digital eficiente. Automatiza rutinas de entrenamiento, mide el progreso físico y optimiza la comunicación en gimnasios modernos.
 
----
+### ✨ Características Principales
 
-🎯 Objetivos
-
-- Automatizar y personalizar rutinas de entrenamiento
-- Facilitar el seguimiento del progreso físico
-- Mejorar la comunicación entre entrenadores y clientes
-- Centralizar la gestión del gimnasio en una plataforma accesible
-
-## 🚀 Características Principales
-
-- 📅 **Calendario de entrenamientos** - Planifica y organiza sesiones
-- 📈 **Gráficos de evolución física** - Visualiza el progreso en tiempo real
-- 📱 **Diseño responsive** - Funciona en dispositivos móviles y desktop
-- 🔐 **Autenticación segura** - Sistema JWT con encriptación bcrypt
-
-
-## 🎮 Demo en Vivo
-
-> Nota: La aplicación debe estar ejecutándose localmente para acceder a todas las funcionalidades.
-
-Frontend: http://localhost:4200
-Backend API: http://localhost:8080
-Swagger UI: http://localhost:8080/swagger-ui.html
+- 📅 **Gestión de Entrenamientos** - Planifica y organiza sesiones personalizadas
+- 📈 **Seguimiento de Progreso** - Visualiza la evolución física en tiempo real
+- 📱 **Diseño Responsive** - Experiencia optimizada en móviles y desktop
+- 🔐 **Seguridad Avanzada** - Autenticación JWT con encriptación bcrypt
+- 👥 **Multi-Rol** - Sistema completo para clientes, entrenadores y administradores
+- 📊 **Dashboard Intuitivo** - Métricas y estadísticas visuales
 
 ## 🏗️ Arquitectura del Sistema
-┌─────────────────┐    HTTP/REST API    ┌─────────────────┐
-│   Frontend      │◄──────────────────►│   Backend       │
-│   Angular 17    │                     │   Spring Boot   │
-│   Port: 4200    │                     │   Port: 8080    │
-└─────────────────┘                     └─────────────────┘
-                                                 │
-                                                 │ JDBC
-                                                 ▼
-                                        ┌─────────────────┐
-                                        │   Database      │
-                                        │   MySQL         │
-                                        │   Port: 3306    │
-                                        └─────────────────┘
 
-Componentes Principales
-
-Frontend: SPA con Angular, Material Design, RxJS para gestión de estado
-Backend: API REST con Spring Boot, seguridad JWT, validación de datos
-Base de Datos: MySQL con diseño normalizado en 3FN
-Autenticación: JWT con refresh tokens y bcrypt para contraseñas
+```mermaid
+graph TD
+    A[🖥️ Frontend<br/>Angular 17] -->|HTTP/REST API| B[⚙️ Backend<br/>Spring Boot]
+    B -->|JDBC| C[🗄️ Database<br/>MySQL]
+    
+    A1[📱 Responsive UI] --> A
+    A2[🔐 JWT Auth] --> A
+    A3[📊 Charts & Analytics] --> A
+    
+    B1[🛡️ Spring Security] --> B
+    B2[📝 JPA/Hibernate] --> B
+    B3[📚 Swagger API] --> B
+    
+    C1[🏗️ Normalized Schema] --> C
+    C2[📋 User Management] --> C
+    C3[💪 Workout Data] --> C
+```
 
 ## 👥 Roles del Sistema
 
-| Rol | Funciones Principales |
-|-----|---------------------|
-| **Cliente** | Visualiza rutinas, registra progreso diario, consulta evolución |
-| **Entrenador** | Crea rutinas personalizadas, monitorea clientes, ajusta planes |
-| **Administrador** | Gestiona usuarios, entrenadores, membresías y métricas generales |
+| Rol | 🎯 Funciones Principales |
+|-----|--------------------------|
+| **👤 Cliente** | • Visualizar rutinas asignadas<br/>• Registrar progreso diario<br/>• Consultar evolución histórica |
+| **💪 Entrenador** | • Crear rutinas personalizadas<br/>• Monitorear progreso de clientes<br/>• Gestionar ejercicios y planes |
+| **⚙️ Administrador** | • Gestión completa de usuarios<br/>• Configuración del sistema<br/>• Métricas y reportes generales |
 
 ## 🛠️ Stack Tecnológico
 
-### Frontend
+<table>
+<tr>
+<td width="50%">
+
+### 🎨 Frontend
 - **Framework:** Angular 17.3.17
-- **UI Library:** Angular Material
-- **Librerías:** RxJS, SweetAlert2
-- **Autenticación:** JWT
+- **UI Components:** Angular Material
+- **State Management:** RxJS
+- **Notifications:** SweetAlert2
+- **Authentication:** JWT tokens
 
-### Backend
-- **Framework:** Spring Boot 3.x (Java 23)
-- **Base de Datos:** MySQL con JPA/Hibernate
-- **Servidor:** Apache Tomcat 11 (embebido)
-- **Seguridad:** Spring Security + JWT + bcrypt
-- **Documentación**: Swagger/OpenAPI 3
-- **Testing**: JUnit 5 + Mockito
+</td>
+<td width="50%">
 
-DevOps & Tools
+### ⚙️ Backend
+- **Framework:** Spring Boot 3.x
+- **Language:** Java 23
+- **Database:** MySQL + JPA/Hibernate
+- **Security:** Spring Security + JWT
+- **Documentation:** Swagger/OpenAPI 3
 
-Control de Versiones: Git + GitHub
-Build Tools: Maven (Backend), npm (Frontend)
-Database Tools: MySQL Workbench
-API Testing: Postman, Swagger UI
-IDE Recomendado: IntelliJ IDEA, VS Code
+</td>
+</tr>
+</table>
 
 ## 📋 Requisitos del Sistema
 
-### Hardware Mínimo
-- Procesador ≥ 2GHz
-- Memoria RAM ≥ 4GB
+### 🖥️ Hardware Mínimo
+- **Procesador:** ≥ 2 GHz
+- **Memoria RAM:** ≥ 4 GB
+- **Espacio en disco:** ≥ 2 GB
 
-### Software Requerido
+### 📦 Software Requerido
 
-| Tecnología | Versión minima | Versión Recomendada | Enlace de Descarga |
-|------------|---------|-------------------|
-| Java JDK | 17+ | 23.0.2 | [Oracle JDK](https://jdk.java.net/) |
-| Apache Maven | 3.6+ | 3.9.9 | [Maven Download](https://maven.apache.org/download.cgi) |
-| Node.js | 18+ | 22.13.1 | [Node.js](https://nodejs.org/) |
-| Angular CLI | 17+ | 17.3.17 | `npm install -g @angular/cli@17.3.17` |
-| MySQL | 8.0+ | Latest | [MySQL Downloads](https://dev.mysql.com/downloads/) |
-| Git | 2.30+ | Latest | [Git Download](https://git-scm.com/downloads) |
+| Tecnología | Versión Mínima | Versión Recomendada | 
+|------------|:--------------:|:------------------:|
+| ☕ Java JDK | 17+ | [23.0.2](https://jdk.java.net/) |
+| 📦 Maven | 3.6+ | [3.9.9](https://maven.apache.org/download.cgi) |
+| 🟢 Node.js | 18+ | [22.13.1](https://nodejs.org/) |
+| 🅰️ Angular CLI | 17+ | 17.3.17 |
+| 🐬 MySQL | 8.0+ | [Latest](https://dev.mysql.com/downloads/) |
 
 ## 🚀 Instalación y Configuración
 
-### 1. Verificar Prerrequisitos
+### 1️⃣ Verificar Prerrequisitos
 
 ```bash
-# Verificar Java
+# ☕ Verificar Java
 java -version
 
-# Verificar Maven
+# 📦 Verificar Maven  
 mvn -version
 
-# Verificar Node.js y NPM
-node -v
-npm -v
+# 🟢 Verificar Node.js y npm
+node -v && npm -v
 
-# Verificar Angular
+# 🅰️ Verificar Angular CLI
 ng version
 ```
 
-<img width="674" height="723" alt="versiones" src="https://github.com/user-attachments/assets/d75c72f2-7ea3-474d-9892-9ceeef035984" />
-
-
-
-### 2. Clonar el Repositorio
+### 2️⃣ Clonar el Repositorio
 
 ```bash
 git clone https://github.com/Jzzc10/gymsync.git
 cd gymsync
 ```
-<img width="655" height="316" alt="clonar_repo" src="https://github.com/user-attachments/assets/9a71c36c-ffbe-4579-8126-5ca15828cdaf" />
 
-### 3. Configurar Base de Datos
+### 3️⃣ Configurar Base de Datos
 
-Crear base de datos MySQL:
+**Crear base de datos MySQL:**
+
 ```sql
+-- 🗄️ Crear base de datos
 CREATE DATABASE gymsync CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'tu_usuario'@'localhost' IDENTIFIED BY 'tu_password';
-GRANT ALL PRIVILEGES ON gymsync.* TO 'tu_usuario'@'localhost';
+
+-- 👤 Crear usuario
+CREATE USER 'gymsync_user'@'localhost' IDENTIFIED BY 'secure_password';
+
+-- 🔑 Asignar permisos
+GRANT ALL PRIVILEGES ON gymsync.* TO 'gymsync_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Configurar application.properties
-Editar `backend/src/main/resources/application.properties`:
+**Configurar `application.properties`:**
+
 ```properties
-# Database Configuration
+# 🗄️ Database Configuration
 spring.datasource.url=jdbc:mysql://localhost:3306/gymsync?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_password
+spring.datasource.username=gymsync_user
+spring.datasource.password=secure_password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-# JPA Configuration
+# 🏗️ JPA Configuration
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.format_sql=true
 
-# JWT Configuration
-jwt.secret=tu_clave_secreta_muy_larga_y_segura
+# 🔐 JWT Configuration
+jwt.secret=your_super_secure_jwt_secret_key_here_minimum_256_bits
 jwt.expiration=86400000
 
-# Server Configuration
+# 🌐 Server Configuration
 server.port=8080
-server.servlet.context-path=/
 
-# Swagger Configuration
+# 📚 API Documentation
 springdoc.api-docs.path=/api-docs
 springdoc.swagger-ui.path=/swagger-ui.html
 ```
-<img width="1112" height="770" alt="bd_mysql" src="https://github.com/user-attachments/assets/327bb33c-b5b5-4896-852a-2b760eeb12fa" />
 
-Scripts SQL
-El script sql estan en `/src/main/resources/sql/`
-<img width="879" height="412" alt="image" src="https://github.com/user-attachments/assets/f1c5326f-8f0c-4068-87ce-fba300f724a5" />
-
-### 4. Ejecutar Backend
+### 4️⃣ Ejecutar Backend
 
 ```bash
 cd backend
 
-# Limpiar e instalar dependencias
+# 🧹 Limpiar e instalar dependencias
 mvn clean install
 
-# Ejecutar en modo desarrollo
+# 🚀 Ejecutar en modo desarrollo
 mvn spring-boot:run
-
 ```
-<img width="857" height="427" alt="mvn_clean_install" src="https://github.com/user-attachments/assets/8a279d11-6e75-4a37-b612-49e709104794" />
-<img width="853" height="131" alt="mvn_spring_boot_run" src="https://github.com/user-attachments/assets/ddd30ebd-553d-4dea-973e-1f1376b5a185" />
 
-✅ Backend listo: http://localhost:8080
+✅ **Backend disponible en:** http://localhost:8080
 
-RECUERDA! La base de datos y tu usuario tiene que estar creado y arrancado antes.
+### 5️⃣ Ejecutar Frontend
 
-<img width="1111" height="564" alt="home_page_spring_boot" src="https://github.com/user-attachments/assets/a5096bdd-7f66-45a9-ad14-9e719b99b6a0" />
+```bash
+# 📂 Abrir nueva terminal
+cd frontend
 
+# 📦 Instalar dependencias
+npm install
 
-### 5. Ejecutar Frontend
+# 🚀 Ejecutar en modo desarrollo
+ng serve
+```
 
-Abre nueva terminal:
+✅ **Frontend disponible en:** http://localhost:4200
+
+## 🎮 Demo en Vivo
+
+Una vez que ambos servicios estén ejecutándose:
+
+| Servicio | URL | Descripción |
+|----------|-----|-------------|
+| 🌐 **Aplicación Principal** | http://localhost:4200 | Interfaz de usuario completa |
+| 🔌 **API Backend** | http://localhost:8080 | Servicios REST |
+| 📚 **Documentación API** | http://localhost:8080/swagger-ui.html | Interfaz Swagger interactiva |
+
+## 📚 Documentación de la API
+
+### 🔗 Endpoints Principales
+
+<details>
+<summary>👤 <strong>Gestión de Usuarios</strong></summary>
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/usuarios` | Listar todos los usuarios |
+| `POST` | `/api/usuarios` | Crear nuevo usuario |
+| `PUT` | `/api/usuarios/{id}` | Actualizar usuario |
+| `DELETE` | `/api/usuarios/{id}` | Eliminar usuario |
+
+</details>
+
+<details>
+<summary>💪 <strong>Rutinas de Entrenamiento</strong></summary>
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/rutinas/cliente/{id}` | Obtener rutinas de un cliente |
+| `POST` | `/api/rutinas` | Crear nueva rutina |
+| `PUT` | `/api/rutinas/{id}` | Actualizar rutina existente |
+| `DELETE` | `/api/rutinas/{id}` | Eliminar rutina |
+
+</details>
+
+<details>
+<summary>🏃‍♂️ <strong>Ejercicios</strong></summary>
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/ejercicios` | Listar todos los ejercicios |
+| `POST` | `/api/ejercicios` | Crear nuevo ejercicio |
+| `PUT` | `/api/ejercicios/{id}` | Actualizar ejercicio |
+
+</details>
+
+<details>
+<summary>📈 <strong>Seguimiento de Progreso</strong></summary>
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/progreso/usuario/{id}` | Obtener progreso de usuario |
+| `POST` | `/api/progreso` | Registrar nuevo progreso |
+
+</details>
+
+## 🧪 Testing
+
+### 🔧 Backend Testing
+
+```bash
+cd backend
+
+# 🧪 Ejecutar todos los tests
+mvn test
+
+# 📊 Tests con reporte de cobertura
+mvn jacoco:prepare-agent test jacoco:report
+
+# 🔍 Tests de integración
+mvn integration-test
+```
+
+### 🎨 Frontend Testing
+
 ```bash
 cd frontend
 
-# Instalar dependencias
-npm install
+# 🧪 Tests unitarios
+ng test
 
-# Ejecutar en modo desarrollo
-ng serve
+# 📊 Tests con cobertura
+ng test --code-coverage
 
-# O ejecutar en modo producción
-ng serve --configuration production
+# 🎭 Tests end-to-end
+ng e2e
 ```
 
-<img width="741" height="293" alt="image" src="https://github.com/user-attachments/assets/4651f63b-3709-4517-9ed3-c4fc387b14d5" />
-<img width="1222" height="1316" alt="image" src="https://github.com/user-attachments/assets/d89ca7a3-2b83-47ea-b4f5-4177bb7fbed5" />
+## ❗ Solución de Problemas
 
+<details>
+<summary>🔧 <strong>Problemas Comunes y Soluciones</strong></summary>
 
-✅ Frontend listo: http://localhost:4200
+| ❌ Error | ✅ Solución |
+|----------|-------------|
+| `Cannot connect to DB` | Verificar que MySQL esté ejecutándose y las credenciales sean correctas |
+| `ng serve no encontrado` | Instalar Angular CLI: `npm install -g @angular/cli@17.3.17` |
+| `mvn no encontrado` | Configurar `MAVEN_HOME` en variables de entorno |
+| `Port 8080 already in use` | Ejecutar: `netstat -ano | findstr :8080` y terminar el proceso |
+| `JWT token expired` | Reiniciar sesión en la aplicación |
 
-## 📚 Documentación API
-Swagger UI (Recomendado)
-Una vez que el backend esté ejecutándose:
-
-- Interfaz Swagger: http://localhost:8080/swagger-ui.html
-- OpenAPI JSON: http://localhost:8080/api-docs
-- OpenAPI YAML: http://localhost:8080/api-docs.yaml
-
-| Recurso | Método | Endpoint | Descripción |
-|---------|--------|----------|-------------|
-| **Usuarios** | GET | `/api/usuarios` | Lista todos los usuarios |
-| | POST | `/api/usuarios` | Crear nuevo usuario |
-| | PUT | `/api/usuarios/{id}` | Editar usuario |
-| | DELETE | `/api/usuarios/{id}` | Eliminar usuario |
-| **Rutinas** | GET | `/api/rutinas/cliente/{id}` | Rutinas de un cliente |
-| | POST | `/api/rutinas` | Crear nueva rutina |
-| | PUT | `/api/rutinas/{id}` | Editar rutina |
-| **Ejercicios** | GET | `/api/ejercicios` | Todos los ejercicios |
-| | POST | `/api/ejercicios` | Crear ejercicio |
-| **Progreso** | GET | `/api/progreso/usuario/{id}` | Progreso por usuario |
-| | POST | `/api/progreso` | Registrar progreso |
-
-## 🗄️ Modelo de Datos
-
-El sistema maneja las siguientes entidades principales:
-
-- **USUARIO** - Información de clientes, entrenadores y administradores
-- **RUTINA** - Planes de entrenamiento personalizados
-- **EJERCICIO** - Biblioteca de ejercicios con descripciones
-- **RUTINA_EJERCICIO** - Relación entre rutinas y ejercicios
-- **PROGRESO** - Registro de evolución física de los usuarios
-
-## 🧪 Uso de la Aplicación
-
-1. **Registro** - Crea tu cuenta como cliente, entrenador o administrador
-2. **Asignación** - Los entrenadores crean y asignan rutinas personalizadas
-3. **Seguimiento** - Los clientes registran su progreso diario
-4. **Análisis** - Visualiza estadísticas y evolución a través de gráficos
-
-## ❗ Problemas Comunes
-
-| Error | Solución |
-|-------|----------|
-| `Cannot connect to DB` | Verificar credenciales y puerto de MySQL |
-| `ng serve no encontrado` | Reinstalar Angular CLI globalmente |
-| `mvn no encontrado` | Configurar correctamente `MAVEN_HOME` |
-| `Port 8080 was already in use` | Hacer un taskkil en el puerto 8080 |
-<img width="638" height="152" alt="image" src="https://github.com/user-attachments/assets/73f9f56d-397c-4f84-b1a4-6140761e1b32" />
+</details>
 
 ## 🤝 Contribuciones
 
-Las contribuciones son bienvenidas. Para cambios importantes:
+¡Las contribuciones son bienvenidas! Sigue estos pasos:
 
-1. Fork el proyecto
-2. Crea tu rama de característica (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+1. 🍴 **Fork** el proyecto
+2. 🌿 **Crea** tu rama de características (`git checkout -b feature/amazing-feature`)
+3. 💾 **Commit** tus cambios (`git commit -m 'Add amazing feature'`)
+4. 📤 **Push** a la rama (`git push origin feature/amazing-feature`)
+5. 🔄 **Abre** un Pull Request
 
-## 📈 Roadmap Futuro
+### 📋 Antes de Contribuir
 
-- 🤖 **Inteligencia Artificial** para rutinas adaptativas
-- 📱 **App móvil nativa** para iOS y Android
-- 🏢 **Escalabilidad** para cadenas de gimnasios
-- 📊 **Analytics avanzados** y reportes
-- Notificaciones rutina
-- Chat Integrado
-    • Normalizar base de datos (3FN)
-    • Diagrama de Gantt
-    • Mockup o wireframe
-    • Biblioteca multimedia - Videos y descripciones de ejercicios
-    • Manual de usuario
+- Asegúrate de que los tests pasen
+- Sigue las convenciones de código existentes
+- Actualiza la documentación si es necesario
+- Incluye tests para nuevas funcionalidades
+
+## 📈 Roadmap
+
+### 🚀 Versión 2.0 (En Desarrollo)
+
+- [ ] 🤖 **IA para rutinas adaptativas** - Algoritmos de machine learning
+- [ ] 📱 **App móvil nativa** - React Native para iOS/Android  
+- [ ] 💬 **Chat integrado** - Comunicación en tiempo real
+- [ ] 🔔 **Notificaciones push** - Recordatorios de entrenamientos
+- [ ] 📊 **Analytics avanzados** - Dashboards ejecutivos
+
+### 🎯 Versión 3.0 (Planificado)
+
+- [ ] 🏢 **Multi-gimnasio** - Soporte para cadenas
+- [ ] 🎥 **Biblioteca multimedia** - Videos de ejercicios
+- [ ] 📋 **Planes nutricionales** - Integración con nutrición
+- [ ] 🏆 **Gamificación** - Sistema de logros y ranking
+
+## 📊 Estado del Proyecto
+
+![Progreso](https://img.shields.io/badge/Progreso-85%25-green)
+![Issues](https://img.shields.io/github/issues/Jzzc10/gymsync)
+![Forks](https://img.shields.io/github/forks/Jzzc10/gymsync)
+![Stars](https://img.shields.io/github/stars/Jzzc10/gymsync)
 
 ## 👨‍💻 Autor
 
-**Jzzc10**
-- GitHub: [@Jzzc10](https://github.com/Jzzc10)
+<div align="center">
+
+**Jorge Zárate** (Jzzc10)
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Jzzc10)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/jorge-zarate)
+
+*Desarrollador Full Stack apasionado por crear soluciones tecnológicas innovadoras*
+
+</div>
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE.md](LICENSE.md) para más detalles.
+Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENSE.md](LICENSE.md) para más detalles.
 
 ---
 
-⭐ Si este proyecto te fue útil, ¡dale una estrella en GitHub!
+<div align="center">
 
-📧 Para preguntas o sugerencias, no dudes en abrir un [issue](https://github.com/Jzzc10/gymsync/issues).
+**⭐ ¡Si este proyecto te resulta útil, dale una estrella!**
+
+**📧 ¿Preguntas? Abre un [issue](https://github.com/Jzzc10/gymsync/issues)**
+
+**🐛 ¿Encontraste un bug? [Repórtalo aquí](https://github.com/Jzzc10/gymsync/issues/new?template=bug_report.md)**
+
+---
+
+*Hecho con ❤️ para la comunidad fitness*
+
+</div>
