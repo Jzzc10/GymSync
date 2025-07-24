@@ -14,7 +14,7 @@
 ![Angular](https://img.shields.io/badge/Angular-17.3.17-DD0031?style=flat&logo=angular&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=flat&logo=mysql&logoColor=white)
 
-[🚀 Demo](#-demo-en-vivo) • [📖 Documentación](#-documentación) • [🛠️ Instalación](#-instalación-y-configuración) • [🤝 Contribuir](#-contribuciones)
+[🚀 Demo](#-demo-en-vivo) • [📖 Documentación](#-documentación-de-la-api) • [🛠️ Instalación](#-instalación-y-configuración) • [🤝 Contribuir](#-contribuciones)
 
 </div>
 
